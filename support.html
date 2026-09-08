@@ -53,10 +53,7 @@
         </div>
 
         <div class="support-channels">
-            <a href="https://t.me/zoha742" target="_blank" class="channel-btn" style="background: rgba(2, 132, 199, 0.2); border-color: #0284c7; color: #38bdf8;">
-                <i class="fa-brands fa-telegram"></i> Telegram Admin
-            </a>
-            <a href="https://t.me/" target="_blank" class="channel-btn" style="background: rgba(124, 58, 237, 0.2); border-color: #7c3aed; color: #c084fc;">
+            <a href="https://t.me/" target="_blank" class="channel-btn" style="background: rgba(124, 58, 237, 0.2); border-color: #7c3aed; color: #c084fc; width: 100%;">
                 <i class="fa-solid fa-bullhorn"></i> Official Channel
             </a>
         </div>
@@ -124,7 +121,6 @@
                 timestamp: Date.now()
             };
 
-            // ফায়ারবেসের support_tickets নোডে ইউজারের মেসেজ সেভ হবে
             db.ref('support_tickets/' + userId + '_' + Date.now()).set(ticketData).then(() => {
                 tg.showAlert("✅ Your message has been sent to Admin Inbox successfully!");
                 document.getElementById('complaintMessage').value = '';
