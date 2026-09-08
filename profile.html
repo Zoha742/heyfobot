@@ -152,8 +152,8 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
-        /* এডমিন প্যানেল গ্রিড (Main Admin & Shop Admin) */
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-bottom: 10px; }
+        /* এডমিন প্যানেল গ্রিড (একদম নিচে থাকবে এবং শুধুমাত্র এডমিন দেখবে) */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-top: 10px; }
         .admin-box-item {
             background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6));
             border: 1px solid #22c55e;
@@ -198,7 +198,7 @@
             </div>
         </div>
 
-        <!-- প্রিমিয়াম ড্যাশবোর্ড কার্ড (ভেরিফাইড হলে গ্লো করবে) -->
+        <!-- প্রিমিয়াম ড্যাশবোর্ড কার্ড -->
         <div class="profile-card" id="profileCardElement">
             <div class="profile-left">
                 <div class="avatar-container">
@@ -227,27 +227,15 @@
             </div>
         </div>
 
-        <!-- শপ থেকে কেনা বা আনলক করা আইটেমগুলোর ড্যাশবোর্ড কালেকশন -->
+        <!-- অর্ডার হিস্ট্রি বা পারচেজ কালেকশন সেকশন -->
         <div class="card">
-            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-shirt" style="color: #c084fc;"></i> Purchased Items & Wardrobe</h4>
+            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</h4>
             <div id="my-collection-list" style="max-height: 180px; overflow-y: auto;">
-                <small style="color: var(--text-muted);">Loading your purchases...</small>
+                <small style="color: var(--text-muted);">Loading your order history...</small>
             </div>
         </div>
 
         <div class="menu-list">
-            <!-- এডমিন প্যানেল অপশন (Main Admin & Shop Admin) -->
-            <div class="admin-grid" id="adminGridContainer">
-                <a class="admin-box-item" href="mainadmin.html">
-                    <i class="fa-solid fa-user-shield"></i>
-                    <h5>Main Admin</h5>
-                </a>
-                <a class="admin-box-item" href="shopadmin.html">
-                    <i class="fa-solid fa-store"></i>
-                    <h5>Shop Admin</h5>
-                </a>
-            </div>
-
             <a class="menu-row-item" href="support.html">
                 <div class="menu-row-left">
                     <div class="menu-row-icon" style="background: #0891b2;"><i class="fa-solid fa-headset"></i></div>
@@ -268,6 +256,18 @@
                     </div>
                 </div>
                 <span class="coming-soon-badge">Soon</span>
+            </div>
+
+            <!-- এডমিন প্যানেল অপশন (একেবারে নিচে রাখা হয়েছে এবং শুধুমাত্র এডমিন দেখবে) -->
+            <div class="admin-grid" id="adminGridContainer">
+                <a class="admin-box-item" href="mainadmin.html">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h5>Main Admin</h5>
+                </a>
+                <a class="admin-box-item" href="shopadmin.html">
+                    <i class="fa-solid fa-store"></i>
+                    <h5>Shop Admin</h5>
+                </a>
             </div>
         </div>
     </div>
@@ -313,12 +313,12 @@
             document.getElementById('user-avatar').src = user.photo_url;
         }
 
-        // এডমিন আইডি চেক করে Main Admin ও Shop Admin গ্রিড শো করা
+        // কঠোর সিকিউরিটি চেক: শুধুমাত্র আপনার আইডিতেই এডমিন প্যানেল শো করবে
         if (userId === ADMIN_USER_ID) {
             document.getElementById('adminGridContainer').style.display = "grid";
         }
 
-        // ফায়ারবেস থেকে ব্যালেন্স এবং ভেরিফিকেশন স্ট্যাটাস ট্র্যাক করা (অ্যানিমেশন সহ)
+        // ফায়ারবেস থেকে ভেরিফাইড স্ট্যাটাস ও ব্যালেন্স চেক করা
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
@@ -328,7 +328,6 @@
                 document.getElementById('total-gp').innerText = gp.toLocaleString();
                 document.getElementById('total-gold').innerText = gold.toLocaleString();
 
-                // ভেরিফাইড হলে প্রিমিয়াম গ্লোয়িং অ্যানিমেশন ও ব্যাজ একটিভ হবে
                 if (data.isVerified === true) {
                     document.getElementById('profileCardElement').classList.add('verified');
                     document.getElementById('verifiedBadgeIcon').style.display = 'flex';
@@ -341,7 +340,7 @@
             }
         });
 
-        // শপ থেকে কেনা আইটেমগুলো প্রোফাইল কালেকশনে দেখানোর ফায়ারবেস লজিক
+        // ফায়ারবেস থেকে ইউজারের অর্ডার হিস্ট্রি বা পারচেজ আইটেমগুলো লোড করা
         db.ref('users/' + userId + '/wardrobe').on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
@@ -354,21 +353,21 @@
                 itemsArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 itemsArray.forEach(item => {
-                    let unlockDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
+                    let orderDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
 
                     html += `
                         <div class="collection-item-box">
                             <div>
                                 <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${item.itemName}</b><br>
-                                <span style="color: #94a3b8; font-size: 10px;">Purchased: ${unlockDate}</span>
+                                <span style="color: #94a3b8; font-size: 10px;">Order Date: ${orderDate}</span>
                             </div>
-                            <span style="font-size: 10px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); padding: 3px 8px; border-radius: 6px;">Owned 👑</span>
+                            <span style="font-size: 10px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); padding: 3px 8px; border-radius: 6px;">Success ✅</span>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No items purchased yet. Visit shop to get items!</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No order history found. Visit shop to make orders!</small>`;
             }
         });
 
