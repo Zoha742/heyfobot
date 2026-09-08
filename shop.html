@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Virtual Wardrobe Shop</title>
+    <title>Heyfobot - Wardrobe Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,7 +12,41 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .header h3 { color: #fff; margin: 0; }
         .balance-badge { background: rgba(254, 240, 138, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; }
-        
+
+        /* প্রোমো / বিজ্ঞাপন ব্যানার কার্ড (ecommerce style) */
+        .promo-banner {
+            background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px -8px rgba(124, 58, 237, 0.55);
+            position: relative;
+            overflow: hidden;
+        }
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            width: 130px; height: 130px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            top: -45px; right: -35px;
+        }
+        .promo-banner::after {
+            content: '';
+            position: absolute;
+            width: 70px; height: 70px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            bottom: -25px; right: 40px;
+        }
+        .promo-text { position: relative; z-index: 1; }
+        .promo-text h4 { margin: 0 0 4px 0; font-size: 15px; color: #fff; font-weight: 800; }
+        .promo-text p { margin: 0; font-size: 11px; color: rgba(255,255,255,0.85); }
+        .promo-icon { font-size: 38px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
         /* শপ ক্যাটাগরি নেভিগেশন বার */
         .shop-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scrollbar-width: none; }
         .shop-nav::-webkit-scrollbar { display: none; }
@@ -20,20 +54,63 @@
         .cat-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
         .dress-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .dress-card { background: #131c2e; border: 1px solid #2a1b4e; border-radius: 14px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .dress-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #0b0f19; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
-        .dress-img:hover { opacity: 0.9; }
+
+        /* প্রোডাক্ট কার্ড - ইকমার্স লুক */
+        .dress-card {
+            background: #131c2e;
+            border: 1px solid #2a1b4e;
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: 0.2s;
+        }
+        .dress-card:active { transform: scale(0.98); }
+
+        .card-img-wrap { position: relative; margin-bottom: 8px; }
+
+        /* টপ ব্যাজ (HOT/NEW/SALE) */
+        .card-badge {
+            position: absolute; top: 6px; left: 6px; z-index: 2;
+            font-size: 9px; font-weight: 800; padding: 3px 8px;
+            border-radius: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+            color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+        .badge-hot { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .badge-new { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .badge-sale { background: linear-gradient(135deg, #ec4899, #db2777); }
+
+        /* Love / Wishlist বাটন */
+        .love-btn {
+            position: absolute; top: 6px; right: 6px; z-index: 2;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(11, 15, 25, 0.7); border: none; color: #cbd5e1;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; backdrop-filter: blur(4px); transition: 0.2s; font-size: 13px;
+        }
+        .love-btn.loved { color: #ec4899; }
+        .love-btn:active { transform: scale(0.85); }
+
+        .dress-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #0b0f19; cursor: pointer; display: block; }
         .dress-title { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dress-price { font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
-        
-        .buy-btn { background: #7c3aed; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
-        .buy-btn:hover { background: #6d28d9; }
+        .dress-price { font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            color: #fff; border: none; padding: 9px; border-radius: 8px;
+            font-size: 12px; font-weight: 700; cursor: pointer; width: 100%;
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .buy-btn:active { opacity: 0.85; }
 
         /* ইমেজ জুম মডাল */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
         .close-modal { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 28px; cursor: pointer; background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        
+
         /* মেইন বটম নেভিগেশন */
         .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #131c2e; border-top: 1px solid #2a1b4e; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 11px; font-weight: 600; flex: 1; cursor: pointer; }
@@ -44,11 +121,20 @@
 <body>
     <div class="container">
         <div class="header">
-            <h3>✨ Virtual Wardrobe</h3>
+            <h3>🛍️ Wardrobe Store</h3>
             <div class="balance-badge" id="shopBalance">0 Gold</div>
         </div>
 
-        <!-- শপ ক্যাটাগরি নেভিগেশন বার (শুধু ভার্চুয়াল কসমেটিকস ও ড্রেস) -->
+        <!-- প্রোমো / বিজ্ঞাপন ব্যানার কার্ড -->
+        <div class="promo-banner">
+            <div class="promo-text">
+                <h4>🔥 Mega Wardrobe Sale</h4>
+                <p>Unlock exclusive outfits with your Gold today!</p>
+            </div>
+            <i class="fa-solid fa-gift promo-icon"></i>
+        </div>
+
+        <!-- শপ ক্যাটাগরি নেভিগেশন বার -->
         <div class="shop-nav">
             <button class="cat-btn active" onclick="filterCategory('All', this)">All Outfits</button>
             <button class="cat-btn" onclick="filterCategory('Dress', this)">👗 Female Wardrobe</button>
@@ -97,7 +183,7 @@
         let username = user ? (user.first_name || "User") : "User";
         let userGold = 0;
 
-        // ফায়ারবেস থেকে ইউজারের রিয়েল Gold ব্যালেন্স লোড করা
+        // ফায়ারবেস থেকে ইউজারের রিয়েল Gold ব্যালেন্স লোড করা
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
@@ -106,7 +192,7 @@
             }
         });
 
-        // শপের ভার্চুয়াল অ্যাভাটার আইটেমগুলো (কসমেটিকস ও ওয়ার্ডরোব ড্রেস)
+        // শপের ভার্চুয়াল অ্যাভাটার আইটেমগুলো (কসমেটিকস ও ওয়ার্ডরোব ড্রেস)
         const storeItems = [
             { name: "Royal Floral Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" },
             { name: "Classic Party Dress", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/4_jwi1bs.webp" },
@@ -132,26 +218,68 @@
             { name: "Daily Casual Set", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/24_pbzdij.webp" },
             { name: "Chic Designer Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/23_exv5bf.webp" },
             { name: "Elite Collection Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/15_vgqlvi.webp" },
-            
+
             // Boys Wardrobe Items
             { name: "Formal Blazer Suit", cat: "Boys", price: 15000, img: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=300" },
             { name: "Casual Hoodie & Jeans", cat: "Boys", price: 20000, img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300" },
             { name: "Executive 3-Piece Suit", cat: "Boys", price: 20000, img: "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=300" }
         ];
 
+        // Wishlist (love) state লোকাল স্টোরেজে সেভ থাকবে
+        function getLovedItems() {
+            return JSON.parse(localStorage.getItem('lovedItems') || '[]');
+        }
+
+        function toggleLove(btn, itemName) {
+            event.stopPropagation();
+            let loved = getLovedItems();
+            let icon = btn.querySelector('i');
+            if (loved.includes(itemName)) {
+                loved = loved.filter(n => n !== itemName);
+                btn.classList.remove('loved');
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            } else {
+                loved.push(itemName);
+                btn.classList.add('loved');
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            }
+            localStorage.setItem('lovedItems', JSON.stringify(loved));
+        }
+
+        // প্রতিটা কার্ডে HOT/NEW/SALE ব্যাজ বসানোর জন্য
+        function getBadge(index) {
+            let mod = index % 5;
+            if (mod === 0) return { cls: 'badge-hot', text: 'HOT' };
+            if (mod === 2) return { cls: 'badge-new', text: 'NEW' };
+            if (mod === 4) return { cls: 'badge-sale', text: 'SALE' };
+            return null;
+        }
+
         function renderItems(list) {
             const dressGrid = document.getElementById('dressGrid');
+            const lovedItems = getLovedItems();
             dressGrid.innerHTML = '';
-            
+
             list.forEach((item, index) => {
+                let badge = getBadge(index);
+                let isLoved = lovedItems.includes(item.name);
+
                 dressGrid.innerHTML += `
                     <div class="dress-card">
-                        <img src="${item.img}" class="dress-img" alt="Virtual Item" onclick="openZoomModal('${item.img}')" title="Click to zoom">
-                        <div>
-                            <h4 class="dress-title">${item.name}</h4>
-                            <div class="dress-price">🪙 ${item.price.toLocaleString()} Gold</div>
+                        <div class="card-img-wrap">
+                            ${badge ? `<span class="card-badge ${badge.cls}">${badge.text}</span>` : ''}
+                            <button class="love-btn ${isLoved ? 'loved' : ''}" onclick="toggleLove(this, '${item.name.replace(/'/g, "\\'")}')">
+                                <i class="fa-${isLoved ? 'solid' : 'regular'} fa-heart"></i>
+                            </button>
+                            <img src="${item.img}" class="dress-img" alt="Virtual Item" onclick="openZoomModal('${item.img}')" title="Click to zoom">
                         </div>
-                        <button class="buy-btn" onclick="confirmUnlock('${item.name}', ${item.price}, ${index})">Unlock Outfit</button>
+                        <div class="dress-title">${item.name}</div>
+                        <div class="dress-price"><i class="fa-solid fa-coins"></i> ${item.price.toLocaleString()} Gold</div>
+                        <button class="buy-btn" onclick="confirmUnlock('${item.name.replace(/'/g, "\\'")}', ${item.price}, ${index})">
+                            <i class="fa-solid fa-bag-shopping"></i> Buy Now
+                        </button>
                     </div>
                 `;
             });
@@ -199,7 +327,7 @@
                             timestamp: Date.now()
                         };
 
-                        // ভার্চুয়াল আইটেম আনলক হিসেবে সেভ হবে, কোনো শিপিং বা ফিজিক্যাল অর্ডারের ঝামেলা নেই
+                        // ভার্চুয়াল আইটেম আনলক হিসেবে সেভ হবে, কোনো শিপিং বা ফিজিক্যাল অর্ডারের ঝামেলা নেই
                         db.ref('virtual_wardrobe_unlocks').push(unlockData);
                         db.ref('users/' + userId + '/wardrobe').push(unlockData).then(() => {
                             tg.showAlert(`🎉 Success! "${itemNameFinal}" added to your virtual wardrobe.`);
