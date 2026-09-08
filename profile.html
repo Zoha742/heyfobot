@@ -54,16 +54,23 @@
         .stat-card .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
-        .card h4 { margin: 0 0 10px 0; font-size: 13px; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .card h4 { margin: 0 0 10px 0; font-size: 13px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
         
+        .section-summary { font-size: 11px; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.2); }
+
         .item-box { 
             background: #0b0f19; border: 1px solid var(--card-border); 
             padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; 
             display: flex; justify-content: space-between; align-items: center; font-size: 12px; 
         }
 
+        .size-select-sm { background: #131c2e; border: 1px solid var(--card-border); color: #fff; padding: 3px 6px; border-radius: 6px; font-size: 10px; margin-top: 4px; outline: none; }
+
         .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .cart-sm-btn { background: #3b82f6; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .delete-sm-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+
+        .total-action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 10px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 12px; margin-top: 6px; text-align: center; }
 
         .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
         .menu-row-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text-main); }
@@ -117,25 +124,39 @@
             </div>
         </div>
 
-        <!-- ১. Add to Cart সেকশন -->
+        <!-- ১. My Cart সেকশন (Total Price ও Total Order সহ) -->
         <div class="card">
-            <h4><i class="fa-solid fa-cart-shopping" style="color: #3b82f6;"></i> My Cart</h4>
-            <div id="cart-list" style="max-height: 180px; overflow-y: auto;">
+            <h4>
+                <span><i class="fa-solid fa-cart-shopping" style="color: #3b82f6;"></i> My Cart</span>
+                <span id="cartSummary" class="section-summary">Total: 0 Gold</span>
+            </h4>
+            <div id="cart-list" style="max-height: 200px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Your cart is empty.</small>
+            </div>
+            <div id="totalOrderBtnContainer" style="display: none;">
+                <button class="total-action-btn" onclick="orderAllCart()">🛒 Total Order (Order All Items)</button>
             </div>
         </div>
 
-        <!-- ২. Whitelist (Wishlist) সেকশন -->
+        <!-- ২. Whitelist / Wishlist সেকশন (Total Price ও Total Add Cart সহ) -->
         <div class="card">
-            <h4><i class="fa-solid fa-heart" style="color: #ef4444;"></i> Whitelist / Wishlist</h4>
-            <div id="whitelist-list" style="max-height: 150px; overflow-y: auto;">
+            <h4>
+                <span><i class="fa-solid fa-heart" style="color: #ef4444;"></i> Whitelist / Wishlist</span>
+                <span id="wishlistSummary" class="section-summary">Total: 0 Gold</span>
+            </h4>
+            <div id="whitelist-list" style="max-height: 180px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">No items in wishlist.</small>
+            </div>
+            <div id="totalAddCartBtnContainer" style="display: none;">
+                <button class="total-action-btn" onclick="addAllToCart()">🛍️ Total Add Cart (Add All to Cart)</button>
             </div>
         </div>
 
         <!-- ৩. My Order History সেকশন -->
         <div class="card">
-            <h4><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</h4>
+            <h4>
+                <span><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</span>
+            </h4>
             <div id="my-collection-list" style="max-height: 200px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">No order history found.</small>
             </div>
@@ -197,6 +218,8 @@
         let firstName = user ? (user.first_name || "User") : "User";
         let username = (user && user.username) ? `@${user.username}` : `@user`;
         let userGold = 0;
+        let globalCartItems = {};
+        let globalWishlistItems = [];
         const ADMIN_USER_ID = "7757851056";
 
         document.getElementById('name-text').innerText = firstName;
@@ -221,53 +244,91 @@
             }
         });
 
-        // ১. Cart রেন্ডার ও অর্ডার প্লেস করার সিস্টেম
+        // ১. Cart রেন্ডার, টোটাল প্রাইস ও সাইজ কাস্টমাইজেশন
         db.ref('users/' + userId + '/cart').on('value', snap => {
             let container = document.getElementById('cart-list');
+            let totalBtnContainer = document.getElementById('totalOrderBtnContainer');
+            let cartSummary = document.getElementById('cartSummary');
             let html = "";
+            globalCartItems = {};
+            let totalCartPrice = 0;
+            let cartCount = 0;
+
             if (snap.exists()) {
-                snap.forEach(child => {
-                    let cartKey = child.key;
-                    let item = child.val();
-                    html += `
-                        <div class="item-box">
-                            <div>
-                                <b>${item.itemName}</b><br>
-                                <span style="color: #fbbf24;">🪙 ${item.price} Gold</span>
+                globalCartItems = snap.val();
+                let keys = Object.keys(globalCartItems);
+                cartCount = keys.length;
+                
+                if(cartCount > 0) {
+                    totalBtnContainer.style.display = 'block';
+                    keys.forEach(cartKey => {
+                        let item = globalCartItems[cartKey];
+                        totalCartPrice += (item.price || 0);
+                        let cleanName = item.rawName || item.itemName.replace(/\s*\(Size: [^)]+\)/g, '');
+
+                        html += `
+                            <div class="item-box">
+                                <div>
+                                    <b style="color:#fff;">${cleanName}</b><br>
+                                    <span style="color: #fbbf24;">🪙 ${item.price} Gold</span><br>
+                                    <select id="cartSize-${cartKey}" class="size-select-sm" onchange="updateCartSize('${cartKey}', '${cleanName}')">
+                                        <option value="S" ${item.itemName.includes('Size: S') ? 'selected' : ''}>Size: S</option>
+                                        <option value="M" ${item.itemName.includes('Size: M') || !item.itemName.includes('Size:') ? 'selected' : ''}>Size: M</option>
+                                        <option value="L" ${item.itemName.includes('Size: L') ? 'selected' : ''}>Size: L</option>
+                                        <option value="XL" ${item.itemName.includes('Size: XL') ? 'selected' : ''}>Size: XL</option>
+                                        <option value="XXL" ${item.itemName.includes('Size: XXL') ? 'selected' : ''}>Size: XXL</option>
+                                    </select>
+                                </div>
+                                <div style="display:flex; gap:4px; align-items:center;">
+                                    <button class="action-sm-btn" onclick="orderSingleCart('${cartKey}')">Order</button>
+                                    <button class="delete-sm-btn" onclick="removeFromCart('${cartKey}')">X</button>
+                                </div>
                             </div>
-                            <div style="display:flex; gap:4px;">
-                                <button class="action-sm-btn" onclick="orderFromCart('${cartKey}', '${item.itemName.replace(/'/g, "\\'")}', ${item.price})">Order</button>
-                                <button class="delete-sm-btn" onclick="removeFromCart('${cartKey}')">X</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
+                        `;
+                    });
+                    container.innerHTML = html;
+                    cartSummary.innerText = `Items: ${cartCount} | Total: ${totalCartPrice.toLocaleString()} Gold`;
+                } else {
+                    totalBtnContainer.style.display = 'none';
+                    container.innerHTML = `<small style="color: var(--text-muted);">Your cart is empty.</small>`;
+                    cartSummary.innerText = `Total: 0 Gold`;
+                }
             } else {
+                totalBtnContainer.style.display = 'none';
                 container.innerHTML = `<small style="color: var(--text-muted);">Your cart is empty.</small>`;
+                cartSummary.innerText = `Total: 0 Gold`;
             }
         });
+
+        function updateCartSize(cartKey, cleanName) {
+            let selectedSize = document.getElementById(`cartSize-${cartKey}`).value;
+            let updatedName = `${cleanName} (Size: ${selectedSize})`;
+            db.ref(`users/${userId}/cart/${cartKey}`).update({ itemName: updatedName, rawName: cleanName });
+        }
 
         function removeFromCart(cartKey) {
             db.ref(`users/${userId}/cart/${cartKey}`).remove();
         }
 
-        function orderFromCart(cartKey, itemName, price) {
-            if (userGold >= price) {
-                let newGold = userGold - price;
+        function orderSingleCart(cartKey) {
+            let item = globalCartItems[cartKey];
+            if (!item) return;
+
+            if (userGold >= item.price) {
+                let newGold = userGold - item.price;
                 db.ref('users/' + userId).update({ gold: newGold }).then(() => {
                     let orderData = {
                         userId: userId,
                         userName: firstName,
                         userUsername: username,
-                        itemName: itemName,
-                        price: price,
+                        itemName: item.itemName,
+                        price: item.price,
                         status: "Pending",
                         timestamp: Date.now()
                     };
                     db.ref('shop_orders').push(orderData).then(() => {
                         db.ref(`users/${userId}/cart/${cartKey}`).remove();
-                        tg.showAlert(`🎉 Order placed successfully for "${itemName}" from Cart!`);
+                        tg.showAlert(`🎉 Order placed successfully for "${item.itemName}"!`);
                     });
                 });
             } else {
@@ -275,29 +336,121 @@
             }
         }
 
-        // ২. Whitelist রেন্ডার সিস্টেম
+        function orderAllCart() {
+            let keys = Object.keys(globalCartItems);
+            if (keys.length === 0) return;
+
+            let totalPrice = 0;
+            keys.forEach(k => { totalPrice += globalCartItems[k].price; });
+
+            if (userGold >= totalPrice) {
+                let newGold = userGold - totalPrice;
+                db.ref('users/' + userId).update({ gold: newGold }).then(() => {
+                    let updates = {};
+                    keys.forEach(cartKey => {
+                        let item = globalCartItems[cartKey];
+                        let orderPushKey = db.ref('shop_orders').push().key;
+                        updates[`shop_orders/${orderPushKey}`] = {
+                            userId: userId,
+                            userName: firstName,
+                            userUsername: username,
+                            itemName: item.itemName,
+                            price: item.price,
+                            status: "Pending",
+                            timestamp: Date.now()
+                        };
+                    });
+                    updates[`users/${userId}/cart`] = null;
+
+                    db.ref().update(updates).then(() => {
+                        tg.showAlert(`🎉 Total ${keys.length} items ordered successfully!`);
+                    });
+                });
+            } else {
+                tg.showAlert("❌ Insufficient Gold Balance to order all items!");
+            }
+        }
+
+        // ২. Whitelist / Wishlist রেন্ডার, টোটাল প্রাইস ও Add Cart অপশন
         db.ref('users/' + userId + '/wishlist').on('value', snap => {
             let container = document.getElementById('whitelist-list');
+            let totalAddBtnContainer = document.getElementById('totalAddCartBtnContainer');
+            let wishlistSummary = document.getElementById('wishlistSummary');
             let html = "";
+            globalWishlistItems = [];
+            let totalWishlistPrice = 0;
+            let wishCount = 0;
+
             if (snap.exists() && snap.val().length > 0) {
-                snap.val().forEach(itemName => {
+                globalWishlistItems = snap.val();
+                wishCount = globalWishlistItems.length;
+                totalAddBtnContainer.style.display = 'block';
+
+                globalWishlistItems.forEach(itemObj => {
+                    let name = typeof itemObj === 'object' ? itemObj.name : itemObj;
+                    let price = typeof itemObj === 'object' ? itemObj.price : 15000;
+                    totalWishlistPrice += price;
+
                     html += `
                         <div class="item-box">
-                            <span>❤️ ${itemName}</span>
-                            <button class="delete-sm-btn" onclick="removeFromWhitelist('${itemName.replace(/'/g, "\\'")}')">Remove</button>
+                            <div>
+                                <span style="color:#fff;">❤️ ${name}</span><br>
+                                <span style="color: #fbbf24; font-size: 10px;">🪙 ${price.toLocaleString()} Gold</span>
+                            </div>
+                            <div style="display:flex; gap:4px;">
+                                <button class="cart-sm-btn" onclick="addSingleToCart('${name.replace(/'/g, "\\'")}', ${price})">Add Cart</button>
+                                <button class="delete-sm-btn" onclick="removeFromWhitelist('${name.replace(/'/g, "\\'")}')">Remove</button>
+                            </div>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
+                wishlistSummary.innerText = `Items: ${wishCount} | Total: ${totalWishlistPrice.toLocaleString()} Gold`;
             } else {
+                totalAddBtnContainer.style.display = 'none';
                 container.innerHTML = `<small style="color: var(--text-muted);">No items in wishlist.</small>`;
+                wishlistSummary.innerText = `Total: 0 Gold`;
             }
         });
+
+        function addSingleToCart(itemName, price) {
+            let cartItem = {
+                itemName: `${itemName} (Size: M)`,
+                rawName: itemName,
+                price: price,
+                timestamp: Date.now()
+            };
+            db.ref('users/' + userId + '/cart').push(cartItem).then(() => {
+                tg.showAlert(`🛒 "${itemName}" added to Cart!`);
+            });
+        }
+
+        function addAllToCart() {
+            if (globalWishlistItems.length === 0) return;
+
+            let updates = {};
+            globalWishlistItems.forEach(itemObj => {
+                let name = typeof itemObj === 'object' ? itemObj.name : itemObj;
+                let price = typeof itemObj === 'object' ? itemObj.price : 15000;
+                let cartPushKey = db.ref(`users/${userId}/cart`).push().key;
+                
+                updates[`users/${userId}/cart/${cartPushKey}`] = {
+                    itemName: `${name} (Size: M)`,
+                    rawName: name,
+                    price: price,
+                    timestamp: Date.now()
+                };
+            });
+
+            db.ref().update(updates).then(() => {
+                tg.showAlert(`🛍️ All wishlist items added to Cart successfully!`);
+            });
+        }
 
         function removeFromWhitelist(itemName) {
             db.ref('users/' + userId + '/wishlist').once('value', snap => {
                 let list = snap.val() || [];
-                list = list.filter(i => i !== itemName);
+                list = list.filter(i => (typeof i === 'object' ? i.name : i) !== itemName);
                 db.ref('users/' + userId).update({ wishlist: list });
             });
         }
