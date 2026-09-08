@@ -30,7 +30,6 @@
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 15px; color: #fbbf24; display: flex; align-items: center; gap: 8px; }
 
-        /* অপশন ট্যাব স্টাইল */
         .method-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
         .method-tab { flex: 1; background: #0b0f19; border: 1px solid var(--card-border); padding: 10px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
         .method-tab.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
@@ -39,7 +38,12 @@
         .method-content.active { display: block; }
 
         .info-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 12px; line-height: 1.6; }
-        .payment-number { font-size: 14px; font-weight: bold; color: #34d399; background: rgba(52, 211, 153, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+        
+        /* কপি রো স্টাইল */
+        .copy-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 8px 10px; border-radius: 8px; margin-top: 6px; margin-bottom: 8px; }
+        .copy-text { font-weight: bold; color: #34d399; font-size: 13px; font-family: monospace; }
+        .copy-btn { background: #7c3aed; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s; }
+        .copy-btn:active { transform: scale(0.95); }
 
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
@@ -47,7 +51,6 @@
         .form-control:focus { border-color: #7c3aed; }
 
         .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
-        .action-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
@@ -61,30 +64,43 @@
         <div class="card">
             <h4><i class="fa-solid fa-shield-halved"></i> Choose Verification Method</h4>
             
-            <!-- দুটি অপশন ট্যাব -->
             <div class="method-tabs">
                 <div class="method-tab active" onclick="switchMethod('freeTab', this)">1. Free Work (200K Gold)</div>
-                <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($30 / Crypto / MFS)</div>
+                <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($30 / Payment)</div>
             </div>
 
             <!-- অপশন ১: ফ্রি কাজ করে ভেরিফাই (200k Gold) -->
             <div id="freeTab" class="method-content active">
                 <div class="info-box">
                     <b>Free Task Verification:</b><br>
-                    আপনি যদি ফ্রিতে কাজ করে ভেরিফাইড হতে চান, তবে আপনার অ্যাকাউন্ট থেকে পেমেন্ট হিসেবে মোট **200,000 Gold** কাটা হবে। আপনার বর্তমান গোল্ড ব্যালেন্স পর্যাপ্ত থাকলে নিচের বাটনে ক্লিক করুন।
+                    ফ্রিতে কাজ করে ভেরিফাইড হতে চাইলে আপনার অ্যাকাউন্ট থেকে মোট **200,000 Gold** পেমেন্ট হিসেবে কাটা হবে।
                 </div>
                 <button class="action-btn" onclick="submitFreeVerification()">Verify Using 200,000 Gold</button>
             </div>
 
-            <!-- অপশন ২: সরাসরি ৩০ ডলার পেমেন্ট (Crypto, Bkash, Nagad) -->
+            <!-- অপশন ২: সরাসরি পেইড ভেরিফিকেশন ($30 / Binance / Bitget / MFS) -->
             <div id="directTab" class="method-content">
                 <div class="info-box">
                     <b>Direct Paid Verification ($30):</b><br>
-                    সরাসরি ভেরিফাইড হতে **$30 USD সমপরিমাণ** নিচের মাধ্যমে পেমেন্ট করুন:<br><br>
-                    <b>🔹 Crypto (USDT / Binance Pay):</b><br>
-                    <span style="color:#fbbf24; word-break:break-all;">0x75C834921b7f83921b3b2910283491023849102a</span><br><br>
-                    <b>🔹 Nagad & Bkash (Personal):</b><br>
-                    <span class="payment-number">01601642742</span> (Send Money / Cash In)
+                    সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন এবং কপি বাটনে ক্লিক করে সহজে তথ্য নিন:<br><br>
+
+                    <b>🔹 Binance UID:</b>
+                    <div class="copy-row">
+                        <span class="copy-text" id="binanceUidText">9950270208</span>
+                        <button class="copy-btn" onclick="copyText('binanceUidText', 'Binance UID')">Copy UID</button>
+                    </div>
+
+                    <b>🔹 Bitget UID:</b>
+                    <div class="copy-row">
+                        <span class="copy-text" id="bitgetUidText">521132367</span>
+                        <button class="copy-btn" onclick="copyText('bitgetUidText', 'Bitget UID')">Copy UID</button>
+                    </div>
+
+                    <b>🔹 Bkash / Nagad (Personal):</b>
+                    <div class="copy-row">
+                        <span class="copy-text" id="mfsNumText">01601642742</span>
+                        <button class="copy-btn" onclick="copyText('mfsNumText', 'Number')">Copy Number</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -92,11 +108,12 @@
                     <select id="payMethod" class="form-control">
                         <option value="Bkash">Bkash (01601642742)</option>
                         <option value="Nagad">Nagad (01601642742)</option>
-                        <option value="Crypto">Crypto USDT / Binance</option>
+                        <option value="Binance">Binance UID (9950270208)</option>
+                        <option value="Bitget">Bitget UID (521132367)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Sender Account / Wallet Address & TrxID</label>
+                    <label>Sender Account / UID / TrxID</label>
                     <input type="text" id="trxId" class="form-control" placeholder="e.g. 017xxxxxxxx or TrxID / TxHash">
                 </div>
                 <div class="form-group">
@@ -146,7 +163,14 @@
             tabElement.classList.add('active');
         }
 
-        // অপশন ১: ফ্রি ভেরিফিকেশন (200k Gold কেটে নেওয়া)
+        // কপি করার ফাংশন
+        function copyText(elementId, labelName) {
+            let textToCopy = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                tg.showAlert(`✅ ${labelName} copied successfully!`);
+            });
+        }
+
         function submitFreeVerification() {
             let requiredGold = 200000;
             if (userGold >= requiredGold) {
@@ -161,18 +185,17 @@
                     });
                 }
             } else {
-                tg.showAlert(`❌ Insufficient Gold! You need at least ${requiredGold.toLocaleString()} Gold. Current balance: ${userGold.toLocaleString()} Gold.`);
+                tg.showAlert(`❌ Insufficient Gold! You need at least ${requiredGold.toLocaleString()} Gold.`);
             }
         }
 
-        // অপশন ২: পেইড ভেরিফিকেশন ($30 / স্ক্রিনশট সহ এডমিনের কাছে রিকোয়েস্ট পাঠানো)
         function submitPaidVerification() {
             let method = document.getElementById('payMethod').value;
             let trxId = document.getElementById('trxId').value.trim();
             let fileInput = document.getElementById('payScreenshot');
 
             if (!trxId) {
-                tg.showAlert("⚠️ Please enter your sender number or TrxID / Wallet hash!");
+                tg.showAlert("⚠️ Please enter your sender number or TrxID / Hash!");
                 return;
             }
 
