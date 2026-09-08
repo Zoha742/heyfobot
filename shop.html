@@ -45,19 +45,25 @@
         .badge-new { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .badge-sale { background: linear-gradient(135deg, #ec4899, #db2777); }
 
+        /* লাভ বাটন (Whitelist) */
+        .love-btn {
+            position: absolute; top: 6px; right: 6px; z-index: 2;
+            background: rgba(0,0,0,0.6); border: none; color: #fff;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 13px;
+            transition: 0.2s;
+        }
+        .love-btn.active { color: #ef4444; }
+
         .dress-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #0b0f19; cursor: pointer; display: block; }
         .dress-title { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .dress-price { font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* সাইজ সিলেকশন ড্রপডাউন স্টাইল */
-        .size-selector { width: 100%; background: #0b0f19; border: 1px solid #2a1b4e; color: #fff; padding: 6px; border-radius: 8px; font-size: 11px; margin-bottom: 8px; outline: none; }
+        .size-selector { width: 100%; background: #0b0f19; border: 1px solid #2a1b4e; color: #fff; padding: 6px; border-radius: 8px; font-size: 11px; margin-bottom: 6px; outline: none; }
         
-        .buy-btn {
-            background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff;
-            border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700;
-            cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .buy-btn:active { opacity: 0.85; }
+        .btn-flex { display: flex; gap: 4px; }
+        .cart-btn { background: #3b82f6; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
+        .buy-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
@@ -129,12 +135,14 @@
         let username = user ? (user.first_name || "User") : "User";
         let userUsername = user && user.username ? `@${user.username}` : `@user`;
         let userGold = 0;
+        let wishlist = [];
 
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
                 userGold = data.gold !== undefined ? data.gold : 0;
                 document.getElementById('shopBalance').innerText = userGold.toLocaleString() + " Gold";
+                wishlist = data.wishlist || [];
             }
         });
 
@@ -161,17 +169,20 @@
             list.forEach((item, index) => {
                 let badge = getBadge(index);
                 let uniqueId = `size-${index}`;
+                let isLoved = wishlist.includes(item.name);
 
                 dressGrid.innerHTML += `
                     <div class="dress-card">
                         <div class="card-img-wrap">
                             <span class="card-badge ${badge.cls}">${badge.text}</span>
+                            <button class="love-btn ${isLoved ? 'active' : ''}" onclick="toggleWishlist('${item.name.replace(/'/g, "\\'")}')">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
                             <img src="${item.img}" class="dress-img" alt="Virtual Item" onclick="openZoomModal('${item.img}')" title="Click to zoom">
                         </div>
                         <div class="dress-title">${item.name}</div>
                         <div class="dress-price"><i class="fa-solid fa-coins"></i> ${item.price.toLocaleString()} Gold</div>
                         
-                        <!-- সাইজ সিলেকশন ড্রপডাউন -->
                         <select id="${uniqueId}" class="size-selector">
                             <option value="S">Size: S</option>
                             <option value="M" selected>Size: M</option>
@@ -180,9 +191,10 @@
                             <option value="XXL">Size: XXL</option>
                         </select>
 
-                        <button class="buy-btn" onclick="confirmUnlock('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${uniqueId}')">
-                            <i class="fa-solid fa-bag-shopping"></i> Buy Now
-                        </button>
+                        <div class="btn-flex">
+                            <button class="cart-btn" onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${uniqueId}')">Cart</button>
+                            <button class="buy-btn" onclick="buyNow('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${uniqueId}')">Buy</button>
+                        </div>
                     </div>
                 `;
             });
@@ -206,13 +218,40 @@
             document.getElementById('imageModal').style.display = 'none';
         }
 
-        function confirmUnlock(itemName, price, sizeSelectId) {
+        // Whitelist (Love icon toggle)
+        function toggleWishlist(itemName) {
+            let index = wishlist.indexOf(itemName);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+            } else {
+                wishlist.push(itemName);
+            }
+            db.ref('users/' + userId).update({ wishlist: wishlist }).then(() => {
+                renderItems(storeItems);
+            });
+        }
+
+        // Add to Cart
+        function addToCart(itemName, price, sizeSelectId) {
+            let selectedSize = document.getElementById(sizeSelectId).value;
+            let cartItem = {
+                itemName: `${itemName} (Size: ${selectedSize})`,
+                price: price,
+                timestamp: Date.now()
+            };
+
+            db.ref('users/' + userId + '/cart').push(cartItem).then(() => {
+                tg.showAlert(`🛒 Added to Cart successfully!`);
+            });
+        }
+
+        // Direct Buy Now
+        function buyNow(itemName, price, sizeSelectId) {
             let selectedSize = document.getElementById(sizeSelectId).value;
             let finalItemName = `${itemName} (Size: ${selectedSize})`;
 
             if (userGold >= price) {
                 let newGold = userGold - price;
-
                 db.ref('users/' + userId).update({ gold: newGold }).then(() => {
                     let orderData = {
                         userId: userId,
@@ -223,14 +262,12 @@
                         status: "Pending",
                         timestamp: Date.now()
                     };
-
-                    // শপ এডমিনের কাছে অর্ডার রিকোয়েস্ট পাঠানো হলো
                     db.ref('shop_orders').push(orderData).then(() => {
-                        tg.showAlert(`🎉 Order placed successfully for "${finalItemName}"! Check profile for order status.`);
+                        tg.showAlert(`🎉 Order placed successfully for "${finalItemName}"!`);
                     });
                 });
             } else {
-                tg.showAlert("❌ Insufficient Gold Balance! Play games to earn more Gold Coins.");
+                tg.showAlert("❌ Insufficient Gold Balance!");
             }
         }
     </script>
