@@ -35,9 +35,6 @@
             transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
-        .page-slide-left { transform: translateX(-50px); opacity: 0; }
-        .page-slide-right { transform: translateX(50px); opacity: 0; }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -86,11 +83,12 @@
         }
         .currency-box span { font-size: 20px; font-weight: 800; }
         
+        /* কুইক মেনু গ্রিড (৪ কলাম করে একাধিক সারি) */
         .quick-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
-        .menu-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 14px 6px; border-radius: 14px; text-align: center; cursor: pointer; text-decoration: none; color: var(--text-main); transition: transform 0.2s, background 0.2s; }
+        .menu-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 4px; border-radius: 14px; text-align: center; cursor: pointer; text-decoration: none; color: var(--text-main); transition: transform 0.2s, background 0.2s; }
         .menu-item:hover { transform: translateY(-3px); background: #1a2642; }
-        .menu-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 16px; color: #fff; }
-        .menu-label { font-size: 11px; font-weight: 600; }
+        .menu-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto; font-size: 15px; color: #fff; }
+        .menu-label { font-size: 10px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .section-title { font-size: 16px; font-weight: 700; color: #c084fc; }
@@ -105,11 +103,12 @@
         .bonus-card .icon { font-size: 18px; margin-bottom: 6px; color: #22c55e; }
         .bonus-card .reward { font-size: 11px; font-weight: 700; color: #fbbf24; }
         
+        /* ড্রেস বা আউটফিট ডিসপ্লে গ্রিড */
         .shop-preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
         .shop-preview-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
         .shop-preview-card:hover { border-color: #7c3aed; }
         .shop-preview-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #0b0f19; margin-bottom: 8px; }
-        .shop-preview-title { font-size: 12px; font-weight: 600; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .shop-preview-title { font-size: 12px; font-weight: 600; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
         .shop-preview-price { font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
         .shop-preview-btn { background: #ec4899; color: #fff; border: none; padding: 6px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; width: 100%; text-decoration: none; display: block; box-sizing: border-box; transition: 0.2s; }
         .shop-preview-btn:hover { opacity: 0.9; }
@@ -176,7 +175,7 @@
             <li><strong>Complete Tasks:</strong> Complete daily tasks and watch ads to earn <strong>GP (Fuel)</strong> points.</li>
             <li><strong>Play Game:</strong> Use your GP points to play the drop mini-game.</li>
             <li><strong>Earn Gold:</strong> Catch items in the game to score and earn <strong>Gold Points</strong>.</li>
-            <li><strong>Agent Center:</strong> Visit the Agent section to manage referrals and community tasks.</li>
+            <li><strong>Boost & Shop:</strong> Use Boost services and unlock exclusive virtual outfits.</li>
         </ul>
         <button class="close-notice-btn" onclick="closeNoticeModal()">Got It, Let's Play!</button>
     </div>
@@ -201,7 +200,7 @@
             </div>
         </div>
 
-        <!-- কুইক মেনুতে Wardrobe এর পরিবর্তে Agent অপশন যুক্ত করা হয়েছে -->
+        <!-- কুইক মেনু: চেক-ইন, গেম, টাস্ক, এজেন্ট এবং নতুন ৪টি অপশন (Boost, Shop, Event, Fire) -->
         <div class="quick-menu">
             <div class="menu-item" onclick="claimDailyBonus()">
                 <div class="menu-icon" style="background: #8b5cf6;"><i class="fa-solid fa-calendar-check"></i></div>
@@ -209,7 +208,7 @@
             </div>
             <a href="game.html" class="menu-item">
                 <div class="menu-icon" style="background: #ec4899;"><i class="fa-solid fa-gamepad"></i></div>
-                <div class="menu-label">Play Game</div>
+                <div class="menu-label">Game</div>
             </a>
             <a href="task.html" class="menu-item">
                 <div class="menu-icon" style="background: #22c55e;"><i class="fa-solid fa-list-check"></i></div>
@@ -219,6 +218,22 @@
                 <div class="menu-icon" style="background: #f59e0b;"><i class="fa-solid fa-handshake"></i></div>
                 <div class="menu-label">Agent</div>
             </a>
+            <a href="boost.html" class="menu-item">
+                <div class="menu-icon" style="background: #3b82f6;"><i class="fa-solid fa-bolt"></i></div>
+                <div class="menu-label">Boost</div>
+            </a>
+            <a href="shop.html" class="menu-item">
+                <div class="menu-icon" style="background: #db2777;"><i class="fa-solid fa-store"></i></div>
+                <div class="menu-label">Shop</div>
+            </a>
+            <div class="menu-item" onclick="tg.showAlert('Event feature is coming soon!')">
+                <div class="menu-icon" style="background: #84cc16;"><i class="fa-solid fa-calendar-star"></i></div>
+                <div class="menu-label">Event</div>
+            </div>
+            <div class="menu-item" onclick="tg.showAlert('Fire feature is coming soon!')">
+                <div class="menu-icon" style="background: #ef4444;"><i class="fa-solid fa-fire"></i></div>
+                <div class="menu-label">Fire</div>
+            </div>
         </div>
 
         <div class="section-header">
@@ -226,6 +241,47 @@
             <div class="streak-badge" id="streak-text"><i class="fa-solid fa-fire"></i> 1 Days Streak</div>
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
+
+        <!-- ড্রেস বা আউটফিট ডিসপ্লে সেকশন -->
+        <div class="section-header">
+            <div class="section-title">Featured Outfits</div>
+            <a href="shop.html" style="font-size: 12px; color: #c084fc; text-decoration: none; font-weight: 600;">View All</a>
+        </div>
+
+        <div class="shop-preview-grid">
+            <div class="shop-preview-card">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="shop-preview-img" alt="Royal Floral Gown">
+                <div>
+                    <h4 class="shop-preview-title">Royal Floral Gown</h4>
+                    <div class="shop-preview-price">🪙 15,000 Gold</div>
+                </div>
+                <a href="shop.html" class="shop-preview-btn">Unlock</a>
+            </div>
+            <div class="shop-preview-card">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/4_jwi1bs.webp" class="shop-preview-img" alt="Classic Party Dress">
+                <div>
+                    <h4 class="shop-preview-title">Classic Party Dress</h4>
+                    <div class="shop-preview-price">🪙 20,000 Gold</div>
+                </div>
+                <a href="shop.html" class="shop-preview-btn">Unlock</a>
+            </div>
+            <div class="shop-preview-card">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/19_fazthb.webp" class="shop-preview-img" alt="Cyberpunk Streetwear">
+                <div>
+                    <h4 class="shop-preview-title">Cyberpunk Streetwear</h4>
+                    <div class="shop-preview-price">🪙 18,500 Gold</div>
+                </div>
+                <a href="shop.html" class="shop-preview-btn">Unlock</a>
+            </div>
+            <div class="shop-preview-card">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/16_ff8bo3.webp" class="shop-preview-img" alt="Elegance Velvet Suit">
+                <div>
+                    <h4 class="shop-preview-title">Elegance Velvet Suit</h4>
+                    <div class="shop-preview-price">🪙 25,000 Gold</div>
+                </div>
+                <a href="shop.html" class="shop-preview-btn">Unlock</a>
+            </div>
+        </div>
 
         <div class="sponsor-banner">
             <h3>📢 Sponsor Ad Space Available</h3>
