@@ -102,7 +102,7 @@
         .ad-task-card.monetag-card .ad-icon { background: rgba(34, 211, 238, 0.22); color: #67e8f9; }
         .ad-task-card.monetag-card .ad-action-btn { background: linear-gradient(135deg, #22d3ee, #0891b2); box-shadow: 0 4px 12px -3px rgba(8, 145, 178, 0.6); }
 
-        /* Monetag Bonus (popup) কার্ডের কালার থিম (গোলাপি-বেগুনি) — একটু আলাদা shade */
+        /* Monetag Bonus (popup) কার্ডের কালার থিম (গোলাপি-বেগুনি) */
         .ad-task-card.monetag-bonus-card {
             background: linear-gradient(150deg, rgba(217, 70, 239, 0.22), rgba(88, 28, 135, 0.4));
             border: 1px solid rgba(232, 121, 249, 0.45);
@@ -280,7 +280,6 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার থেকে Hotcake অপশন বাদ দেওয়া হয়েছে -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -314,7 +313,6 @@
         let userId = user ? user.id.toString() : "7757851056";
         let userRef = db.ref('users/' + userId);
 
-        // Monetag In-App Interstitial - passive background ad, no reward (auto-shown by SDK)
         if (typeof show_11752857 === 'function') {
             show_11752857({
                 type: 'inApp',
@@ -322,7 +320,6 @@
             }).catch(() => {});
         }
 
-        // OnClicka Rewarded Ad Initialize (Spot ID: 6136924) - reused for 3 buttons
         let onClickaShowAd = null;
         window.initCdTma?.({ id: 6136924 })
             .then(show => { onClickaShowAd = show; })
@@ -511,8 +508,6 @@
             }, 10000);
         }
 
-        function completeTaskAndRestart(channelUsername) {}
-
         function completeTaskAndReward(channelUsername) {
             let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
             let newGp = currentGp + 5;
@@ -535,7 +530,7 @@
             renderChannelTasks();
         }, 1000);
 
-        // সোয়াইপ নেভিগেশন আপডেট করা হয়েছে (হটকেক বাদ দিয়ে শুধু গেম ও প্রোফাইলের মধ্যে সোয়াইপ)
+        // ডানে সোয়াইপ করলে Game পেজে এবং বামে সোয়াইপ করলে Profile পেজে যাওয়ার সোয়াইপ নেভিগেশন সিস্টেম
         let touchStartX = 0;
         window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
         window.addEventListener('touchend', e => {
