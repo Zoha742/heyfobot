@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Main Admin Dashboard</title>
+    <title>Heyfo - Super Admin Dashboard</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -47,17 +47,22 @@
         .action-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .action-btn:hover { background: #6d28d9; }
 
-        .user-row, .ticket-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
-        .user-info, .ticket-info { font-size: 12px; margin-bottom: 6px; }
-        .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
-        .delete-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .user-row, .ticket-row, .boost-req-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 10px; }
+        .user-info, .ticket-info, .boost-info { font-size: 12px; margin-bottom: 8px; }
+        
+        .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+        .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .ban-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .reset-btn { background: #f59e0b; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        
+        .reply-box { display: none; margin-top: 8px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <h3><i class="fa-solid fa-user-shield" style="color: #34d399;"></i> Heyfo Admin Panel</h3>
+            <h3><i class="fa-solid fa-user-shield" style="color: #34d399;"></i> Heyfo Super Admin</h3>
             <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
         </div>
 
@@ -65,7 +70,7 @@
             <a href="shopadmin.html" class="nav-link-btn"><i class="fa-solid fa-store"></i> Manage Shop & Orders</a>
         </div>
 
-        <!-- ১. ওভারভিউ / স্ট্যাটিস্টিক্স -->
+        <!-- ১. ওভারভিউ স্ট্যাটিস্টিক্স -->
         <div class="stats-grid">
             <div class="stat-box">
                 <h2 id="totalUsersCount">0</h2>
@@ -77,36 +82,44 @@
             </div>
         </div>
 
-        <!-- ২. নোটিফিকেশন সিস্টেম (Photo সহ ব্রডকাস্ট) -->
+        <!-- ২. ইউজারের বুস্ট রিকোয়েস্ট ম্যানেজমেন্ট -->
         <div class="card">
-            <h4><i class="fa-solid fa-paper-plane"></i> Send Notification to All Users</h4>
+            <h4><i class="fa-solid fa-bolt"></i> User Boost Requests (Pending)</h4>
+            <div id="boostRequestsContainer" style="max-height: 250px; overflow-y: auto;">
+                <small style="color: var(--text-muted);">Loading boost requests...</small>
+            </div>
+        </div>
+
+        <!-- ৩. নোটিফিকেশন সিস্টেম (ফাইল ইমেজ আপলোড সহ) -->
+        <div class="card">
+            <h4><i class="fa-solid fa-paper-plane"></i> Broadcast Notification with Image</h4>
             <div class="form-group">
                 <label>Notification Title</label>
                 <input type="text" id="notifTitle" class="form-control" placeholder="e.g. Special Bonus Event!">
             </div>
             <div class="form-group">
                 <label>Message Body</label>
-                <textarea id="notifMessage" class="form-control" placeholder="Type your notification message here..."></textarea>
+                <textarea id="notifMessage" class="form-control" placeholder="Type notification message..."></textarea>
             </div>
             <div class="form-group">
-                <label>Image URL (Optional - Photo Banner)</label>
-                <input type="text" id="notifImage" class="form-control" placeholder="https://image-url.com">
+                <label>Upload Banner Image</label>
+                <input type="file" id="notifImageFile" class="form-control" accept="image/*" style="color: #94a3b8;">
             </div>
             <button class="action-btn" onclick="sendGlobalNotification()">Broadcast Notification</button>
         </div>
 
-        <!-- ৩. সাপোর্ট ইনবক্স / ইউজার মেসেজ -->
+        <!-- ৪. সাপোর্ট ইনবক্স ও রিপ্লাই সিস্টেম -->
         <div class="card">
-            <h4><i class="fa-solid fa-inbox"></i> Support Inbox & Complaints</h4>
-            <div id="supportTicketsContainer" style="max-height: 250px; overflow-y: auto;">
+            <h4><i class="fa-solid fa-inbox"></i> Support Inbox & Admin Reply</h4>
+            <div id="supportTicketsContainer" style="max-height: 280px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading support tickets...</small>
             </div>
         </div>
 
-        <!-- ৪. ইউজার ম্যানেজমেন্ট ও ব্যালেন্স -->
+        <!-- ৫. ফুল পাওয়ারফুল ইউজার ম্যানেজমেন্ট (Balance Edit, Reset, Ban/Unban) -->
         <div class="card">
-            <h4><i class="fa-solid fa-users"></i> User Management & Balance</h4>
-            <div id="usersListContainer" style="max-height: 300px; overflow-y: auto;">
+            <h4><i class="fa-solid fa-users-gear"></i> Full User Management Control</h4>
+            <div id="usersListContainer" style="max-height: 350px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading users...</small>
             </div>
         </div>
@@ -135,13 +148,196 @@
         let userId = user ? user.id.toString() : "7757851056";
         const ADMIN_USER_ID = "7757851056";
 
-        // কঠোর সিকিউরিটি চেক
         if (userId !== ADMIN_USER_ID) {
             alert("Access Denied! Admins only.");
             window.location.href = "index.html";
         }
 
-        // ইউজার লিস্ট, টোটাল ইউজার ও একটিভ ইউজার কাউন্ট
+        // ইউজারের বুস্ট রিকোয়েস্ট লোড ও এপ্রুভ/রিজেক্ট সিস্টেম
+        db.ref('users').on('value', snap => {
+            let container = document.getElementById('boostRequestsContainer');
+            let html = "";
+            let hasBoosts = false;
+
+            if (snap.exists()) {
+                snap.forEach(userSnap => {
+                    let uId = userSnap.key;
+                    let uData = userSnap.val();
+                    if (uData.pending_boosts) {
+                        hasBoosts = true;
+                        Object.keys(uData.pending_boosts).forEach(boostKey => {
+                            let boost = uData.pending_boosts[boostKey];
+                            if (boost.status === 'Pending') {
+                                html += `
+                                    <div class="boost-req-row">
+                                        <div class="boost-info">
+                                            <b>User:</b> ${boost.userName} (ID: ${uId})<br>
+                                            <b>Service:</b> <span style="color:#fbbf24">${boost.serviceName} (${boost.duration})</span><br>
+                                            <b>Method:</b> ${boost.method} | <b>Price:</b> ${boost.price}<br>
+                                            <a href="${boost.screenshot}" target="_blank" style="color:#38bdf8; font-size:11px;">View Payment Screenshot 📷</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button class="action-sm-btn" onclick="approveBoost('${uId}', '${boostKey}', '${boost.serviceId}', '${boost.duration}')">Approve</button>
+                                            <button class="ban-btn" onclick="rejectBoost('${uId}', '${boostKey}')">Reject</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                });
+            }
+            container.innerHTML = html || `<small style="color: var(--text-muted);">No pending boost requests.</small>`;
+        });
+
+        function approveBoost(targetUserId, boostKey, serviceId, durationDaysStr) {
+            let daysMatch = parseInt(durationDaysStr) || 5;
+            let expireTime = Date.now() + (daysMatch * 24 * 60 * 60 * 1000);
+
+            let updates = {};
+            updates[`users/${targetUserId}/pending_boosts/${boostKey}/status`] = "Approved";
+            updates[`users/${targetUserId}/boosts/${serviceId}`] = { expireTime: expireTime };
+
+            let notifData = {
+                title: "Boost Activated! ⚡",
+                message: `Your boost service has been approved and activated successfully for ${daysMatch} days!`,
+                timestamp: Date.now()
+            };
+            db.ref(`users/${targetUserId}/notifications`).push(notifData);
+
+            db.ref().update(updates).then(() => {
+                tg.showAlert("✅ Boost approved and activated successfully!");
+            });
+        }
+
+        function rejectBoost(targetUserId, boostKey) {
+            db.ref(`users/${targetUserId}/pending_boosts/${boostKey}`).update({ status: "Rejected" }).then(() => {
+                let notifData = {
+                    title: "Boost Request Rejected",
+                    message: `Your boost payment proof was rejected by admin. Please contact support.`,
+                    timestamp: Date.now()
+                };
+                db.ref(`users/${targetUserId}/notifications`).push(notifData);
+                tg.showAlert("❌ Boost request rejected.");
+            });
+        }
+
+        // নোটিফিকেশন ব্রডকাস্ট (Image Upload File সহ)
+        function sendGlobalNotification() {
+            let title = document.getElementById('notifTitle').value.trim();
+            let message = document.getElementById('notifMessage').value.trim();
+            let fileInput = document.getElementById('notifImageFile');
+
+            if (!title || !message) {
+                tg.showAlert("⚠️ Please enter title and message!");
+                return;
+            }
+
+            if (fileInput.files.length > 0) {
+                let reader = new FileReader();
+                reader.onloadend = function() {
+                    broadcastData(title, message, reader.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                broadcastData(title, message, "");
+            }
+        }
+
+        function broadcastData(title, message, imageUrl) {
+            let notifData = {
+                title: title,
+                message: message,
+                image: imageUrl,
+                timestamp: Date.now()
+            };
+
+            db.ref('users').once('value').then(snap => {
+                if (snap.exists()) {
+                    let updates = {};
+                    snap.forEach(child => {
+                        let uId = child.key;
+                        let pushKey = db.ref().child(`users/${uId}/notifications`).push().key;
+                        updates[`users/${uId}/notifications/${pushKey}`] = notifData;
+                    });
+                    db.ref().update(updates).then(() => {
+                        tg.showAlert("✅ Notification broadcasted with image successfully!");
+                        document.getElementById('notifTitle').value = '';
+                        document.getElementById('notifMessage').value = '';
+                        document.getElementById('notifImageFile').value = '';
+                    });
+                }
+            });
+        }
+
+        // সাপোর্ট ইনবক্স এবং এডমিন রিপ্লাই সিস্টেম
+        db.ref('support_tickets').on('value', snap => {
+            let container = document.getElementById('supportTicketsContainer');
+            let html = "";
+
+            if (snap.exists()) {
+                snap.forEach(childSnap => {
+                    let ticketKey = childSnap.key;
+                    let t = childSnap.val();
+                    let dateStr = t.timestamp ? new Date(t.timestamp).toLocaleString() : 'N/A';
+
+                    html += `
+                        <div class="ticket-row" id="ticket-${ticketKey}">
+                            <div class="ticket-info">
+                                <b>From:</b> ${t.userName} (${t.userUsername}) [ID: ${t.userId}]<br>
+                                <b>Subject:</b> <span style="color:#fbbf24;">${t.subject}</span><br>
+                                <b>Message:</b> ${t.message}<br>
+                                ${t.adminReply ? `<b style="color:#22c55e;">Admin Reply:</b> ${t.adminReply}<br>` : ''}
+                                <span style="font-size:10px; color:var(--text-muted);">${dateStr}</span>
+                            </div>
+                            <div class="btn-group">
+                                <button class="action-sm-btn" onclick="toggleReplyBox('${ticketKey}')">Reply</button>
+                                <button class="ban-btn" onclick="deleteTicket('${ticketKey}')">Delete</button>
+                            </div>
+                            <div class="reply-box" id="replyBox-${ticketKey}">
+                                <input type="text" id="replyInput-${ticketKey}" class="form-control" placeholder="Type reply message..." style="margin-top:6px; margin-bottom:6px;">
+                                <button class="action-btn" style="padding:6px; font-size:11px;" onclick="sendAdminReply('${ticketKey}', '${t.userId}')">Send Reply to User</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<small style="color: var(--text-muted);">No support tickets in inbox.</small>`;
+            }
+        });
+
+        function toggleReplyBox(ticketKey) {
+            let box = document.getElementById(`replyBox-${ticketKey}`);
+            box.style.display = box.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function sendAdminReply(ticketKey, targetUserId) {
+            let replyMsg = document.getElementById(`replyInput-${ticketKey}`).value.trim();
+            if (!replyMsg) {
+                alert("Please type a reply message!");
+                return;
+            }
+
+            db.ref(`support_tickets/${ticketKey}`).update({ adminReply: replyMsg }).then(() => {
+                let notifData = {
+                    title: "Support Reply from Admin",
+                    message: `Admin replied to your ticket: "${replyMsg}"`,
+                    timestamp: Date.now()
+                };
+                db.ref(`users/${targetUserId}/notifications`).push(notifData).then(() => {
+                    tg.showAlert("✅ Reply sent to user successfully!");
+                });
+            });
+        }
+
+        function deleteTicket(ticketKey) {
+            if(confirm("Delete this support ticket?")) {
+                db.ref('support_tickets/' + ticketKey).remove();
+            }
+        }
+
+        // ফুল ইউজার ম্যানেজমেন্ট (Balance Edit, Reset, Ban/Unban, Total Points)
         db.ref('users').on('value', snap => {
             let container = document.getElementById('usersListContainer');
             let totalElem = document.getElementById('totalUsersCount');
@@ -165,16 +361,19 @@
                     let name = uData.name || uData.username || "User";
                     let gp = uData.gp !== undefined ? uData.gp : (uData.points || 0);
                     let gold = uData.gold !== undefined ? uData.gold : 0;
+                    let isBanned = uData.isBanned || false;
 
                     html += `
-                        <div class="user-row" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="user-row">
                             <div class="user-info">
-                                <b>${name}</b><br>
+                                <b>${name}</b> ${isBanned ? '<span style="color:#ef4444">[BANNED]</span>' : ''}<br>
                                 <span style="color: #94a3b8; font-size: 10px;">ID: ${uId}</span><br>
-                                <span style="color: #fbbf24;">⚡ ${gp} GP | 🪙 ${gold} Gold</span>
+                                <span style="color: #fbbf24;">⚡ GP: <input type="number" id="gp-${uId}" value="${gp}" style="width:60px; background:#050a14; color:#fff; border:1px solid #2a1b4e; border-radius:4px; padding:2px;"> | 🪙 Gold: <input type="number" id="gold-${uId}" value="${gold}" style="width:60px; background:#050a14; color:#fff; border:1px solid #2a1b4e; border-radius:4px; padding:2px;"></span>
                             </div>
-                            <div>
-                                <button class="action-sm-btn" onclick="addBonus('${uId}', ${gp})">+100 GP</button>
+                            <div class="btn-group" style="margin-top:6px;">
+                                <button class="action-sm-btn" onclick="updateUserBalance('${uId}')">Save</button>
+                                <button class="reset-btn" onclick="resetUserBalance('${uId}')">Reset 0</button>
+                                <button class="ban-btn" onclick="toggleBanUser('${uId}', ${isBanned})">${isBanned ? 'Unban' : 'Ban'}</button>
                             </div>
                         </div>
                     `;
@@ -184,89 +383,31 @@
                 activeElem.innerText = active;
             } else {
                 container.innerHTML = `<small style="color: var(--text-muted);">No users found.</small>`;
-                totalElem.innerText = 0;
-                activeElem.innerText = 0;
             }
         });
 
-        function addBonus(targetId, currentGp) {
-            let addGp = currentGp + 100;
-            db.ref('users/' + targetId).update({ gp: addGp, points: addGp }).then(() => {
-                tg.showAlert(`✅ Added 100 GP to User ID: ${targetId}`);
+        function updateUserBalance(uId) {
+            let newGp = parseInt(document.getElementById(`gp-${uId}`).value) || 0;
+            let newGold = parseInt(document.getElementById(`gold-${uId}`).value) || 0;
+
+            db.ref('users/' + uId).update({ gp: newGp, points: newGp, gold: newGold }).then(() => {
+                tg.showAlert(`✅ User ID ${uId} balance updated!`);
             });
         }
 
-        // গ্লোবাল নোটিফিকেশন ব্রডকাস্ট (Photo সহ)
-        function sendGlobalNotification() {
-            let title = document.getElementById('notifTitle').value.trim();
-            let message = document.getElementById('notifMessage').value.trim();
-            let image = document.getElementById('notifImage').value.trim();
-
-            if (!title || !message) {
-                tg.showAlert("⚠️ Please enter notification title and message!");
-                return;
+        function resetUserBalance(uId) {
+            if (confirm(`Reset balance to 0 for User ID ${uId}?`)) {
+                db.ref('users/' + uId).update({ gp: 0, points: 0, gold: 0 }).then(() => {
+                    tg.showAlert(`🔄 Balance reset to 0 for User ID ${uId}`);
+                });
             }
-
-            let notifData = {
-                title: title,
-                message: message,
-                image: image || "",
-                timestamp: Date.now()
-            };
-
-            db.ref('users').once('value').then(snap => {
-                if (snap.exists()) {
-                    let updates = {};
-                    snap.forEach(child => {
-                        let uId = child.key;
-                        let pushKey = db.ref().child(`users/${uId}/notifications`).push().key;
-                        updates[`users/${uId}/notifications/${pushKey}`] = notifData;
-                    });
-                    db.ref().update(updates).then(() => {
-                        tg.showAlert("✅ Notification broadcasted to all users successfully!");
-                        document.getElementById('notifTitle').value = '';
-                        document.getElementById('notifMessage').value = '';
-                        document.getElementById('notifImage').value = '';
-                    });
-                }
-            });
         }
 
-        // সাপোর্ট ইনবক্স / টিকিট ম্যানেজমেন্ট
-        db.ref('support_tickets').on('value', snap => {
-            let container = document.getElementById('supportTicketsContainer');
-            let html = "";
-
-            if (snap.exists()) {
-                snap.forEach(childSnap => {
-                    let ticketKey = childSnap.key;
-                    let t = childSnap.val();
-                    let dateStr = t.timestamp ? new Date(t.timestamp).toLocaleString() : 'N/A';
-
-                    html += `
-                        <div class="ticket-row" id="ticket-${ticketKey}">
-                            <div class="ticket-info">
-                                <b>From:</b> ${t.userName} (${t.userUsername})<br>
-                                <b>Subject:</b> <span style="color:#fbbf24;">${t.subject}</span><br>
-                                <b>Message:</b> ${t.message}<br>
-                                <span style="font-size:10px; color:var(--text-muted);">${dateStr}</span>
-                            </div>
-                            <button class="delete-btn" onclick="deleteTicket('${ticketKey}')">Close / Delete Ticket</button>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No support messages in inbox.</small>`;
-            }
-        });
-
-        function deleteTicket(ticketKey) {
-            if(confirm("Are you sure you want to close/delete this support ticket?")) {
-                db.ref('support_tickets/' + ticketKey).remove().then(() => {
-                    tg.showAlert("🗑️ Ticket closed successfully!");
-                });
-            }
+        function toggleBanUser(uId, currentStatus) {
+            let newStatus = !currentStatus;
+            db.ref('users/' + uId).update({ isBanned: newStatus }).then(() => {
+                tg.showAlert(newStatus ? `🚫 User ID ${uId} has been Banned.` : `✅ User ID ${uId} has been Unbanned.`);
+            });
         }
     </script>
 </body>
