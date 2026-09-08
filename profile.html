@@ -15,6 +15,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --primary-purple: #7c3aed;
+            --modal-bg: #0b132b;
         }
 
         body {
@@ -63,7 +64,6 @@
             transition: 0.3s ease;
         }
 
-        /* ভেরিফাইড ইউজারদের জন্য প্রিমিয়াম ড্যাশবোর্ড ডিজাইন ও লাইট অ্যানিমেশন */
         .profile-card.verified { 
             background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 50%, #1e1b4b 100%);
             border: 2px solid #a855f7; 
@@ -83,9 +83,7 @@
             background: linear-gradient(135deg, #7c3aed, #ec4899); 
             flex-shrink: 0; position: relative; 
         }
-        .profile-card.verified .avatar-container {
-            animation: avatarPulse 2s infinite alternate;
-        }
+        .profile-card.verified .avatar-container { animation: avatarPulse 2s infinite alternate; }
         @keyframes avatarPulse {
             0% { transform: scale(1); box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
             100% { transform: scale(1.05); box-shadow: 0 0 20px rgba(168, 85, 247, 0.9); }
@@ -106,16 +104,9 @@
         .user-id-badge { font-size: 11px; color: #c084fc; font-weight: 650; cursor: pointer; display: inline-block; background: rgba(124, 58, 237, 0.15); padding: 1px 6px; border-radius: 6px; }
 
         .premium-badge-tag {
-            background: linear-gradient(135deg, #f59e0b, #ec4899);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 6px;
-            display: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+            background: linear-gradient(135deg, #f59e0b, #ec4899); color: #fff;
+            font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px;
+            display: none; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -134,57 +125,43 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .collection-item-box:hover { border-color: #7c3aed; background: #131c2e; }
 
         .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
         .menu-row-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text-main); transition: 0.2s; cursor: pointer; }
-        .menu-row-item:active { transform: scale(0.98); }
         .menu-row-left { display: flex; align-items: center; gap: 14px; }
         .menu-row-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; }
 
-        .coming-soon-badge {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
+        .coming-soon-badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-        /* এডমিন প্যানেল গ্রিড (একদম নিচে থাকবে এবং শুধুমাত্র এডমিন দেখবে) */
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-top: 10px; }
-        .admin-box-item {
-            background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6));
-            border: 1px solid #22c55e;
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-            text-decoration: none;
-            color: #34d399;
-            transition: 0.2s;
-        }
-        .admin-box-item:active { transform: scale(0.98); }
+        .admin-box-item { background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6)); border: 1px solid #22c55e; border-radius: 14px; padding: 12px; text-align: center; text-decoration: none; color: #34d399; }
         .admin-box-item i { font-size: 18px; margin-bottom: 4px; display: block; }
-        .admin-box-item h5 { margin: 0; font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-box-item h5 { margin: 0; font-size: 11px; font-weight: 700; color: #fff; }
+
+        /* অর্ডার ডিটেইলস পপআপ মডাল */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: var(--modal-bg);
+            border: 2px solid #7c3aed; border-radius: 20px; padding: 20px;
+            width: 90%; max-width: 380px; z-index: 1001; box-sizing: border-box;
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4); text-align: left;
+        }
+        .modal h3 { margin: 0 0 12px 0; font-size: 16px; color: #fbbf24; text-align: center; }
+        .modal-close-btn { background: #7c3aed; color: #fff; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 14px; font-weight: bold; cursor: pointer; }
 
         .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%; 
-            max-width: 480px;
-            background: var(--card-bg); 
-            border-top: 1px solid var(--card-border); 
-            display: flex; 
-            justify-content: space-around; 
-            padding: 12px 0 16px 0; 
-            box-sizing: border-box; 
-            z-index: 9999; 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; background: var(--card-bg); 
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
+            padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
         }
-        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
+        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
         .nav-item.active { color: #c084fc; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
@@ -193,12 +170,9 @@
 
     <div class="container">
         <div class="top-header">
-            <div>
-                <h1>Heyfo Profile</h1>
-            </div>
+            <div><h1>Heyfo Profile</h1></div>
         </div>
 
-        <!-- প্রিমিয়াম ড্যাশবোর্ড কার্ড -->
         <div class="profile-card" id="profileCardElement">
             <div class="profile-left">
                 <div class="avatar-container">
@@ -227,10 +201,10 @@
             </div>
         </div>
 
-        <!-- অর্ডার হিস্ট্রি বা পারচেজ কালেকশন সেকশন -->
+        <!-- অর্ডার হিস্ট্রি সেকশন -->
         <div class="card">
             <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</h4>
-            <div id="my-collection-list" style="max-height: 180px; overflow-y: auto;">
+            <div id="my-collection-list" style="max-height: 200px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading your order history...</small>
             </div>
         </div>
@@ -247,18 +221,6 @@
                 <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
             </a>
 
-            <div class="menu-row-item" onclick="tg.showAlert('Create Sponsor feature is coming soon!')">
-                <div class="menu-row-left">
-                    <div class="menu-row-icon" style="background: #7c3aed;"><i class="fa-solid fa-bullhorn"></i></div>
-                    <div class="menu-row-info">
-                        <h5 style="margin:0; font-size:13px; color:#fff;">Create Sponsor</h5>
-                        <p style="margin:0; font-size:11px; color:var(--text-muted);">Promote your brand or project</p>
-                    </div>
-                </div>
-                <span class="coming-soon-badge">Soon</span>
-            </div>
-
-            <!-- এডমিন প্যানেল অপশন (একেবারে নিচে রাখা হয়েছে এবং শুধুমাত্র এডমিন দেখবে) -->
             <div class="admin-grid" id="adminGridContainer">
                 <a class="admin-box-item" href="mainadmin.html">
                     <i class="fa-solid fa-user-shield"></i>
@@ -272,12 +234,21 @@
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার -->
+    <!-- Order Details Modal -->
+    <div class="overlay" id="orderModalOverlay" onclick="closeOrderModal()"></div>
+    <div class="modal" id="orderModal">
+        <h3>Order Details 📦</h3>
+        <div id="modalOrderContent" style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
+            <!-- Dynamic Details -->
+        </div>
+        <button class="modal-close-btn" onclick="closeOrderModal()">Close</button>
+    </div>
+
     <div class="bottom-nav">
-        <a class="nav-item" href="index.html" onclick="navigateWithAnimation(event, 'index.html')"><i class="fa-solid fa-house"></i>Home</a>
-        <a class="nav-item" href="game.html" onclick="navigateWithAnimation(event, 'game.html')"><i class="fa-solid fa-gamepad"></i>Game</a>
-        <a class="nav-item" href="task.html" onclick="navigateWithAnimation(event, 'task.html')"><i class="fa-solid fa-list-check"></i>Task</a>
-        <a class="nav-item active" href="profile.html" onclick="navigateWithAnimation(event, 'profile.html')"><i class="fa-solid fa-user"></i>Profile</a>
+        <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+        <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
+        <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
+        <a class="nav-item active" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -313,18 +284,15 @@
             document.getElementById('user-avatar').src = user.photo_url;
         }
 
-        // কঠোর সিকিউরিটি চেক: শুধুমাত্র আপনার আইডিতেই এডমিন প্যানেল শো করবে
         if (userId === ADMIN_USER_ID) {
             document.getElementById('adminGridContainer').style.display = "grid";
         }
 
-        // ফায়ারবেস থেকে ভেরিফাইড স্ট্যাটাস ও ব্যালেন্স চেক করা
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
                 let gp = data.gp !== undefined ? data.gp : (data.points || 0);
                 let gold = data.gold !== undefined ? data.gold : 0;
-
                 document.getElementById('total-gp').innerText = gp.toLocaleString();
                 document.getElementById('total-gold').innerText = gold.toLocaleString();
 
@@ -332,36 +300,51 @@
                     document.getElementById('profileCardElement').classList.add('verified');
                     document.getElementById('verifiedBadgeIcon').style.display = 'flex';
                     document.getElementById('premiumBadgeTag').style.display = 'inline-block';
-                } else {
-                    document.getElementById('profileCardElement').classList.remove('verified');
-                    document.getElementById('verifiedBadgeIcon').style.display = 'none';
-                    document.getElementById('premiumBadgeTag').style.display = 'none';
                 }
             }
         });
 
-        // ফায়ারবেস থেকে ইউজারের অর্ডার হিস্ট্রি বা পারচেজ আইটেমগুলো লোড করা
-        db.ref('users/' + userId + '/wardrobe').on('value', snap => {
+        let cachedOrders = {};
+
+        // ফায়ারবেস থেকে ইউজারের শপ অর্ডারগুলো লোড করা (Pending, Accepted, Rejected স্ট্যাটাস সহ)
+        db.ref('shop_orders').orderByChild('userId').equalTo(userId).on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
+            cachedOrders = {};
+
             if (snap.exists()) {
-                let itemsArray = [];
+                let ordersArray = [];
                 snap.forEach(child => {
-                    itemsArray.push(child.val());
+                    let orderKey = child.key;
+                    let order = child.val();
+                    order.id = orderKey;
+                    ordersArray.push(order);
+                    cachedOrders[orderKey] = order;
                 });
 
-                itemsArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-                itemsArray.forEach(item => {
-                    let orderDate = item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'N/A';
+                ordersArray.forEach(order => {
+                    let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A';
+                    let status = order.status || 'Pending';
+                    
+                    let badgeColor = '#f59e0b'; // Pending (Yellow)
+                    let badgeBg = 'rgba(245, 158, 11, 0.15)';
+                    if (status === 'Accepted') {
+                        badgeColor = '#22c55e'; // Green
+                        badgeBg = 'rgba(34, 197, 94, 0.15)';
+                    } else if (status === 'Rejected') {
+                        badgeColor = '#ef4444'; // Red
+                        badgeBg = 'rgba(239, 68, 68, 0.15)';
+                    }
 
                     html += `
-                        <div class="collection-item-box">
+                        <div class="collection-item-box" onclick="openOrderDetails('${order.id}')">
                             <div>
-                                <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${item.itemName}</b><br>
-                                <span style="color: #94a3b8; font-size: 10px;">Order Date: ${orderDate}</span>
+                                <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
+                                <span style="color: #94a3b8; font-size: 10px;">Date: ${orderDate} | ID: #${order.id.slice(-6)}</span>
                             </div>
-                            <span style="font-size: 10px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); padding: 3px 8px; border-radius: 6px;">Success ✅</span>
+                            <span style="font-size: 10px; font-weight: bold; color: ${badgeColor}; background: ${badgeBg}; padding: 3px 8px; border-radius: 6px;">${status}</span>
                         </div>
                     `;
                 });
@@ -371,12 +354,30 @@
             }
         });
 
-        function navigateWithAnimation(event, url) {
-            event.preventDefault();
-            document.querySelector('.container').classList.add('page-slide-out');
-            setTimeout(() => {
-                window.location.href = url;
-            }, 300);
+        function openOrderDetails(orderId) {
+            let order = cachedOrders[orderId];
+            if (!order) return;
+
+            let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+            let status = order.status || 'Pending';
+
+            let content = `
+                <b>Order Number:</b> <span style="color:#fff;">#${order.id}</span><br>
+                <b>Item Name:</b> <span style="color:#c084fc;">${order.itemName}</span><br>
+                <b>Price:</b> 🪙 <span style="color:#fbbf24;">${order.price} Gold</span><br>
+                <b>Order Date:</b> ${orderDate}<br>
+                <b>Current Status:</b> <span style="color:${status === 'Accepted' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#f59e0b')}; font-weight:bold;">${status}</span><br>
+                ${status === 'Rejected' ? '<br><small style="color:#ef4444;">Note: This order was rejected and your gold has been refunded.</small>' : ''}
+            `;
+
+            document.getElementById('modalOrderContent').innerHTML = content;
+            document.getElementById('orderModalOverlay').style.display = 'block';
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModalOverlay').style.display = 'none';
+            document.getElementById('orderModal').style.display = 'none';
         }
     </script>
 </body>
