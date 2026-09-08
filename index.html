@@ -118,7 +118,7 @@
         .sponsor-banner h3 { margin: 0 0 6px 0; font-size: 16px; color: #c084fc; }
         .sponsor-banner p { margin: 0; font-size: 12px; color: var(--text-muted); }
 
-        /* Notice Modal Popup Styling (English) */
+        /* Notice Modal Popup Styling */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
         .notice-modal {
             display: none;
@@ -168,7 +168,7 @@
 </head>
 <body>
 
-    <!-- Notice Modal Popup (Updated for Virtual Wardrobe & Collectibles) -->
+    <!-- Notice Modal Popup -->
     <div class="overlay" id="noticeOverlay"></div>
     <div class="notice-modal" id="noticeModal">
         <h3><i class="fa-solid fa-bullhorn" style="color: #c084fc;"></i> How to Play & Earn</h3>
@@ -176,7 +176,7 @@
             <li><strong>Complete Tasks:</strong> Complete daily tasks and watch ads to earn <strong>GP (Fuel)</strong> points.</li>
             <li><strong>Play Game:</strong> Use your GP points to play the drop mini-game.</li>
             <li><strong>Earn Gold:</strong> Catch items in the game to score and earn <strong>Gold Points</strong>.</li>
-            <li><strong>Wardrobe:</strong> Spend your earned Gold Points to unlock exclusive virtual outfits and collectibles for your profile.</li>
+            <li><strong>Agent Center:</strong> Visit the Agent section to manage referrals and community tasks.</li>
         </ul>
         <button class="close-notice-btn" onclick="closeNoticeModal()">Got It, Let's Play!</button>
     </div>
@@ -197,10 +197,11 @@
             <div class="points-title">Your Balance</div>
             <div class="points-value">
                 <div class="currency-box" title="GP Points (Fuel)">⚡ <span id="gp-balance">0</span> GP</div>
-                <div class="currency-box" title="Gold Points (Wardrobe)">🪙 <span id="gold-balance">0</span> Gold</div>
+                <div class="currency-box" title="Gold Points">🪙 <span id="gold-balance">0</span> Gold</div>
             </div>
         </div>
 
+        <!-- কুইক মেনুতে Wardrobe এর পরিবর্তে Agent অপশন যুক্ত করা হয়েছে -->
         <div class="quick-menu">
             <div class="menu-item" onclick="claimDailyBonus()">
                 <div class="menu-icon" style="background: #8b5cf6;"><i class="fa-solid fa-calendar-check"></i></div>
@@ -214,9 +215,9 @@
                 <div class="menu-icon" style="background: #22c55e;"><i class="fa-solid fa-list-check"></i></div>
                 <div class="menu-label">Tasks</div>
             </a>
-            <a href="shop.html" class="menu-item">
-                <div class="menu-icon" style="background: #f59e0b;"><i class="fa-solid fa-store"></i></div>
-                <div class="menu-label">Wardrobe</div>
+            <a href="agent.html" class="menu-item">
+                <div class="menu-icon" style="background: #f59e0b;"><i class="fa-solid fa-handshake"></i></div>
+                <div class="menu-label">Agent</div>
             </a>
         </div>
 
@@ -226,53 +227,12 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <div class="section-header">
-            <div class="section-title">Featured Outfits</div>
-            <a href="shop.html" style="font-size: 12px; color: #c084fc; text-decoration: none; font-weight: 600;">View All</a>
-        </div>
-
-        <div class="shop-preview-grid">
-            <div class="shop-preview-card">
-                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="shop-preview-img" alt="Royal Floral Gown">
-                <div>
-                    <h4 class="shop-preview-title">Royal Floral Gown</h4>
-                    <div class="shop-preview-price">🪙 15,000 Gold</div>
-                </div>
-                <a href="shop.html" class="shop-preview-btn">Unlock</a>
-            </div>
-            <div class="shop-preview-card">
-                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/4_jwi1bs.webp" class="shop-preview-img" alt="Classic Party Dress">
-                <div>
-                    <h4 class="shop-preview-title">Classic Party Dress</h4>
-                    <div class="shop-preview-price">🪙 20,000 Gold</div>
-                </div>
-                <a href="shop.html" class="shop-preview-btn">Unlock</a>
-            </div>
-            <div class="shop-preview-card">
-                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/19_fazthb.webp" class="shop-preview-img" alt="Cyberpunk Streetwear">
-                <div>
-                    <h4 class="shop-preview-title">Cyberpunk Streetwear</h4>
-                    <div class="shop-preview-price">🪙 18,500 Gold</div>
-                </div>
-                <a href="shop.html" class="shop-preview-btn">Unlock</a>
-            </div>
-            <div class="shop-preview-card">
-                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/16_ff8bo3.webp" class="shop-preview-img" alt="Elegance Velvet Suit">
-                <div>
-                    <h4 class="shop-preview-title">Elegance Velvet Suit</h4>
-                    <div class="shop-preview-price">🪙 25,000 Gold</div>
-                </div>
-                <a href="shop.html" class="shop-preview-btn">Unlock</a>
-            </div>
-        </div>
-
         <div class="sponsor-banner">
             <h3>📢 Sponsor Ad Space Available</h3>
             <p>Promote your brand here! Coming Soon...</p>
         </div>
     </div>
 
-    <!-- বটম নেভিগেশন বার থেকে Hotcake অপশন বাদ দেওয়া হয়েছে -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -377,10 +337,9 @@
             });
         }
 
-        // ৬ ঘণ্টা পর পর নোটিশ পপআপ দেখানোর লজিক
         function checkAndShowNotice() {
             const SIX_HOURS = 6 * 60 * 60 * 1000;
-            let lastShownTime = localStorage.getItem('feldo_notice_time_' + userId);
+            let lastShownTime = localStorage.getItem('heyfo_notice_time_' + userId);
             let currentTime = Date.now();
 
             if (!lastShownTime || (currentTime - parseInt(lastShownTime)) >= SIX_HOURS) {
@@ -392,7 +351,7 @@
         function closeNoticeModal() {
             document.getElementById('noticeOverlay').style.display = 'none';
             document.getElementById('noticeModal').style.display = 'none';
-            localStorage.setItem('feldo_notice_time_' + userId, Date.now());
+            localStorage.setItem('heyfo_notice_time_' + userId, Date.now());
         }
 
         window.addEventListener('DOMContentLoaded', () => {
