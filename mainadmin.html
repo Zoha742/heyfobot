@@ -14,6 +14,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --primary-purple: #7c3aed;
+            --modal-bg: #0b132b;
         }
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -33,9 +34,11 @@
         .nav-links { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
         .nav-link-btn { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 13px; display: block; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
 
+        /* স্ট্যাটিস্টিক্স গ্রিড (৫টি বক্স) */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .stat-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 14px; text-align: center; }
+        .stat-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; text-align: center; }
         .stat-box h2 { margin: 0 0 4px 0; color: #fbbf24; font-size: 20px; }
+        .stat-box.full { grid-column: span 2; }
         .stat-box span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 
         .form-group { margin-bottom: 12px; }
@@ -47,15 +50,33 @@
         .action-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .action-btn:hover { background: #6d28d9; }
 
-        .user-row, .ticket-row, .boost-req-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .user-info, .ticket-info, .boost-info { font-size: 12px; margin-bottom: 8px; }
+        /* ইউজার লিস্ট ও সার্চ বক্স */
+        .search-box { margin-bottom: 12px; }
+        .user-compact-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .user-compact-info { font-size: 12px; }
+        
+        .manage-btn { background: #3b82f6; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+
+        .ticket-row, .boost-req-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 10px; }
+        .ticket-info, .boost-info { font-size: 12px; margin-bottom: 8px; }
         
         .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
         .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
         .ban-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
         .reset-btn { background: #f59e0b; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
-        
         .reply-box { display: none; margin-top: 8px; }
+
+        /* মডাল পপআপ স্টাইল (Manage Profile) */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: var(--modal-bg);
+            border: 2px solid #7c3aed; border-radius: 20px; padding: 20px;
+            width: 90%; max-width: 400px; z-index: 1001; box-sizing: border-box;
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4); text-align: left;
+        }
+        .modal h3 { margin: 0 0 12px 0; font-size: 16px; color: #fbbf24; text-align: center; }
+        .modal-close { background: #ef4444; color: #fff; border: none; padding: 8px; border-radius: 8px; width: 100%; margin-top: 14px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -70,7 +91,7 @@
             <a href="shopadmin.html" class="nav-link-btn"><i class="fa-solid fa-store"></i> Manage Shop & Orders</a>
         </div>
 
-        <!-- ১. ওভারভিউ স্ট্যাটিস্টিক্স -->
+        <!-- ১. স্ট্যাটিস্টিক্স কার্ড (Total, Active, Pending, Total GP, Banned) -->
         <div class="stats-grid">
             <div class="stat-box">
                 <h2 id="totalUsersCount">0</h2>
@@ -78,51 +99,76 @@
             </div>
             <div class="stat-box">
                 <h2 id="activeUsersCount">0</h2>
-                <span>Active Users (24h)</span>
+                <span>Active (Live)</span>
+            </div>
+            <div class="stat-box">
+                <h2 id="pendingReqCount">0</h2>
+                <span>Pending Req</span>
+            </div>
+            <div class="stat-box">
+                <h2 id="totalGpCount">0</h2>
+                <span>Total GP</span>
+            </div>
+            <div class="stat-box full">
+                <h2 id="bannedUsersCount">0</h2>
+                <span>Banned Users</span>
             </div>
         </div>
 
-        <!-- ২. ইউজারের বুস্ট রিকোয়েস্ট ম্যানেজমেন্ট -->
+        <!-- ২. বুস্ট রিকোয়েস্ট ম্যানেজমেন্ট -->
         <div class="card">
-            <h4><i class="fa-solid fa-bolt"></i> User Boost Requests (Pending)</h4>
-            <div id="boostRequestsContainer" style="max-height: 250px; overflow-y: auto;">
+            <h4><i class="fa-solid fa-bolt"></i> User Boost Requests</h4>
+            <div id="boostRequestsContainer" style="max-height: 220px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading boost requests...</small>
             </div>
         </div>
 
-        <!-- ৩. নোটিফিকেশন সিস্টেম (ফাইল ইমেজ আপলোড সহ) -->
+        <!-- ৩. নোটিফিকেশন ব্রডকাস্ট (Image File সহ) -->
         <div class="card">
-            <h4><i class="fa-solid fa-paper-plane"></i> Broadcast Notification with Image</h4>
+            <h4><i class="fa-solid fa-paper-plane"></i> Broadcast Notification</h4>
             <div class="form-group">
-                <label>Notification Title</label>
-                <input type="text" id="notifTitle" class="form-control" placeholder="e.g. Special Bonus Event!">
+                <label>Title</label>
+                <input type="text" id="notifTitle" class="form-control" placeholder="Event Title...">
             </div>
             <div class="form-group">
-                <label>Message Body</label>
-                <textarea id="notifMessage" class="form-control" placeholder="Type notification message..."></textarea>
+                <label>Message</label>
+                <textarea id="notifMessage" class="form-control" placeholder="Message body..."></textarea>
             </div>
             <div class="form-group">
                 <label>Upload Banner Image</label>
                 <input type="file" id="notifImageFile" class="form-control" accept="image/*" style="color: #94a3b8;">
             </div>
-            <button class="action-btn" onclick="sendGlobalNotification()">Broadcast Notification</button>
+            <button class="action-btn" onclick="sendGlobalNotification()">Broadcast</button>
         </div>
 
-        <!-- ৪. সাপোর্ট ইনবক্স ও রিপ্লাই সিস্টেম -->
+        <!-- ৪. সাপোর্ট ইনবক্স -->
         <div class="card">
-            <h4><i class="fa-solid fa-inbox"></i> Support Inbox & Admin Reply</h4>
-            <div id="supportTicketsContainer" style="max-height: 280px; overflow-y: auto;">
+            <h4><i class="fa-solid fa-inbox"></i> Support Inbox</h4>
+            <div id="supportTicketsContainer" style="max-height: 250px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading support tickets...</small>
             </div>
         </div>
 
-        <!-- ৫. ফুল পাওয়ারফুল ইউজার ম্যানেজমেন্ট (Balance Edit, Reset, Ban/Unban) -->
+        <!-- ৫. ইউজার ম্যানেজমেন্ট ও আইডি সার্চ -->
         <div class="card">
-            <h4><i class="fa-solid fa-users-gear"></i> Full User Management Control</h4>
-            <div id="usersListContainer" style="max-height: 350px; overflow-y: auto;">
+            <h4><i class="fa-solid fa-users-gear"></i> User Management (Compact)</h4>
+            <div class="search-box">
+                <input type="text" id="searchUserાInput" class="form-control" placeholder="🔍 Search by User ID..." onkeyup="filterUsersList()">
+            </div>
+            <div id="usersListContainer" style="max-height: 300px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading users...</small>
             </div>
         </div>
+    </div>
+
+    <!-- User Manage Profile Modal -->
+    <div class="overlay" id="modalOverlay" onclick="closeUserModal()"></div>
+    <div class="modal" id="userManageModal">
+        <h3>Manage User Profile</h3>
+        <div id="modalUserContent" style="font-size: 12px; line-height: 1.6;">
+            <!-- Dynamic User Details -->
+        </div>
+        <button class="modal-close" onclick="closeUserModal()">Close</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -153,42 +199,72 @@
             window.location.href = "index.html";
         }
 
-        // ইউজারের বুস্ট রিকোয়েস্ট লোড ও এপ্রুভ/রিজেক্ট সিস্টেম
+        let allUsersData = {};
+
+        // স্ট্যাটিস্টিক্স এবং বুস্ট রিকোয়েস্ট কাউন্ট আপডেট
         db.ref('users').on('value', snap => {
-            let container = document.getElementById('boostRequestsContainer');
-            let html = "";
-            let hasBoosts = false;
+            let total = 0, active = 0, banned = 0, pendingReq = 0, totalGp = 0;
+            let now = Date.now();
+            let oneDayMs = 24 * 60 * 60 * 1000;
 
             if (snap.exists()) {
+                allUsersData = snap.val();
                 snap.forEach(userSnap => {
-                    let uId = userSnap.key;
                     let uData = userSnap.val();
+                    total++;
+                    totalGp += (uData.gp !== undefined ? uData.gp : (uData.points || 0));
+
+                    if (uData.lastSeen && (now - uData.lastSeen <= oneDayMs)) active++;
+                    if (uData.isBanned) banned++;
                     if (uData.pending_boosts) {
-                        hasBoosts = true;
-                        Object.keys(uData.pending_boosts).forEach(boostKey => {
-                            let boost = uData.pending_boosts[boostKey];
-                            if (boost.status === 'Pending') {
-                                html += `
-                                    <div class="boost-req-row">
-                                        <div class="boost-info">
-                                            <b>User:</b> ${boost.userName} (ID: ${uId})<br>
-                                            <b>Service:</b> <span style="color:#fbbf24">${boost.serviceName} (${boost.duration})</span><br>
-                                            <b>Method:</b> ${boost.method} | <b>Price:</b> ${boost.price}<br>
-                                            <a href="${boost.screenshot}" target="_blank" style="color:#38bdf8; font-size:11px;">View Payment Screenshot 📷</a>
-                                        </div>
-                                        <div class="btn-group">
-                                            <button class="action-sm-btn" onclick="approveBoost('${uId}', '${boostKey}', '${boost.serviceId}', '${boost.duration}')">Approve</button>
-                                            <button class="ban-btn" onclick="rejectBoost('${uId}', '${boostKey}')">Reject</button>
-                                        </div>
-                                    </div>
-                                `;
-                            }
+                        Object.values(uData.pending_boosts).forEach(b => {
+                            if (b.status === 'Pending') pendingReq++;
                         });
                     }
                 });
             }
-            container.innerHTML = html || `<small style="color: var(--text-muted);">No pending boost requests.</small>`;
+
+            document.getElementById('totalUsersCount').innerText = total;
+            document.getElementById('activeUsersCount').innerText = active;
+            document.getElementById('bannedUsersCount').innerText = banned;
+            document.getElementById('pendingReqCount').innerText = pendingReq;
+            document.getElementById('totalGpCount').innerText = totalGp.toLocaleString();
+
+            renderUsersList(allUsersData);
+            renderBoostRequests(allUsersData);
         });
+
+        function renderBoostRequests(usersObj) {
+            let container = document.getElementById('boostRequestsContainer');
+            let html = "";
+            let hasBoosts = false;
+
+            Object.keys(usersObj).forEach(uId => {
+                let uData = usersObj[uId];
+                if (uData.pending_boosts) {
+                    Object.keys(uData.pending_boosts).forEach(boostKey => {
+                        let boost = uData.pending_boosts[boostKey];
+                        if (boost.status === 'Pending') {
+                            hasBoosts = true;
+                            html += `
+                                <div class="boost-req-row">
+                                    <div class="boost-info">
+                                        <b>User:</b> ${boost.userName} (ID: ${uId})<br>
+                                        <b>Service:</b> <span style="color:#fbbf24">${boost.serviceName} (${boost.duration})</span><br>
+                                        <a href="${boost.screenshot}" target="_blank" style="color:#38bdf8; font-size:11px;">View Screenshot 📷</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="action-sm-btn" onclick="approveBoost('${uId}', '${boostKey}', '${boost.serviceId}', '${boost.duration}')">Approve</button>
+                                        <button class="ban-btn" onclick="rejectBoost('${uId}', '${boostKey}')">Reject</button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+            });
+            container.innerHTML = html || `<small style="color: var(--text-muted);">No pending boost requests.</small>`;
+        }
 
         function approveBoost(targetUserId, boostKey, serviceId, durationDaysStr) {
             let daysMatch = parseInt(durationDaysStr) || 5;
@@ -200,44 +276,157 @@
 
             let notifData = {
                 title: "Boost Activated! ⚡",
-                message: `Your boost service has been approved and activated successfully for ${daysMatch} days!`,
+                message: `Your boost service has been approved and activated for ${daysMatch} days!`,
                 timestamp: Date.now()
             };
             db.ref(`users/${targetUserId}/notifications`).push(notifData);
-
-            db.ref().update(updates).then(() => {
-                tg.showAlert("✅ Boost approved and activated successfully!");
-            });
+            db.ref().update(updates).then(() => tg.showAlert("✅ Boost approved successfully!"));
         }
 
         function rejectBoost(targetUserId, boostKey) {
             db.ref(`users/${targetUserId}/pending_boosts/${boostKey}`).update({ status: "Rejected" }).then(() => {
-                let notifData = {
-                    title: "Boost Request Rejected",
-                    message: `Your boost payment proof was rejected by admin. Please contact support.`,
-                    timestamp: Date.now()
-                };
+                let notifData = { title: "Boost Rejected", message: `Your boost payment proof was rejected.`, timestamp: Date.now() };
                 db.ref(`users/${targetUserId}/notifications`).push(notifData);
                 tg.showAlert("❌ Boost request rejected.");
             });
         }
 
-        // নোটিফিকেশন ব্রডকাস্ট (Image Upload File সহ)
+        // কমপ্যাক্ট ইউজার লিস্ট ও সার্চ ফিল্টার
+        function renderUsersList(usersObj) {
+            let container = document.getElementById('usersListContainer');
+            let html = "";
+
+            Object.keys(usersObj).forEach(uId => {
+                let uData = usersObj[uId];
+                let name = uData.name || uData.username || "User";
+                let country = uData.country || "Global / Unknown";
+                let isBanned = uData.isBanned || false;
+
+                html += `
+                    <div class="user-compact-row" data-userid="${uId}">
+                        <div class="user-compact-info">
+                            <b>${name}</b> ${isBanned ? '<span style="color:#ef4444">[BANNED]</span>' : ''}<br>
+                            <span style="color: #94a3b8; font-size: 10px;">ID: ${uId} | 🌍 ${country}</span>
+                        </div>
+                        <button class="manage-btn" onclick="openUserModal('${uId}')">Manage</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html || `<small style="color: var(--text-muted);">No users found.</small>`;
+        }
+
+        function filterUsersList() {
+            let query = document.getElementById('searchUserInput').value.trim().toLowerCase();
+            let rows = document.querySelectorAll('.user-compact-row');
+            rows.forEach(row => {
+                let uId = row.getAttribute('data-userid').toLowerCase();
+                row.style.display = uId.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        // ইউজার ম্যানেজ পপআপ মডাল সিস্টেম
+        function openUserModal(uId) {
+            let uData = allUsersData[uId];
+            if (!uData) return;
+
+            let name = uData.name || uData.username || "User";
+            let gp = uData.gp !== undefined ? uData.gp : (uData.points || 0);
+            let gold = uData.gold !== undefined ? uData.gold : 0;
+            let country = uData.country || "Unknown";
+            let isBanned = uData.isBanned || false;
+
+            let content = `
+                <b>Name:</b> ${name}<br>
+                <b>User ID:</b> ${uId}<br>
+                <b>Location/Country:</b> 🌍 ${country}<br>
+                <b>Current GP:</b> <span style="color:#fbbf24;">⚡ ${gp}</span><br>
+                <b>Current Gold:</b> <span style="color:#fbbf24;">🪙 ${gold}</span><br><br>
+
+                <b>Gift Balance (Add):</b><br>
+                <div style="display:flex; gap:6px; margin-top:4px; margin-bottom:8px;">
+                    <input type="number" id="giftGp-${uId}" placeholder="GP" class="form-control" style="width:50px;">
+                    <input type="number" id="giftGold-${uId}" placeholder="Gold" class="form-control" style="width:50px;">
+                    <button class="action-sm-btn" onclick="giftBalance('${uId}')">Add Gift</button>
+                </div>
+
+                <b>Reset Balance:</b><br>
+                <div style="display:flex; gap:6px; margin-top:4px; margin-bottom:8px;">
+                    <button class="reset-btn" onclick="resetBalance('${uId}', 'gp')">Reset GP</button>
+                    <button class="reset-btn" onclick="resetBalance('${uId}', 'gold')">Reset Gold</button>
+                </div>
+
+                <b>Account Status:</b><br>
+                <div style="margin-top:4px;">
+                    <button class="ban-btn" onclick="toggleBan('${uId}', ${isBanned})">${isBanned ? 'Unban Account' : 'Ban Account'}</button>
+                </div>
+            `;
+
+            document.getElementById('modalUserContent').innerHTML = content;
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('userManageModal').style.display = 'block';
+        }
+
+        function closeUserModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('userManageModal').style.display = 'none';
+        }
+
+        function giftBalance(uId) {
+            let addGp = parseInt(document.getElementById(`giftGp-${uId}`).value) || 0;
+            let addGold = parseInt(document.getElementById(`giftGold-${uId}`).value) || 0;
+            let uData = allUsersData[uId];
+            let currentGp = uData.gp !== undefined ? uData.gp : (uData.points || 0);
+            let currentGold = uData.gold !== undefined ? uData.gold : 0;
+
+            db.ref('users/' + uId).update({
+                gp: currentGp + addGp,
+                points: currentGp + addGp,
+                gold: currentGold + addGold
+            }).then(() => {
+                tg.showAlert(`🎁 Gift sent successfully to User ID ${uId}`);
+                closeUserModal();
+            });
+        }
+
+        function resetBalance(uId, type) {
+            if (confirm(`Reset ${type.toUpperCase()} to 0 for User ID ${uId}?`)) {
+                let updates = {};
+                if (type === 'gp') { updates.gp = 0; updates.points = 0; }
+                if (type === 'gold') { updates.gold = 0; }
+
+                db.ref('users/' + uId).update(updates).then(() => {
+                    tg.showAlert(`🔄 ${type.toUpperCase()} reset to 0`);
+                    closeUserModal();
+                });
+            }
+        }
+
+        function toggleBan(uId, currentStatus) {
+            let newStatus = !currentStatus;
+            db.ref('users/' + uId).update({ isBanned: newStatus }).then(() => {
+                tg.showAlert(newStatus ? `🚫 User Banned` : `✅ User Unbanned`);
+                closeUserModal();
+            });
+        }
+
+        // কান্ট্রি বা লোকেশন অটো ডিটেক্ট করে সেভ করার কোড (ipapi.co ব্যবহার করে)
+        fetch('https://ipapi.co/json/').then(res => res.json()).then(data => {
+            if (data && data.country_name) {
+                db.ref('users/' + userId).update({ country: `${data.country_name} (${data.city || 'Unknown'})` });
+            }
+        }).catch(err => console.log(err));
+
+        // ব্রডকাস্ট নোটিফিকেশন সিস্টেম
         function sendGlobalNotification() {
             let title = document.getElementById('notifTitle').value.trim();
             let message = document.getElementById('notifMessage').value.trim();
             let fileInput = document.getElementById('notifImageFile');
 
-            if (!title || !message) {
-                tg.showAlert("⚠️ Please enter title and message!");
-                return;
-            }
+            if (!title || !message) { tg.showAlert("⚠️ Enter title & message!"); return; }
 
             if (fileInput.files.length > 0) {
                 let reader = new FileReader();
-                reader.onloadend = function() {
-                    broadcastData(title, message, reader.result);
-                };
+                reader.onloadend = () => broadcastData(title, message, reader.result);
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 broadcastData(title, message, "");
@@ -245,23 +434,16 @@
         }
 
         function broadcastData(title, message, imageUrl) {
-            let notifData = {
-                title: title,
-                message: message,
-                image: imageUrl,
-                timestamp: Date.now()
-            };
-
+            let notifData = { title, message, image: imageUrl, timestamp: Date.now() };
             db.ref('users').once('value').then(snap => {
                 if (snap.exists()) {
                     let updates = {};
                     snap.forEach(child => {
-                        let uId = child.key;
-                        let pushKey = db.ref().child(`users/${uId}/notifications`).push().key;
-                        updates[`users/${uId}/notifications/${pushKey}`] = notifData;
+                        let pushKey = db.ref().child(`users/${child.key}/notifications`).push().key;
+                        updates[`users/${child.key}/notifications/${pushKey}`] = notifData;
                     });
                     db.ref().update(updates).then(() => {
-                        tg.showAlert("✅ Notification broadcasted with image successfully!");
+                        tg.showAlert("✅ Notification broadcasted!");
                         document.getElementById('notifTitle').value = '';
                         document.getElementById('notifMessage').value = '';
                         document.getElementById('notifImageFile').value = '';
@@ -270,40 +452,36 @@
             });
         }
 
-        // সাপোর্ট ইনবক্স এবং এডমিন রিপ্লাই সিস্টেম
+        // সাপোর্ট ইনবক্স
         db.ref('support_tickets').on('value', snap => {
             let container = document.getElementById('supportTicketsContainer');
             let html = "";
-
             if (snap.exists()) {
                 snap.forEach(childSnap => {
                     let ticketKey = childSnap.key;
                     let t = childSnap.val();
-                    let dateStr = t.timestamp ? new Date(t.timestamp).toLocaleString() : 'N/A';
-
                     html += `
-                        <div class="ticket-row" id="ticket-${ticketKey}">
+                        <div class="ticket-row">
                             <div class="ticket-info">
-                                <b>From:</b> ${t.userName} (${t.userUsername}) [ID: ${t.userId}]<br>
+                                <b>From:</b> ${t.userName} (ID: ${t.userId})<br>
                                 <b>Subject:</b> <span style="color:#fbbf24;">${t.subject}</span><br>
                                 <b>Message:</b> ${t.message}<br>
                                 ${t.adminReply ? `<b style="color:#22c55e;">Admin Reply:</b> ${t.adminReply}<br>` : ''}
-                                <span style="font-size:10px; color:var(--text-muted);">${dateStr}</span>
                             </div>
                             <div class="btn-group">
                                 <button class="action-sm-btn" onclick="toggleReplyBox('${ticketKey}')">Reply</button>
-                                <button class="ban-btn" onclick="deleteTicket('${ticketKey}')">Delete</button>
+                                <button class="ban-btn" onclick="db.ref('support_tickets/${ticketKey}').remove()">Delete</button>
                             </div>
                             <div class="reply-box" id="replyBox-${ticketKey}">
-                                <input type="text" id="replyInput-${ticketKey}" class="form-control" placeholder="Type reply message..." style="margin-top:6px; margin-bottom:6px;">
-                                <button class="action-btn" style="padding:6px; font-size:11px;" onclick="sendAdminReply('${ticketKey}', '${t.userId}')">Send Reply to User</button>
+                                <input type="text" id="replyInput-${ticketKey}" class="form-control" placeholder="Type reply..." style="margin-top:6px; margin-bottom:6px;">
+                                <button class="action-btn" style="padding:6px; font-size:11px;" onclick="sendAdminReply('${ticketKey}', '${t.userId}')">Send</button>
                             </div>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No support tickets in inbox.</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No support tickets.</small>`;
             }
         });
 
@@ -314,99 +492,10 @@
 
         function sendAdminReply(ticketKey, targetUserId) {
             let replyMsg = document.getElementById(`replyInput-${ticketKey}`).value.trim();
-            if (!replyMsg) {
-                alert("Please type a reply message!");
-                return;
-            }
-
+            if (!replyMsg) return;
             db.ref(`support_tickets/${ticketKey}`).update({ adminReply: replyMsg }).then(() => {
-                let notifData = {
-                    title: "Support Reply from Admin",
-                    message: `Admin replied to your ticket: "${replyMsg}"`,
-                    timestamp: Date.now()
-                };
-                db.ref(`users/${targetUserId}/notifications`).push(notifData).then(() => {
-                    tg.showAlert("✅ Reply sent to user successfully!");
-                });
-            });
-        }
-
-        function deleteTicket(ticketKey) {
-            if(confirm("Delete this support ticket?")) {
-                db.ref('support_tickets/' + ticketKey).remove();
-            }
-        }
-
-        // ফুল ইউজার ম্যানেজমেন্ট (Balance Edit, Reset, Ban/Unban, Total Points)
-        db.ref('users').on('value', snap => {
-            let container = document.getElementById('usersListContainer');
-            let totalElem = document.getElementById('totalUsersCount');
-            let activeElem = document.getElementById('activeUsersCount');
-            let html = "";
-            let total = 0;
-            let active = 0;
-            let now = Date.now();
-            let oneDayMs = 24 * 60 * 60 * 1000;
-
-            if (snap.exists()) {
-                snap.forEach(childSnap => {
-                    let uId = childSnap.key;
-                    let uData = childSnap.val();
-                    total++;
-
-                    if (uData.lastSeen && (now - uData.lastSeen <= oneDayMs)) {
-                        active++;
-                    }
-
-                    let name = uData.name || uData.username || "User";
-                    let gp = uData.gp !== undefined ? uData.gp : (uData.points || 0);
-                    let gold = uData.gold !== undefined ? uData.gold : 0;
-                    let isBanned = uData.isBanned || false;
-
-                    html += `
-                        <div class="user-row">
-                            <div class="user-info">
-                                <b>${name}</b> ${isBanned ? '<span style="color:#ef4444">[BANNED]</span>' : ''}<br>
-                                <span style="color: #94a3b8; font-size: 10px;">ID: ${uId}</span><br>
-                                <span style="color: #fbbf24;">⚡ GP: <input type="number" id="gp-${uId}" value="${gp}" style="width:60px; background:#050a14; color:#fff; border:1px solid #2a1b4e; border-radius:4px; padding:2px;"> | 🪙 Gold: <input type="number" id="gold-${uId}" value="${gold}" style="width:60px; background:#050a14; color:#fff; border:1px solid #2a1b4e; border-radius:4px; padding:2px;"></span>
-                            </div>
-                            <div class="btn-group" style="margin-top:6px;">
-                                <button class="action-sm-btn" onclick="updateUserBalance('${uId}')">Save</button>
-                                <button class="reset-btn" onclick="resetUserBalance('${uId}')">Reset 0</button>
-                                <button class="ban-btn" onclick="toggleBanUser('${uId}', ${isBanned})">${isBanned ? 'Unban' : 'Ban'}</button>
-                            </div>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-                totalElem.innerText = total;
-                activeElem.innerText = active;
-            } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No users found.</small>`;
-            }
-        });
-
-        function updateUserBalance(uId) {
-            let newGp = parseInt(document.getElementById(`gp-${uId}`).value) || 0;
-            let newGold = parseInt(document.getElementById(`gold-${uId}`).value) || 0;
-
-            db.ref('users/' + uId).update({ gp: newGp, points: newGp, gold: newGold }).then(() => {
-                tg.showAlert(`✅ User ID ${uId} balance updated!`);
-            });
-        }
-
-        function resetUserBalance(uId) {
-            if (confirm(`Reset balance to 0 for User ID ${uId}?`)) {
-                db.ref('users/' + uId).update({ gp: 0, points: 0, gold: 0 }).then(() => {
-                    tg.showAlert(`🔄 Balance reset to 0 for User ID ${uId}`);
-                });
-            }
-        }
-
-        function toggleBanUser(uId, currentStatus) {
-            let newStatus = !currentStatus;
-            db.ref('users/' + uId).update({ isBanned: newStatus }).then(() => {
-                tg.showAlert(newStatus ? `🚫 User ID ${uId} has been Banned.` : `✅ User ID ${uId} has been Unbanned.`);
+                db.ref(`users/${targetUserId}/notifications`).push({ title: "Support Reply", message: `Admin replied: "${replyMsg}"`, timestamp: Date.now() });
+                tg.showAlert("✅ Reply sent!");
             });
         }
     </script>
