@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeyCen - Master Admin Control Center</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+    
+    <style>
+        :root { 
+            --bg: #050a18; --card: #121e36; --border: #1e2d4d; 
+            --blue: #3b82f6; --green: #22c55e; --red: #ef4444; 
+            --orange: #f59e0b; --purple: #a855f7; --primary: #fbbf24; --pink: #ec4899;
+        }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; display: flex; justify-content: center; }
+        .container { padding: 15px; width: 100%; max-width: 480px; box-sizing: border-box; }
+        .header { background: var(--card); padding: 15px; position: sticky; top: 0; border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-radius: 0 0 12px 12px; }
+        .back-nav { font-size: 20px; color: white; cursor: pointer; padding: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .stat-box { background: #0a1226; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid var(--border); }
+        .stat-box h2 { margin: 5px 0; font-size: 20px; color: var(--blue); }
+        .input-box { width: 100%; padding: 12px; margin: 8px 0; background: #0a1226; color: white; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .btn { padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-green { background: var(--green); color: white; }
+        .btn-red { background: var(--red); color: white; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-purple { background: var(--purple); color: white; }
+        .btn-gray { background: #475569; color: white; }
+        .list-item { background: #0a1226; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-left: 4px solid var(--orange); }
+        .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 10px; background: #0a1226; border-radius: 8px; border: 1px solid var(--border); }
+        .admin-notif-row { background: #0a1226; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); border: 2px solid var(--purple); padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; z-index: 1001; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .floating-back-container { display: flex; justify-content: center; margin: 25px 0 10px 0; }
+        .circle-back-btn { background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-arrow-left back-nav" onclick="location.href='profile.html'"></i>
+            <h3 style="margin:0;"><i class="fas fa-crown" style="color: gold;"></i> Master Admin Center</h3>
+        </div>
+
+        <div class="grid">
+            <div class="stat-box"><small>Total Users</small><h2 id="st-users">0</h2></div>
+            <div class="stat-box"><small>Active Live</small><h2 id="st-active" style="color: var(--green);">0</h2></div>
+            <div class="stat-box"><small>Total GP</small><h2 id="st-total-gp" style="color: var(--green);">0</h2></div>
+            <div class="stat-box"><small>Banned</small><h2 id="st-banned" style="color: var(--red);">0</h2></div>
+        </div>
+
+        <div class="card" style="border-color: var(--blue);">
+            <h4><i class="fas fa-paper-plane" style="color:var(--blue);"></i> Send Notification</h4>
+            <input type="hidden" id="edit-notif-key" value="">
+            <input type="text" id="notif-target-uid" class="input-box" placeholder="Target UID (Blank = ALL)">
+            <input type="text" id="notif-title" class="input-box" placeholder="Title">
+            <textarea id="notif-msg" class="input-box" placeholder="Message..." style="height: 60px; resize: none;"></textarea>
+            <input type="file" id="notif-media-file" class="input-box" accept="image/*,video/*" style="font-size:12px;">
+            <div class="grid" style="margin-top: 8px;">
+                <button class="btn btn-blue" onclick="saveOrSendNotification('send')">Send Now</button>
+                <button class="btn btn-purple" onclick="saveOrSendNotification('draft')">Draft</button>
+            </div>
+        </div>
+
+        <div class="card" style="border-color: var(--red);">
+            <h4><i class="fas fa-history" style="color:var(--red);"></i> Notification History</h4>
+            <div id="admin-notif-list" style="max-height: 250px; overflow-y: auto; margin-top: 10px;"><small>Loading...</small></div>
+        </div>
+
+        <div class="card" style="border-color: var(--purple);">
+            <h4><i class="fas fa-handshake" style="color:var(--purple);"></i> GP Sale Requests</h4>
+            <div id="agent-req-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px;">Loading...</div>
+        </div>
+
+        <div class="card" style="border-color: var(--orange);">
+            <h4><i class="fas fa-wallet" style="color:var(--orange);"></i> Mining Boost Proofs</h4>
+            <div id="boost-req-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px;">Loading...</div>
+        </div>
+
+        <div class="card" style="border-color: var(--green);">
+            <h4><i class="fas fa-id-card" style="color:var(--green);"></i> ID Verified Proofs</h4>
+            <div id="agent-pay-req-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px;">Loading...</div>
+        </div>
+
+        <div class="card" style="border-color: var(--blue);">
+            <h4><i class="fas fa-money-bill-transfer" style="color:var(--blue);"></i> Withdraw Requests</h4>
+            <div id="wd-list">Loading withdrawals...</div>
+        </div>
+
+        <div class="card">
+            <h4><i class="fas fa-user-shield"></i> User Search & Management</h4>
+            <input type="text" id="user-search" class="input-box" placeholder="Search ID or Name..." oninput="filterUsers()">
+            <div id="user-list" style="max-height: 250px; overflow-y: auto; margin-top: 10px;">Loading users...</div>
+        </div>
+
+        <div class="floating-back-container">
+            <button class="circle-back-btn" onclick="location.href='profile.html'"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeModal()"></div>
+    <div class="modal" id="modal">
+        <h3 id="m-title">Manage User</h3>
+        <p id="m-name-label" style="font-size: 14px; color: #fbbf24; margin: 5px 0; font-weight: bold;"></p>
+        <p id="m-uid-label" style="font-size: 12px; color: var(--blue); margin-bottom: 10px;"></p>
+        <hr border="0" style="height:1px; background:var(--border); margin:10px 0;">
+        <label style="font-size:12px;">Balance (GP)</label>
+        <input type="number" id="m-gp" class="input-box">
+        <div class="grid" style="margin-top:5px;">
+            <button class="btn btn-blue" onclick="updateUserGP()">Update GP</button>
+            <button class="btn btn-orange" onclick="makeGPZero()">Set 0</button>
+        </div>
+        <div class="grid" style="margin-top:5px;">
+            <button class="btn btn-purple" onclick="resetUserData()">Reset</button>
+            <button class="btn btn-red" id="ban-btn" onclick="toggleBan()">Ban</button>
+        </div>
+        <button class="btn btn-gray" style="margin-top:10px;" onclick="closeModal()">Cancel</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "7757851056";
+        const ADMIN_ID = "7757851056";
+
+        if (userId !== ADMIN_ID) {
+            alert("Access Denied!");
+            window.location.href = "index.html";
+        } else {
+            initAdmin();
+        }
+
+        function initAdmin() {
+            loadAdminNotifications();
+            loadBoostRequests();
+            loadIdVerifiedProofs();
+
+            db.ref('users').on('value', snap => {
+                let count = snap.numChildren();
+                let banned = 0, totalGP = 0, activeCount = 0;
+                let currentTime = Date.now();
+                let usersArray = [];
+                
+                snap.forEach(c => {
+                    let u = c.val() || {};
+                    let uId = c.key;
+                    let uName = u.username || u.name || "Unknown";
+                    if(u.banned) banned++;
+                    let userPoints = u.points !== undefined ? u.points : (u.gp || 0);
+                    totalGP += userPoints;
+                    if (u.lastSeen && (currentTime - u.lastSeen) < (5 * 60 * 1000)) activeCount++;
+                    usersArray.push({ id: uId, name: uName, gp: userPoints, banned: u.banned || false });
+                });
+
+                document.getElementById('st-users').innerText = count;
+                document.getElementById('st-active').innerText = activeCount;
+                document.getElementById('st-banned').innerText = banned;
+                document.getElementById('st-total-gp').innerText = totalGP.toLocaleString();
+                
+                let html = "";
+                usersArray.forEach(u => {
+                    let safeName = u.name.replace(/'/g, "\\'");
+                    html += `<div class="user-item">
+                        <div><b>${u.name}</b> (${u.id})<br><small>${u.gp.toLocaleString()} GP</small></div>
+                        <button class="btn btn-blue" style="width:auto; padding:5px 12px;" onclick="openUserModal('${u.id}', '${safeName}', ${u.gp}, ${u.banned})">Manage</button>
+                    </div>`;
+                });
+                document.getElementById('user-list').innerHTML = html || "No users found.";
+            });
+
+            db.ref('sell_requests').on('value', snap => {
+                let html = "";
+                snap.forEach(c => {
+                    let req = c.val();
+                    if(req.status === "Pending") {
+                        html += `<div class="list-item">
+                            <b>${req.userName || 'User'}</b> - ${req.amount} GP
+                            <div class="grid" style="margin-top:5px;">
+                                <button class="btn btn-green" onclick="db.ref('sell_requests/${c.key}').update({status:'Approved'}); db.ref('users/${req.userId}').update({isVerified:true})">Approve</button>
+                                <button class="btn btn-red" onclick="db.ref('sell_requests/${c.key}').update({status:'Rejected'})">Reject</button>
+                            </div>
+                        </div>`;
+                    }
+                });
+                document.getElementById('agent-req-list').innerHTML = html || "No pending requests.";
+            });
+
+            db.ref('withdraw_requests').on('value', snap => {
+                let html = "";
+                snap.forEach(c => {
+                    let r = c.val();
+                    if(r.status === 'pending') {
+                        html += `<div class="list-item">
+                            <b>ID: ${r.userId} - ${r.amount} GP</b><br><small>${r.method} | ${r.address || r.number}</small>
+                            <div class="grid" style="margin-top:5px;">
+                                <button class="btn btn-green" onclick="updateWD('${c.key}', 'approved', '${r.userId}', ${r.amount})">Accept</button>
+                                <button class="btn btn-red" onclick="updateWD('${c.key}', 'rejected', '${r.userId}', ${r.amount})">Reject</button>
+                            </div>
+                        </div>`;
+                    }
+                });
+                document.getElementById('wd-list').innerHTML = html || "No pending withdraws.";
+            });
+        }
+
+        function loadBoostRequests() {
+            db.ref('pending_boosts').on('value', snap => {
+                let html = "";
+                if (snap.exists()) {
+                    snap.forEach(c => {
+                        let req = c.val();
+                        if (req.status === 'Pending' || !req.status) {
+                            html += `<div class="list-item">
+                                <b>User ID: ${req.userId}</b><br><small>Boost: ${req.amount || 0}</small>
+                                <div class="grid" style="margin-top:5px;">
+                                    <button class="btn btn-green" onclick="db.ref('pending_boosts/${c.key}').update({status:'Approved'}); db.ref('users/${req.userId}/boosts').transaction(b=>(b||0)+${req.amount||0})">Approve</button>
+                                    <button class="btn btn-red" onclick="db.ref('pending_boosts/${c.key}').update({status:'Rejected'})">Reject</button>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    document.getElementById('boost-req-list').innerHTML = html || "No pending boosts.";
+                }
+            });
+        }
+
+        function loadIdVerifiedProofs() {
+            db.ref('pending_agent_pay').on('value', snap => {
+                let html = "";
+                if (snap.exists()) {
+                    snap.forEach(c => {
+                        let req = c.val();
+                        if (req.status === 'Pending' || !req.status) {
+                            html += `<div class="list-item">
+                                <b>User ID: ${req.userId}</b><br><small>${req.details || 'Proof'}</small>
+                                <div class="grid" style="margin-top:5px;">
+                                    <button class="btn btn-green" onclick="db.ref('pending_agent_pay/${c.key}').update({status:'Approved'}); db.ref('users/${req.userId}').update({isVerified:true})">Verify</button>
+                                    <button class="btn btn-red" onclick="db.ref('pending_agent_pay/${c.key}').update({status:'Rejected'})">Reject</button>
+                                </div>
+                            </div>`;
+                        }
+                    });
+                    document.getElementById('agent-pay-req-list').innerHTML = html || "No pending ID proofs.";
+                }
+            });
+        }
+
+        function saveOrSendNotification(type) {
+            let title = document.getElementById('notif-title').value.trim() || "HeyCen Update";
+            let msg = document.getElementById('notif-msg').value.trim();
+            if(!msg) { alert("Write a message!"); return; }
+            db.ref('admin_notifications').push({ title, message: msg, status: type, timestamp: Date.now() });
+            alert("Notification saved/sent!");
+        }
+
+        function loadAdminNotifications() {
+            db.ref('admin_notifications').on('value', snap => {
+                let html = "";
+                if(snap.exists()) {
+                    snap.forEach(c => {
+                        let it = c.val();
+                        html += `<div class="admin-notif-row"><b>${it.title}</b><br><small>${it.message}</small></div>`;
+                    });
+                    document.getElementById('admin-notif-list').innerHTML = html;
+                }
+            });
+        }
+
+        function openUserModal(id, name, gp, isBanned) {
+            window.targetU = id;
+            window.targetBanned = isBanned;
+            document.getElementById('m-name-label').innerText = "Name: " + name;
+            document.getElementById('m-uid-label').innerText = "ID: " + id;
+            document.getElementById('m-gp').value = gp;
+            document.getElementById('ban-btn').innerText = isBanned ? "Unban" : "Ban";
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function updateUserGP() {
+            let gp = parseInt(document.getElementById('m-gp').value) || 0;
+            db.ref('users/' + window.targetU).update({ gp, points: gp }).then(() => { alert("Updated!"); closeModal(); });
+        }
+
+        function makeGPZero() {
+            db.ref('users/' + window.targetU).update({ gp: 0, points: 0 }).then(() => { alert("Set to 0!"); closeModal(); });
+        }
+
+        function resetUserData() {
+            db.ref('users/' + window.targetU).update({ boosts: null }).then(() => { alert("Reset!"); closeModal(); });
+        }
+
+        function toggleBan() {
+            let ns = !window.targetBanned;
+            db.ref('users/' + window.targetU + '/banned').set(ns).then(() => { alert(ns ? "Banned!" : "Unbanned!"); closeModal(); });
+        }
+
+        function updateWD(key, status, uid, amt) {
+            db.ref('withdraw_requests/' + key).update({ status }).then(() => {
+                if(status === 'rejected') {
+                    db.ref('users/' + uid).transaction(u => { if(u){u.gp=(u.gp||0)+amt; u.points=(u.points||0)+amt;} return u; });
+                }
+                alert("Withdraw updated!");
+            });
+        }
+
+        function filterUsers() {
+            let q = document.getElementById('user-search').value.toLowerCase();
+            document.querySelectorAll('.user-item').forEach(it => {
+                it.style.display = it.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeyCen - Shop Admin Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --bg: #050a18; --card: #121e36; --border: #1e2d4d; 
+            --blue: #3b82f6; --green: #22c55e; --red: #ef4444; 
+            --orange: #f59e0b; --pink: #ec4899;
+        }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; display: flex; justify-content: center; }
+        .container { padding: 15px; width: 100%; max-width: 480px; box-sizing: border-box; }
+        .header { background: var(--card); padding: 15px; position: sticky; top: 0; border-bottom: 1px solid var(--border); z-index: 100; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-radius: 0 0 12px 12px; }
+        .back-nav { font-size: 20px; color: white; cursor: pointer; padding: 5px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .btn { padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+        .btn-green { background: var(--green); color: white; }
+        .btn-red { background: var(--red); color: white; }
+        .btn-gray { background: #475569; color: white; }
+        .list-item { background: #0a1226; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-left: 4px solid var(--pink); cursor: pointer; transition: 0.2s; }
+        .list-item:hover { background: #0e1730; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); border: 2px solid var(--pink); padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; z-index: 1001; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .floating-back-container { display: flex; justify-content: center; margin: 25px 0 10px 0; }
+        .circle-back-btn { background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-arrow-left back-nav" onclick="location.href='profile.html'"></i>
+            <h3 style="margin:0;"><i class="fas fa-store" style="color: var(--pink);"></i> Shop Orders Admin</h3>
+        </div>
+
+        <div class="card" style="border-color: var(--pink);">
+            <h4><i class="fas fa-box-open" style="color:var(--pink);"></i> Pending Shop Orders</h4>
+            <small style="color: #94a3b8; font-size: 11px;">Tap order box to view user phone, address, date & time.</small>
+            <div id="shop-orders-list" style="max-height: 450px; overflow-y: auto; margin-top: 10px;">
+                <small style="color: #94a3b8;">Loading orders...</small>
+            </div>
+        </div>
+
+        <div class="floating-back-container">
+            <button class="circle-back-btn" onclick="location.href='profile.html'"><i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="overlay" id="orderOverlay" onclick="closeOrderModal()"></div>
+    <div class="modal" id="orderModal">
+        <h3 style="margin-top:0; color:var(--pink);"><i class="fas fa-address-card"></i> Order & Address Info</h3>
+        <div id="order-modal-content" style="font-size: 13px; line-height: 1.6; color: #e2e8f0;">
+            <p>Loading details...</p>
+        </div>
+        <button class="btn btn-gray" style="margin-top: 15px;" onclick="closeOrderModal()">Close</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "7757851056";
+        const ADMIN_ID = "7757851056";
+
+        if (userId !== ADMIN_ID) {
+            alert("Access Denied!");
+            window.location.href = "index.html";
+        } else {
+            loadShopOrders();
+        }
+
+        function loadShopOrders() {
+            let container = document.getElementById('shop-orders-list');
+            db.ref('shop_orders').on('value', snapshot => {
+                let html = "";
+                if (snapshot.exists()) {
+                    let ordersArray = [];
+                    snapshot.forEach(child => {
+                        let orderData = child.val();
+                        orderData.key = child.key;
+                        if (orderData.status === 'Pending') {
+                            ordersArray.push(orderData);
+                        }
+                    });
+
+                    // নতুন অর্ডারগুলো সবার উপরে দেখানোর জন্য সর্টিং (Newest First)
+                    ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                    ordersArray.forEach(order => {
+                        let orderTimeFormatted = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+                        let safeItemName = order.itemName.replace(/'/g, "\\'");
+                        html += `
+                            <div class="list-item" onclick="viewOrderDetails('${order.userId}', '${safeItemName}', ${order.price}, '${orderTimeFormatted}')">
+                                <b>Item: ${order.itemName}</b><br>
+                                <small>User: ${order.userName} (ID: ${order.userId})</small><br>
+                                <small style="color:#fbbf24; font-weight:bold;">Cost: ${order.price.toLocaleString()} GP</small><br>
+                                <small style="color:#94a3b8;">🕒 ${orderTimeFormatted}</small>
+                                <div style="margin-top: 4px; font-size: 11px; color: #38bdf8;"><i class="fas fa-eye"></i> Tap to view phone & address</div>
+                                <div class="grid" onclick="event.stopPropagation()">
+                                    <button class="btn btn-green" onclick="approveShopOrder('${order.key}', '${order.userId}', '${safeItemName}')">Accept</button>
+                                    <button class="btn btn-red" onclick="rejectShopOrder('${order.key}', '${order.userId}', '${safeItemName}', ${order.price})">Reject & Refund</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html || `<small style="color: #94a3b8;">No pending shop orders.</small>`;
+                } else {
+                    container.innerHTML = `<small style="color: #94a3b8;">No pending shop orders.</small>`;
+                }
+            });
+        }
+
+        // সরাসরি users/{userId}/address নোড থেকে ডেটা ফেচ করার ফাংশন
+        function viewOrderDetails(targetUserId, itemName, price, orderTime) {
+            document.getElementById('order-modal-content').innerHTML = "Fetching user phone & address details...";
+            document.getElementById('orderOverlay').style.display = 'block';
+            document.getElementById('orderModal').style.display = 'block';
+
+            db.ref('users/' + targetUserId + '/address').once('value', snap => {
+                let addr = snap.val();
+
+                let fullName = 'N/A';
+                let phoneNum = 'N/A';
+                let fullLocation = 'N/A';
+                let zipCode = 'N/A';
+
+                if (addr) {
+                    fullName = addr.fullName || 'N/A';
+                    phoneNum = addr.phone || 'N/A';
+                    fullLocation = addr.address || 'N/A';
+                    zipCode = addr.zip || 'N/A';
+                }
+
+                let addressHtml = `
+                    <div style="background: #0a1226; padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px;">
+                        <p style="margin: 6px 0;"><b>👤 Name:</b> ${fullName}</p>
+                        <p style="margin: 6px 0;"><b>📞 Phone:</b> <a href="tel:${phoneNum}" style="color:var(--green); font-weight:bold; text-decoration:underline;">${phoneNum}</a></p>
+                        <p style="margin: 6px 0;"><b>🏠 Address:</b> ${fullLocation} (Zip: ${zipCode})</p>
+                        <p style="margin: 6px 0;"><b>🆔 Telegram ID:</b> ${targetUserId}</p>
+                    </div>
+                `;
+
+                document.getElementById('order-modal-content').innerHTML = `
+                    <p style="margin: 4px 0;"><b>📦 Item:</b> <span style="color:#fbbf24;">${itemName}</span></p>
+                    <p style="margin: 4px 0;"><b>🪙 Price:</b> ${price.toLocaleString()} GP</p>
+                    <p style="margin: 4px 0;"><b>🕒 Time:</b> ${orderTime}</p>
+                    <hr style="border:0; height:1px; background:var(--border); margin:10px 0;">
+                    <b>📍 Saved Shipping Info:</b>
+                    ${addressHtml}
+                `;
+            });
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderOverlay').style.display = 'none';
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function approveShopOrder(orderKey, targetUserId, itemName) {
+            if (confirm("Accept this order?")) {
+                db.ref('shop_orders/' + orderKey).update({ status: 'Approved' }).then(() => {
+                    db.ref('users/' + targetUserId + '/orders').once('value', snap => {
+                        let orders = snap.val() || {};
+                        Object.keys(orders).forEach(oKey => {
+                            if (orders[oKey].itemName === itemName && orders[oKey].status === 'Pending') {
+                                db.ref(`users/${targetUserId}/orders/${oKey}`).update({ status: 'Approved' });
+                            }
+                        });
+                    });
+                    alert("Order accepted successfully!");
+                });
+            }
+        }
+
+        function rejectShopOrder(orderKey, targetUserId, itemName, itemPrice) {
+            if (confirm("Reject order and refund GP to user?")) {
+                db.ref('shop_orders/' + orderKey).update({ status: 'Rejected' }).then(() => {
+                    db.ref('users/' + targetUserId).transaction(u => {
+                        if (u) {
+                            u.points = (u.points || 0) + itemPrice;
+                            u.gp = (u.gp || 0) + itemPrice;
+                        }
+                        return u;
+                    }).then(() => {
+                        db.ref('users/' + targetUserId + '/orders').once('value', snap => {
+                            let orders = snap.val() || {};
+                            Object.keys(orders).forEach(oKey => {
+                                if (orders[oKey].itemName === itemName && orders[oKey].status === 'Pending') {
+                                    db.ref(`users/${targetUserId}/orders/${oKey}`).update({ status: 'Rejected' });
+                                }
+                            });
+                        });
+                        alert("Order rejected and GP successfully refunded!");
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
