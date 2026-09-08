@@ -22,92 +22,31 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            box-sizing: border-box;
-            overflow-y: auto;
-            overscroll-behavior-y: none;
-            -webkit-overflow-scrolling: touch;
+            margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; box-sizing: border-box;
+            overflow-y: auto; overscroll-behavior-y: none;
         }
 
         .container { 
-            width: 100%; 
-            max-width: 480px; 
-            padding: 16px; 
-            margin: 0 auto;
-            padding-bottom: 110px; 
-            box-sizing: border-box; 
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .container.page-slide-out {
-            opacity: 0;
-            transform: translateX(-20px);
+            width: 100%; max-width: 480px; padding: 16px; margin: 0 auto;
+            padding-bottom: 110px; box-sizing: border-box; 
         }
 
         .top-header h1 { margin: 0 0 10px 0; font-size: 24px; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .profile-card {
             background: linear-gradient(135deg, #131c2e 0%, #1e1b4b 100%);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            margin-bottom: 16px;
-            transition: 0.3s ease;
-        }
-
-        .profile-card.verified { 
-            background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 50%, #1e1b4b 100%);
-            border: 2px solid #a855f7; 
-            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
-            animation: premiumGlow 3s infinite alternate;
-        }
-
-        @keyframes premiumGlow {
-            0% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.1); }
-            100% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.6), inset 0 0 20px rgba(236, 72, 153, 0.2); }
+            border: 1px solid var(--card-border); border-radius: 20px;
+            padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
         }
 
         .profile-left { display: flex; align-items: center; gap: 14px; width: 100%; }
-        
-        .avatar-container { 
-            width: 65px; height: 65px; border-radius: 50%; padding: 2px; 
-            background: linear-gradient(135deg, #7c3aed, #ec4899); 
-            flex-shrink: 0; position: relative; 
-        }
-        .profile-card.verified .avatar-container { animation: avatarPulse 2s infinite alternate; }
-        @keyframes avatarPulse {
-            0% { transform: scale(1); box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
-            100% { transform: scale(1.05); box-shadow: 0 0 20px rgba(168, 85, 247, 0.9); }
-        }
-
+        .avatar-container { width: 65px; height: 65px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #7c3aed, #ec4899); flex-shrink: 0; position: relative; }
         .avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .verified-badge {
-            position: absolute; bottom: 0; right: 0;
-            background: #22c55e; color: #fff; width: 20px; height: 20px;
-            border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center;
-            border: 2px solid #131c2e; display: none;
-        }
-
-        .profile-info { width: 100%; }
-        .profile-info h3 { margin: 0 0 2px 0; font-size: 16px; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .profile-info h3 { margin: 0 0 2px 0; font-size: 16px; color: #fff; }
         .username-text { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .user-id-badge { font-size: 11px; color: #c084fc; font-weight: 650; cursor: pointer; display: inline-block; background: rgba(124, 58, 237, 0.15); padding: 1px 6px; border-radius: 6px; }
-
-        .premium-badge-tag {
-            background: linear-gradient(135deg, #f59e0b, #ec4899); color: #fff;
-            font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px;
-            display: none; text-transform: uppercase; letter-spacing: 0.5px;
-        }
+        .user-id-badge { font-size: 11px; color: #c084fc; font-weight: 650; background: rgba(124, 58, 237, 0.15); padding: 1px 6px; border-radius: 6px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px; text-align: center; }
@@ -115,23 +54,19 @@
         .stat-card .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
 
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 10px 0; font-size: 13px; color: #fff; display: flex; align-items: center; gap: 8px; }
         
-        .collection-item-box { 
-            background: #0b0f19; 
-            border: 1px solid var(--card-border); 
-            padding: 10px 12px; 
-            border-radius: 10px; 
-            margin-bottom: 8px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            cursor: pointer;
-            transition: 0.2s;
+        .item-box { 
+            background: #0b0f19; border: 1px solid var(--card-border); 
+            padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; 
+            display: flex; justify-content: space-between; align-items: center; font-size: 12px; 
         }
-        .collection-item-box:hover { border-color: #7c3aed; background: #131c2e; }
+
+        .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .delete-sm-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
 
         .menu-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-        .menu-row-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text-main); transition: 0.2s; cursor: pointer; }
+        .menu-row-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text-main); }
         .menu-row-left { display: flex; align-items: center; gap: 14px; }
         .menu-row-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; }
 
@@ -140,24 +75,11 @@
         .admin-box-item i { font-size: 18px; margin-bottom: 4px; display: block; }
         .admin-box-item h5 { margin: 0; font-size: 11px; font-weight: 700; color: #fff; }
 
-        /* অর্ডার ডিটেইলস পপআপ মডাল */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
-        .modal {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); background: var(--modal-bg);
-            border: 2px solid #7c3aed; border-radius: 20px; padding: 20px;
-            width: 90%; max-width: 380px; z-index: 1001; box-sizing: border-box;
-            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4); text-align: left;
-        }
-        .modal h3 { margin: 0 0 12px 0; font-size: 16px; color: #fbbf24; text-align: center; }
-        .modal-close-btn { background: #7c3aed; color: #fff; border: none; padding: 10px; border-radius: 10px; width: 100%; margin-top: 14px; font-weight: bold; cursor: pointer; }
-
         .bottom-nav { 
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 480px; background: var(--card-bg); 
             border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
             padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
         }
         .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
         .nav-item.active { color: #c084fc; }
@@ -175,13 +97,9 @@
             <div class="profile-left">
                 <div class="avatar-container">
                     <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Avatar">
-                    <div class="verified-badge" id="verifiedBadgeIcon"><i class="fa-solid fa-check"></i></div>
                 </div>
                 <div class="profile-info">
-                    <h3 id="profile-name">
-                        <span id="name-text">User</span> 
-                        <span class="premium-badge-tag" id="premiumBadgeTag"><i class="fa-solid fa-crown"></i> VIP</span>
-                    </h3>
+                    <h3 id="profile-name"><span id="name-text">User</span></h3>
                     <div class="username-text" id="profile-username">@user</div>
                     <div><span class="user-id-badge" id="profile-id">ID: Loading... 📋</span></div>
                 </div>
@@ -199,11 +117,27 @@
             </div>
         </div>
 
-        <!-- অর্ডার হিস্ট্রি সেকশন -->
+        <!-- ১. Add to Cart সেকশন -->
         <div class="card">
-            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</h4>
+            <h4><i class="fa-solid fa-cart-shopping" style="color: #3b82f6;"></i> My Cart</h4>
+            <div id="cart-list" style="max-height: 180px; overflow-y: auto;">
+                <small style="color: var(--text-muted);">Your cart is empty.</small>
+            </div>
+        </div>
+
+        <!-- ২. Whitelist (Wishlist) সেকশন -->
+        <div class="card">
+            <h4><i class="fa-solid fa-heart" style="color: #ef4444;"></i> Whitelist / Wishlist</h4>
+            <div id="whitelist-list" style="max-height: 150px; overflow-y: auto;">
+                <small style="color: var(--text-muted);">No items in wishlist.</small>
+            </div>
+        </div>
+
+        <!-- ৩. My Order History সেকশন -->
+        <div class="card">
+            <h4><i class="fa-solid fa-clock-rotate-left" style="color: #c084fc;"></i> My Order History</h4>
             <div id="my-collection-list" style="max-height: 200px; overflow-y: auto;">
-                <small style="color: var(--text-muted);">Loading your order history...</small>
+                <small style="color: var(--text-muted);">No order history found.</small>
             </div>
         </div>
 
@@ -230,16 +164,6 @@
                 </a>
             </div>
         </div>
-    </div>
-
-    <!-- Order Details Modal -->
-    <div class="overlay" id="orderModalOverlay" onclick="closeOrderModal()"></div>
-    <div class="modal" id="orderModal">
-        <h3>Order Details 📦</h3>
-        <div id="modalOrderContent" style="font-size: 13px; line-height: 1.6; color: var(--text-muted);">
-            <!-- Dynamic Details -->
-        </div>
-        <button class="modal-close-btn" onclick="closeOrderModal()">Close</button>
     </div>
 
     <div class="bottom-nav">
@@ -272,6 +196,7 @@
         let userId = user ? user.id.toString() : "7757851056"; 
         let firstName = user ? (user.first_name || "User") : "User";
         let username = (user && user.username) ? `@${user.username}` : `@user`;
+        let userGold = 0;
         const ADMIN_USER_ID = "7757851056";
 
         document.getElementById('name-text').innerText = firstName;
@@ -289,37 +214,106 @@
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
+                userGold = data.gold !== undefined ? data.gold : 0;
                 let gp = data.gp !== undefined ? data.gp : (data.points || 0);
-                let gold = data.gold !== undefined ? data.gold : 0;
                 document.getElementById('total-gp').innerText = gp.toLocaleString();
-                document.getElementById('total-gold').innerText = gold.toLocaleString();
-
-                if (data.isVerified === true) {
-                    document.getElementById('profileCardElement').classList.add('verified');
-                    document.getElementById('verifiedBadgeIcon').style.display = 'flex';
-                    document.getElementById('premiumBadgeTag').style.display = 'inline-block';
-                }
+                document.getElementById('total-gold').innerText = userGold.toLocaleString();
             }
         });
 
-        let cachedOrders = {};
+        // ১. Cart রেন্ডার ও অর্ডার প্লেস করার সিস্টেম
+        db.ref('users/' + userId + '/cart').on('value', snap => {
+            let container = document.getElementById('cart-list');
+            let html = "";
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    let cartKey = child.key;
+                    let item = child.val();
+                    html += `
+                        <div class="item-box">
+                            <div>
+                                <b>${item.itemName}</b><br>
+                                <span style="color: #fbbf24;">🪙 ${item.price} Gold</span>
+                            </div>
+                            <div style="display:flex; gap:4px;">
+                                <button class="action-sm-btn" onclick="orderFromCart('${cartKey}', '${item.itemName.replace(/'/g, "\\'")}', ${item.price})">Order</button>
+                                <button class="delete-sm-btn" onclick="removeFromCart('${cartKey}')">X</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<small style="color: var(--text-muted);">Your cart is empty.</small>`;
+            }
+        });
 
-        // সরাসরি `shop_orders` থেকে ফিল্টার করে এই ইউজারের অর্ডারগুলো লোড করা
+        function removeFromCart(cartKey) {
+            db.ref(`users/${userId}/cart/${cartKey}`).remove();
+        }
+
+        function orderFromCart(cartKey, itemName, price) {
+            if (userGold >= price) {
+                let newGold = userGold - price;
+                db.ref('users/' + userId).update({ gold: newGold }).then(() => {
+                    let orderData = {
+                        userId: userId,
+                        userName: firstName,
+                        userUsername: username,
+                        itemName: itemName,
+                        price: price,
+                        status: "Pending",
+                        timestamp: Date.now()
+                    };
+                    db.ref('shop_orders').push(orderData).then(() => {
+                        db.ref(`users/${userId}/cart/${cartKey}`).remove();
+                        tg.showAlert(`🎉 Order placed successfully for "${itemName}" from Cart!`);
+                    });
+                });
+            } else {
+                tg.showAlert("❌ Insufficient Gold Balance!");
+            }
+        }
+
+        // ২. Whitelist রেন্ডার সিস্টেম
+        db.ref('users/' + userId + '/wishlist').on('value', snap => {
+            let container = document.getElementById('whitelist-list');
+            let html = "";
+            if (snap.exists() && snap.val().length > 0) {
+                snap.val().forEach(itemName => {
+                    html += `
+                        <div class="item-box">
+                            <span>❤️ ${itemName}</span>
+                            <button class="delete-sm-btn" onclick="removeFromWhitelist('${itemName.replace(/'/g, "\\'")}')">Remove</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<small style="color: var(--text-muted);">No items in wishlist.</small>`;
+            }
+        });
+
+        function removeFromWhitelist(itemName) {
+            db.ref('users/' + userId + '/wishlist').once('value', snap => {
+                let list = snap.val() || [];
+                list = list.filter(i => i !== itemName);
+                db.ref('users/' + userId).update({ wishlist: list });
+            });
+        }
+
+        // ৩. My Order History রেন্ডার সিস্টেম
         db.ref('shop_orders').on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
-            cachedOrders = {};
 
             if (snap.exists()) {
                 let ordersArray = [];
                 snap.forEach(child => {
-                    let orderKey = child.key;
                     let order = child.val();
-                    // চেক করা হচ্ছে অর্ডারটি বর্তমান ইউজারের কি না
                     if (order.userId && order.userId.toString() === userId.toString()) {
-                        order.id = orderKey;
+                        order.id = child.key;
                         ordersArray.push(order);
-                        cachedOrders[orderKey] = order;
                     }
                 });
 
@@ -329,24 +323,17 @@
                     ordersArray.forEach(order => {
                         let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A';
                         let status = order.status || 'Pending';
-                        
-                        // ৭ সংখ্যার অর্ডার নম্বর জেনারেট করা
-                        let orderNum = order.orderNumber || Math.abs(hashCode(order.id)).toString().substring(0, 7).padEnd(7, '0');
+                        let orderNum = Math.abs(hashCode(order.id)).toString().substring(0, 7).padEnd(7, '0');
 
-                        let badgeColor = '#f59e0b'; // Pending
+                        let badgeColor = '#f59e0b';
                         let badgeBg = 'rgba(245, 158, 11, 0.15)';
-                        if (status === 'Accepted') {
-                            badgeColor = '#22c55e'; // Green
-                            badgeBg = 'rgba(34, 197, 94, 0.15)';
-                        } else if (status === 'Rejected') {
-                            badgeColor = '#ef4444'; // Red
-                            badgeBg = 'rgba(239, 68, 68, 0.15)';
-                        }
+                        if (status === 'Accepted') { badgeColor = '#22c55e'; badgeBg = 'rgba(34, 197, 94, 0.15)'; }
+                        else if (status === 'Rejected') { badgeColor = '#ef4444'; badgeBg = 'rgba(239, 68, 68, 0.15)'; }
 
                         html += `
-                            <div class="collection-item-box" onclick="openOrderDetails('${order.id}', '${orderNum}')">
+                            <div class="item-box">
                                 <div>
-                                    <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
+                                    <b style="color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
                                     <span style="color: #94a3b8; font-size: 10px;">Order: #${orderNum} | Date: ${orderDate}</span>
                                 </div>
                                 <span style="font-size: 10px; font-weight: bold; color: ${badgeColor}; background: ${badgeBg}; padding: 3px 8px; border-radius: 6px;">${status}</span>
@@ -355,10 +342,10 @@
                     });
                     container.innerHTML = html;
                 } else {
-                    container.innerHTML = `<small style="color: var(--text-muted);">No order history found. Visit shop to make orders!</small>`;
+                    container.innerHTML = `<small style="color: var(--text-muted);">No order history found.</small>`;
                 }
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No order history found. Visit shop to make orders!</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No order history found.</small>`;
             }
         });
 
@@ -369,32 +356,6 @@
                 hash |= 0;
             }
             return Math.abs(hash).toString();
-        }
-
-        function openOrderDetails(orderId, orderNum) {
-            let order = cachedOrders[orderId];
-            if (!order) return;
-
-            let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
-            let status = order.status || 'Pending';
-
-            let content = `
-                <b>Order Number:</b> <span style="color:#fff;">#${orderNum}</span><br>
-                <b>Item Name:</b> <span style="color:#c084fc;">${order.itemName}</span><br>
-                <b>Price:</b> 🪙 <span style="color:#fbbf24;">${order.price} Gold</span><br>
-                <b>Order Date:</b> ${orderDate}<br>
-                <b>Current Status:</b> <span style="color:${status === 'Accepted' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#f59e0b')}; font-weight:bold;">${status}</span><br>
-                ${status === 'Rejected' ? '<br><small style="color:#ef4444;">Note: This order was rejected and your gold has been refunded to your account.</small>' : ''}
-            `;
-
-            document.getElementById('modalOrderContent').innerHTML = content;
-            document.getElementById('orderModalOverlay').style.display = 'block';
-            document.getElementById('orderModal').style.display = 'block';
-        }
-
-        function closeOrderModal() {
-            document.getElementById('orderModalOverlay').style.display = 'none';
-            document.getElementById('orderModal').style.display = 'none';
         }
     </script>
 </body>
