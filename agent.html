@@ -39,7 +39,6 @@
 
         .info-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 12px; line-height: 1.6; }
         
-        /* কপি রো স্টাইল */
         .copy-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); padding: 8px 10px; border-radius: 8px; margin-top: 6px; margin-bottom: 8px; }
         .copy-text { font-weight: bold; color: #34d399; font-size: 13px; font-family: monospace; }
         .copy-btn { background: #7c3aed; color: #fff; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s; }
@@ -69,20 +68,20 @@
                 <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($30 / Payment)</div>
             </div>
 
-            <!-- অপশন ১: ফ্রি কাজ করে ভেরিফাই (200k Gold) -->
+            <!-- অপশন ১: ফ্রি কাজ / গোল্ড দিয়ে ভেরিফিকেশন -->
             <div id="freeTab" class="method-content active">
                 <div class="info-box">
                     <b>Free Task Verification:</b><br>
-                    ফ্রিতে কাজ করে ভেরিফাইড হতে চাইলে আপনার অ্যাকাউন্ট থেকে মোট **200,000 Gold** পেমেন্ট হিসেবে কাটা হবে।
+                    গোল্ড দিয়ে ভেরিফিকেশন রিকোয়েস্ট পাঠাতে চাইলে আপনার অ্যাকাউন্ট থেকে মোট **200,000 Gold** কেটে নেওয়া হবে এবং এডমিন অ্যাপ্রুভ করলে অ্যাকাউন্ট ভেরিফাইড হবে।
                 </div>
-                <button class="action-btn" onclick="submitFreeVerification()">Verify Using 200,000 Gold</button>
+                <button class="action-btn" onclick="submitGoldVerification()">Send Request Using 200,000 Gold</button>
             </div>
 
-            <!-- অপশন ২: সরাসরি পেইড ভেরিফিকেশন ($30 / Binance / Bitget / MFS) -->
+            <!-- অপশন ২: সরাসরি পেইড ভেরিফিকেশন -->
             <div id="directTab" class="method-content">
                 <div class="info-box">
                     <b>Direct Paid Verification ($30):</b><br>
-                    সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন এবং কপি বাটনে ক্লিক করে সহজে তথ্য নিন:<br><br>
+                    সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
 
                     <b>🔹 Binance UID:</b>
                     <div class="copy-row">
@@ -147,6 +146,7 @@
         let user = tg.initDataUnsafe.user;
         let userId = user ? user.id.toString() : "7757851056";
         let firstName = user ? (user.first_name || "User") : "User";
+        let username = user && user.username ? `@${user.username}` : `@user`;
         let userGold = 0;
 
         db.ref('users/' + userId).on('value', snap => {
@@ -163,7 +163,6 @@
             tabElement.classList.add('active');
         }
 
-        // কপি করার ফাংশন
         function copyText(elementId, labelName) {
             let textToCopy = document.getElementById(elementId).innerText;
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -171,17 +170,26 @@
             });
         }
 
-        function submitFreeVerification() {
+        function submitGoldVerification() {
             let requiredGold = 200000;
             if (userGold >= requiredGold) {
-                if (confirm(`Are you sure you want to spend ${requiredGold.toLocaleString()} Gold for verification?`)) {
+                if (confirm(`Send verification request using ${requiredGold.toLocaleString()} Gold?`)) {
                     let newGold = userGold - requiredGold;
-                    db.ref('users/' + userId).update({
-                        gold: newGold,
-                        isVerified: true
-                    }).then(() => {
-                        tg.showAlert("🎉 Congratulations! Your account has been successfully verified using Gold.");
-                        window.location.href = "profile.html";
+                    db.ref('users/' + userId).update({ gold: newGold }).then(() => {
+                        let verificationReq = {
+                            userId: userId,
+                            userName: firstName,
+                            userUsername: username,
+                            method: "200K Gold Payment",
+                            trxId: "Deducted From Balance",
+                            screenshot: "",
+                            status: "Pending",
+                            timestamp: Date.now()
+                        };
+                        db.ref('verification_requests').push(verificationReq).then(() => {
+                            tg.showAlert("✅ Gold verification request submitted successfully to Admin!");
+                            window.location.href = "profile.html";
+                        });
                     });
                 }
             } else {
@@ -211,6 +219,7 @@
                 let verificationReq = {
                     userId: userId,
                     userName: firstName,
+                    userUsername: username,
                     method: method,
                     trxId: trxId,
                     screenshot: imgData,
