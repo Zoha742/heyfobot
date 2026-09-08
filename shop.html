@@ -45,7 +45,6 @@
         .badge-new { background: linear-gradient(135deg, #22c55e, #16a34a); }
         .badge-sale { background: linear-gradient(135deg, #ec4899, #db2777); }
 
-        /* লাভ বাটন (Whitelist) */
         .love-btn {
             position: absolute; top: 6px; right: 6px; z-index: 2;
             background: rgba(0,0,0,0.6); border: none; color: #fff;
@@ -151,6 +150,26 @@
             { name: "Classic Party Dress", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/4_jwi1bs.webp" },
             { name: "Elegance Evening Wear", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/7_zz8gga.webp" },
             { name: "Casual Denim Outfit", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/1_ufizyp.webp" },
+            { name: "Summer Breeze Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/3_tm4w9f.webp" },
+            { name: "Chic Party Frock", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/5_lphyur.webp" },
+            { name: "Modern Denim Style", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/6_a7nrjj.webp" },
+            { name: "Velvet Night Outfit", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/9_pyynus.webp" },
+            { name: "Designer Casual Wear", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/8_rnhjh5.webp" },
+            { name: "Luxury Party Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/10_l7enmg.webp" },
+            { name: "Graceful Maxi Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/19_fazthb.webp" },
+            { name: "Stylish Evening Look", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/16_ff8bo3.webp" },
+            { name: "Premium Party Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/11_nmuqvi.webp" },
+            { name: "Trend Setter Denim", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/17_nevt22.webp" },
+            { name: "Royal Blue Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/21_g8xdy3.webp" },
+            { name: "Classic Evening Style", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/18_vtbuam.webp" },
+            { name: "Modest Casual Fit", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/12_lxoxkk.webp" },
+            { name: "Special Event Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/14_vv3edn.webp" },
+            { name: "Vibrant Party Frock", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/13_j1iqqj.webp" },
+            { name: "Urban Denim Wear", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/20_nl0iqq.webp" },
+            { name: "Exquisite Evening Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/22_ostfn4.webp" },
+            { name: "Daily Casual Set", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/24_pbzdij.webp" },
+            { name: "Chic Designer Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/23_exv5bf.webp" },
+            { name: "Elite Collection Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/15_vgqlvi.webp" },
             { name: "Formal Blazer Suit", cat: "Boys", price: 15000, img: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=300" },
             { name: "Casual Hoodie & Jeans", cat: "Boys", price: 20000, img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300" }
         ];
@@ -218,7 +237,6 @@
             document.getElementById('imageModal').style.display = 'none';
         }
 
-        // Whitelist (Love icon toggle)
         function toggleWishlist(itemName) {
             let index = wishlist.indexOf(itemName);
             if (index > -1) {
@@ -231,7 +249,6 @@
             });
         }
 
-        // Add to Cart
         function addToCart(itemName, price, sizeSelectId) {
             let selectedSize = document.getElementById(sizeSelectId).value;
             let cartItem = {
@@ -245,7 +262,6 @@
             });
         }
 
-        // Direct Buy Now
         function buyNow(itemName, price, sizeSelectId) {
             let selectedSize = document.getElementById(sizeSelectId).value;
             let finalItemName = `${itemName} (Size: ${selectedSize})`;
