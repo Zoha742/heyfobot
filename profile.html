@@ -563,7 +563,7 @@
             return Math.abs(hash).toString();
         }
 
-        // সোয়াইপ নেভিগেশন সিস্টেম (বামে সোয়াইপ করলে Task পেজে যাবে)
+       // সোয়াইপ নেভিগেশন সিস্টেম (বামে সোয়াইপ করলে Task পেজে এবং ডানে সোয়াইপ করলে Game পেজে যাবে)
         let touchStartX = 0;
         window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
         window.addEventListener('touchend', e => {
@@ -573,9 +573,11 @@
 
             if (Math.abs(diff) > 50) {
                 if (diff > 0) {
+                    // ডানে সোয়াইপ (Right Swipe) -> Game পেজ
                     container.classList.add('page-slide-right');
                     setTimeout(() => { window.location.href = "game.html"; }, 250);
                 } else {
+                    // বামে সোয়াইপ (Left Swipe) -> Task পেজ
                     container.classList.add('page-slide-left');
                     setTimeout(() => { window.location.href = "task.html"; }, 250);
                 }
