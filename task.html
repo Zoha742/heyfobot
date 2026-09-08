@@ -6,8 +6,10 @@
     <title>Heyfo - Tasks</title>
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Adsgram Rewarded Video SDK Script -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <!-- Monetag SDK Script -->
+    <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
+    <!-- OnClicka SDK Script -->
+    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -169,6 +171,50 @@
             <button id="adBtn1" class="ad-action-btn" onclick="watchAd(50)">Watch Ad</button>
         </div>
 
+        <div class="ad-task-card">
+            <div class="ad-info">
+                <div class="ad-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="ad-details">
+                    <h4>Watch Bonus Ad</h4>
+                    <p>Reward: +30 GP Fuel</p>
+                </div>
+            </div>
+            <button id="adBtn2" class="ad-action-btn" onclick="watchPopupAd(30)">Watch Ad</button>
+        </div>
+
+        <div class="ad-task-card">
+            <div class="ad-info">
+                <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
+                <div class="ad-details">
+                    <h4>Watch Video Ad #1</h4>
+                    <p>Reward: +20 GP Fuel</p>
+                </div>
+            </div>
+            <button id="adBtn3" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn3', 'lastOcAdTime1')">Watch Ad</button>
+        </div>
+
+        <div class="ad-task-card">
+            <div class="ad-info">
+                <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
+                <div class="ad-details">
+                    <h4>Watch Video Ad #2</h4>
+                    <p>Reward: +20 GP Fuel</p>
+                </div>
+            </div>
+            <button id="adBtn4" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn4', 'lastOcAdTime2')">Watch Ad</button>
+        </div>
+
+        <div class="ad-task-card">
+            <div class="ad-info">
+                <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
+                <div class="ad-details">
+                    <h4>Watch Video Ad #3</h4>
+                    <p>Reward: +20 GP Fuel</p>
+                </div>
+            </div>
+            <button id="adBtn5" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn5', 'lastOcAdTime3')">Watch Ad</button>
+        </div>
+
         <div class="section-title"><i class="fa-brands fa-telegram"></i> Telegram Channel Tasks</div>
         
         <div class="task-grid" id="dynamicTaskGrid">
@@ -210,8 +256,19 @@
         let userId = user ? user.id.toString() : "7757851056";
         let userRef = db.ref('users/' + userId);
 
-        // Adsgram Rewarded Controller Initialize (Bot ID: 8999587694, Platform ID: 43545)
-        const adController = window.Adsgram ? window.Adsgram.init({ blockId: "46140", platform: "tg" }) : null;
+        // Monetag In-App Interstitial - passive background ad, no reward (auto-shown by SDK)
+        if (typeof show_11752857 === 'function') {
+            show_11752857({
+                type: 'inApp',
+                inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false }
+            }).catch(() => {});
+        }
+
+        // OnClicka Rewarded Ad Initialize (Spot ID: 6136924) - reused for 3 buttons
+        let onClickaShowAd = null;
+        window.initCdTma?.({ id: 6136924 })
+            .then(show => { onClickaShowAd = show; })
+            .catch(e => console.error("OnClicka init error:", e));
 
         const channelList = [
             "Xoypo", "Xoyfo", "Xoyco", "Xoyvo", "Xoyqo", "Xoywo", "Ogeeu", "Foyko", "Royci", "Royqo", "Keoiv", "Keoiz", "Bivbo", "Mivbo", "Oviib", "Qeoil", "EoPay", "cyriv", "cypit", "Bypir", "cypij", "Cypia", "Psirt", "Wjstv", "Doyvi", "Foyvi", "Jtrtv", "Apsox", "Apgox", "Oamgo", "Cisot", "Orous", "Okous", "Oeous", "uoike", "Foike", "Doike", "Uniwo", "hizdo", "Eopse", "Risof", "Roiho", "Tebvi", "Coaic", "icoji", "Uaffi", "Xafbi", "Coijo", "Cexmo", "Pexmo", "Wopse", "tavfo", "Kavfo", "Oanlo", "Eamvo", "Oanvo", "oofti", "Foqro", "Foqxo", "Joivo", "Xijci", "Foyzo", "Foljo", "Fuuqo", "fusqo", "fuyqo", "tiqoo", "Qifoo", "Hoyqo", "Qelfo", "Qeljo", "Fnntv", "Jnntv", "Fnitv", "Fbntv", "Cbigo", "Eavno", "Eapno", "Foyqo", "Upbif", "Upbib", "Upbir", "Upbip", "Upbim", "Oesno", "Lanvo", "Yovki", "Oovki", "Uovki", "syfox", "Spyzo", "Vavfo", "Cavfo", "Eavdo", "Coixo", "Fovgi", "Tafvi", "Guzna", "Aovji", "Oelgo", "Yelfo", "Zoosy", "Zivfo", "Uesgo", "Ripfo", "Fovmi", "Wovti", "Jafki", "Dikto", "Joizo", "Uxdao", "Wxdao", "Movti", "Fovti", "Oafki", "Eafki", "Oafmi", "Uafmi", "Vafmi", "Eafmi", "Gigxe", "Eooti", "Eovmi", "Pafbi", "Livbo", "Dapbo", "Roiwo", "Foiqo", "Wigdo", "Diczo", "Oafvi", "Dijzo", "Kovmi", "Oubuy", "Jafvi", "Kafvi", "Cafvi", "Eapti", "Xafti", "Cekio", "Ualjo", "Ealjo", "Uofti", "Eofti", "Pofti", "Vunki", "dagpi", "Hagpi", "Eagpi", "Cagpi", "Zidme", "Relbo", "Eelvo", "Yelvo", "Ohous", "Opous", "Tewvi", "Epegi", "Uafti", "dysel", "dycel", "Oviwo", "Dojvi", "Fisdo", "Rirbo", "Uanbo", "Oamco", "Zisvo", "Oisvo", "Wisvo", "Oispo", "reljo", "uepax", "uevax", "aekax", "Cigzo", "Uevio", "Xikvi", "Oeyvi", "Ueyvi", "Qittoo", "ZilMal", "ZilXal", "XilXal", "BikNak", "BikVak", "BakVak", "XilMal", "Zilfal", "ZilSal", "XalXil", "XikMik", "XilMil", "XikXaq", "HakVak", "HakBak", "HikDik"
@@ -231,10 +288,17 @@
         }
 
         function renderAds() {
-            let btn = document.getElementById('adBtn1');
-            let lastAdTime = userData.lastAdTime || 0;
+            renderAdButton('adBtn1', userData.lastAdTime || 0);
+            renderAdButton('adBtn2', userData.lastPopupAdTime || 0);
+            renderAdButton('adBtn3', userData.lastOcAdTime1 || 0);
+            renderAdButton('adBtn4', userData.lastOcAdTime2 || 0);
+            renderAdButton('adBtn5', userData.lastOcAdTime3 || 0);
+        }
+
+        function renderAdButton(btnId, lastTime) {
+            let btn = document.getElementById(btnId);
             let now = Date.now();
-            let timeLeft = (lastAdTime + INTERVAL_12H) - now;
+            let timeLeft = (lastTime + INTERVAL_12H) - now;
 
             if (timeLeft > 0) {
                 btn.disabled = true;
@@ -252,25 +316,59 @@
             let btn = document.getElementById('adBtn1');
             if(btn.disabled) return;
 
-            if (adController) {
-                adController.show().then((result) => {
-                    let now = Date.now();
-                    let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
-                    
-                    userRef.update({ 
-                        gp: currentGp + rewardAmount, 
-                        points: currentGp + rewardAmount,
-                        lastAdTime: now
-                    }).then(() => {
-                        tg.showAlert(`Ad watched successfully! +${rewardAmount} GP added.`);
-                    });
+            if (typeof show_11752857 === 'function') {
+                show_11752857().then(() => {
+                    grantAdReward(rewardAmount, 'lastAdTime');
                 }).catch((err) => {
-                    console.error("Adsgram error:", err);
+                    console.error("Monetag error:", err);
                     tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
                 });
             } else {
                 tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
             }
+        }
+
+        function watchPopupAd(rewardAmount) {
+            let btn = document.getElementById('adBtn2');
+            if(btn.disabled) return;
+
+            if (typeof show_11752857 === 'function') {
+                show_11752857({ type: 'pop' }).then(() => {
+                    grantAdReward(rewardAmount, 'lastPopupAdTime');
+                }).catch((err) => {
+                    console.error("Monetag popup error:", err);
+                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+                });
+            } else {
+                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+            }
+        }
+
+        function watchOnClickaAd(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+
+            if (onClickaShowAd) {
+                onClickaShowAd().then(() => {
+                    grantAdReward(rewardAmount, cooldownKey);
+                }).catch((err) => {
+                    console.error("OnClicka error:", err);
+                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+                });
+            } else {
+                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+            }
+        }
+
+        function grantAdReward(rewardAmount, cooldownKey) {
+            let now = Date.now();
+            let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
+            let updateObj = { gp: currentGp + rewardAmount, points: currentGp + rewardAmount };
+            updateObj[cooldownKey] = now;
+
+            userRef.update(updateObj).then(() => {
+                tg.showAlert(`Ad watched successfully! +${rewardAmount} GP added.`);
+            });
         }
 
         function renderChannelTasks() {
