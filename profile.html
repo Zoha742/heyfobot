@@ -49,7 +49,7 @@
             transform: translateX(-20px);
         }
 
-        .top-header h1 { margin: 0 0 10px 0; font-size: 24px; color: #fff; }
+        .top-header h1 { margin: 0 0 10px 0; font-size: 24px; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .profile-card {
             background: linear-gradient(135deg, #131c2e 0%, #1e1b4b 100%);
@@ -77,7 +77,20 @@
         }
 
         .profile-left { display: flex; align-items: center; gap: 14px; width: 100%; }
-        .avatar-container { width: 65px; height: 65px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #7c3aed, #4c1d95); flex-shrink: 0; position: relative; }
+        
+        .avatar-container { 
+            width: 65px; height: 65px; border-radius: 50%; padding: 2px; 
+            background: linear-gradient(135deg, #7c3aed, #ec4899); 
+            flex-shrink: 0; position: relative; 
+        }
+        .profile-card.verified .avatar-container {
+            animation: avatarPulse 2s infinite alternate;
+        }
+        @keyframes avatarPulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
+            100% { transform: scale(1.05); box-shadow: 0 0 20px rgba(168, 85, 247, 0.9); }
+        }
+
         .avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
         .verified-badge {
@@ -139,6 +152,21 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
+        /* এডমিন প্যানেল গ্রিড (Main Admin & Shop Admin) */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-bottom: 10px; }
+        .admin-box-item {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6));
+            border: 1px solid #22c55e;
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #34d399;
+            transition: 0.2s;
+        }
+        .admin-box-item:active { transform: scale(0.98); }
+        .admin-box-item i { font-size: 18px; margin-bottom: 4px; display: block; }
+        .admin-box-item h5 { margin: 0; font-size: 11px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .bottom-nav { 
             position: fixed; 
@@ -161,7 +189,7 @@
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
 </head>
-<body id="bodySwipeArea">
+<body>
 
     <div class="container">
         <div class="top-header">
@@ -170,7 +198,7 @@
             </div>
         </div>
 
-        <!-- প্রিমিয়াম ড্যাশবোর্ড কার্ড -->
+        <!-- প্রিমিয়াম ড্যাশবোর্ড কার্ড (ভেরিফাইড হলে গ্লো করবে) -->
         <div class="profile-card" id="profileCardElement">
             <div class="profile-left">
                 <div class="avatar-container">
@@ -199,15 +227,27 @@
             </div>
         </div>
 
-        <!-- ভার্চুয়াল ওয়ার্ডরোব কালেকশন সেকশন -->
+        <!-- শপ থেকে কেনা বা আনলক করা আইটেমগুলোর ড্যাশবোর্ড কালেকশন -->
         <div class="card">
-            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-shirt" style="color: #c084fc;"></i> My Wardrobe Collection</h4>
+            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #fff;"><i class="fa-solid fa-shirt" style="color: #c084fc;"></i> Purchased Items & Wardrobe</h4>
             <div id="my-collection-list" style="max-height: 180px; overflow-y: auto;">
-                <small style="color: var(--text-muted);">Loading your wardrobe items...</small>
+                <small style="color: var(--text-muted);">Loading your purchases...</small>
             </div>
         </div>
 
         <div class="menu-list">
+            <!-- এডমিন প্যানেল অপশন (Main Admin & Shop Admin) -->
+            <div class="admin-grid" id="adminGridContainer">
+                <a class="admin-box-item" href="mainadmin.html">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h5>Main Admin</h5>
+                </a>
+                <a class="admin-box-item" href="shopadmin.html">
+                    <i class="fa-solid fa-store"></i>
+                    <h5>Shop Admin</h5>
+                </a>
+            </div>
+
             <a class="menu-row-item" href="support.html">
                 <div class="menu-row-left">
                     <div class="menu-row-icon" style="background: #0891b2;"><i class="fa-solid fa-headset"></i></div>
@@ -225,17 +265,6 @@
                     <div class="menu-row-info">
                         <h5 style="margin:0; font-size:13px; color:#fff;">Create Sponsor</h5>
                         <p style="margin:0; font-size:11px; color:var(--text-muted);">Promote your brand or project</p>
-                    </div>
-                </div>
-                <span class="coming-soon-badge">Soon</span>
-            </div>
-
-            <div class="menu-row-item" onclick="tg.showAlert('Create Idea feature is coming soon!')">
-                <div class="menu-row-left">
-                    <div class="menu-row-icon" style="background: #db2777;"><i class="fa-solid fa-lightbulb"></i></div>
-                    <div class="menu-row-info">
-                        <h5 style="margin:0; font-size:13px; color:#fff;">Create Idea</h5>
-                        <p style="margin:0; font-size:11px; color:var(--text-muted);">Share your suggestions & ideas</p>
                     </div>
                 </div>
                 <span class="coming-soon-badge">Soon</span>
@@ -274,6 +303,7 @@
         let userId = user ? user.id.toString() : "7757851056"; 
         let firstName = user ? (user.first_name || "User") : "User";
         let username = (user && user.username) ? `@${user.username}` : `@user`;
+        const ADMIN_USER_ID = "7757851056";
 
         document.getElementById('name-text').innerText = firstName;
         document.getElementById('profile-username').innerText = username;
@@ -283,7 +313,12 @@
             document.getElementById('user-avatar').src = user.photo_url;
         }
 
-        // ফায়ারবেস থেকে ভেরিফাইড স্ট্যাটাস ও ব্যালেন্স চেক করা
+        // এডমিন আইডি চেক করে Main Admin ও Shop Admin গ্রিড শো করা
+        if (userId === ADMIN_USER_ID) {
+            document.getElementById('adminGridContainer').style.display = "grid";
+        }
+
+        // ফায়ারবেস থেকে ব্যালেন্স এবং ভেরিফিকেশন স্ট্যাটাস ট্র্যাক করা (অ্যানিমেশন সহ)
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
@@ -293,6 +328,7 @@
                 document.getElementById('total-gp').innerText = gp.toLocaleString();
                 document.getElementById('total-gold').innerText = gold.toLocaleString();
 
+                // ভেরিফাইড হলে প্রিমিয়াম গ্লোয়িং অ্যানিমেশন ও ব্যাজ একটিভ হবে
                 if (data.isVerified === true) {
                     document.getElementById('profileCardElement').classList.add('verified');
                     document.getElementById('verifiedBadgeIcon').style.display = 'flex';
@@ -305,7 +341,7 @@
             }
         });
 
-        // ফায়ারবেস থেকে ইউজারের আনলক করা ভার্চুয়াল ওয়ার্ডরোব আইটেমগুলো লোড করা
+        // শপ থেকে কেনা আইটেমগুলো প্রোফাইল কালেকশনে দেখানোর ফায়ারবেস লজিক
         db.ref('users/' + userId + '/wardrobe').on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
@@ -323,8 +359,8 @@
                     html += `
                         <div class="collection-item-box">
                             <div>
-                                <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-hanger" style="color: #c084fc;"></i> ${item.itemName}</b><br>
-                                <span style="color: #94a3b8; font-size: 10px;">Unlocked on: ${unlockDate}</span>
+                                <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${item.itemName}</b><br>
+                                <span style="color: #94a3b8; font-size: 10px;">Purchased: ${unlockDate}</span>
                             </div>
                             <span style="font-size: 10px; font-weight: bold; color: #22c55e; background: rgba(34, 197, 94, 0.15); padding: 3px 8px; border-radius: 6px;">Owned 👑</span>
                         </div>
@@ -332,7 +368,7 @@
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No items in your wardrobe yet. Visit shop to unlock!</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No items purchased yet. Visit shop to get items!</small>`;
             }
         });
 
