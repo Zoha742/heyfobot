@@ -23,20 +23,34 @@
             display: flex; justify-content: center;
         }
         .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 50px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h3 { margin: 0; color: #fff; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
 
         .nav-links { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
-        .nav-link-btn { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 13px; display: block; }
-        
-        .user-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .user-info { font-size: 12px; }
-        .user-actions { display: flex; gap: 6px; }
-        .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .nav-link-btn { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 13px; display: block; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .stat-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 14px; text-align: center; }
+        .stat-box h2 { margin: 0 0 4px 0; color: #fbbf24; font-size: 20px; }
+        .stat-box span { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #7c3aed; }
+        textarea.form-control { resize: none; height: 80px; }
+
+        .action-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .action-btn:hover { background: #6d28d9; }
+
+        .user-row, .ticket-row { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 8px; }
+        .user-info, .ticket-info { font-size: 12px; margin-bottom: 6px; }
+        .action-sm-btn { background: #22c55e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .delete-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -48,18 +62,50 @@
         </div>
 
         <div class="nav-links">
-            <a href="shopadmin.html" class="nav-link-btn"><i class="fa-solid fa-store"></i> Manage Shop & Wardrobe Items</a>
+            <a href="shopadmin.html" class="nav-link-btn"><i class="fa-solid fa-store"></i> Manage Shop & Orders</a>
         </div>
 
-        <!-- প্ল্যাটফর্ম স্ট্যাটিস্টিকস -->
-        <div class="card">
-            <h4><i class="fa-solid fa-chart-pie"></i> Platform Overview</h4>
-            <p style="font-size: 13px; margin: 0; color: var(--text-muted);">Total Registered Users: <b id="totalUsersCount" style="color: #fff;">0</b></p>
+        <!-- ১. ওভারভিউ / স্ট্যাটিস্টিক্স -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h2 id="totalUsersCount">0</h2>
+                <span>Total Users</span>
+            </div>
+            <div class="stat-box">
+                <h2 id="activeUsersCount">0</h2>
+                <span>Active Users (24h)</span>
+            </div>
         </div>
 
-        <!-- ইউজার লিস্ট ও ব্যালেন্স ম্যানেজমেন্ট -->
+        <!-- ২. নোটিফিকেশন সিস্টেম (Photo সহ ব্রডকাস্ট) -->
         <div class="card">
-            <h4><i class="fa-solid fa-users"></i> User List & Balances</h4>
+            <h4><i class="fa-solid fa-paper-plane"></i> Send Notification to All Users</h4>
+            <div class="form-group">
+                <label>Notification Title</label>
+                <input type="text" id="notifTitle" class="form-control" placeholder="e.g. Special Bonus Event!">
+            </div>
+            <div class="form-group">
+                <label>Message Body</label>
+                <textarea id="notifMessage" class="form-control" placeholder="Type your notification message here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Image URL (Optional - Photo Banner)</label>
+                <input type="text" id="notifImage" class="form-control" placeholder="https://image-url.com">
+            </div>
+            <button class="action-btn" onclick="sendGlobalNotification()">Broadcast Notification</button>
+        </div>
+
+        <!-- ৩. সাপোর্ট ইনবক্স / ইউজার মেসেজ -->
+        <div class="card">
+            <h4><i class="fa-solid fa-inbox"></i> Support Inbox & Complaints</h4>
+            <div id="supportTicketsContainer" style="max-height: 250px; overflow-y: auto;">
+                <small style="color: var(--text-muted);">Loading support tickets...</small>
+            </div>
+        </div>
+
+        <!-- ৪. ইউজার ম্যানেজমেন্ট ও ব্যালেন্স -->
+        <div class="card">
+            <h4><i class="fa-solid fa-users"></i> User Management & Balance</h4>
             <div id="usersListContainer" style="max-height: 300px; overflow-y: auto;">
                 <small style="color: var(--text-muted);">Loading users...</small>
             </div>
@@ -89,55 +135,138 @@
         let userId = user ? user.id.toString() : "7757851056";
         const ADMIN_USER_ID = "7757851056";
 
-        // সিকিউরিটি চেক
+        // কঠোর সিকিউরিটি চেক
         if (userId !== ADMIN_USER_ID) {
             alert("Access Denied! Admins only.");
             window.location.href = "index.html";
         }
 
-        // ফায়ারবেস থেকে সব ইউজারের ডাটা লোড করা
+        // ইউজার লিস্ট, টোটাল ইউজার ও একটিভ ইউজার কাউন্ট
         db.ref('users').on('value', snap => {
             let container = document.getElementById('usersListContainer');
-            let countElem = document.getElementById('totalUsersCount');
+            let totalElem = document.getElementById('totalUsersCount');
+            let activeElem = document.getElementById('activeUsersCount');
             let html = "";
-            let count = 0;
+            let total = 0;
+            let active = 0;
+            let now = Date.now();
+            let oneDayMs = 24 * 60 * 60 * 1000;
 
             if (snap.exists()) {
                 snap.forEach(childSnap => {
                     let uId = childSnap.key;
                     let uData = childSnap.val();
-                    count++;
+                    total++;
+
+                    if (uData.lastSeen && (now - uData.lastSeen <= oneDayMs)) {
+                        active++;
+                    }
 
                     let name = uData.name || uData.username || "User";
                     let gp = uData.gp !== undefined ? uData.gp : (uData.points || 0);
                     let gold = uData.gold !== undefined ? uData.gold : 0;
 
                     html += `
-                        <div class="user-row">
+                        <div class="user-row" style="display:flex; justify-content:space-between; align-items:center;">
                             <div class="user-info">
                                 <b>${name}</b><br>
                                 <span style="color: #94a3b8; font-size: 10px;">ID: ${uId}</span><br>
                                 <span style="color: #fbbf24;">⚡ ${gp} GP | 🪙 ${gold} Gold</span>
                             </div>
-                            <div class="user-actions">
-                                <button class="action-sm-btn" onclick="addBonus('${uId}', ${gp}, ${gold})">Add +100</button>
+                            <div>
+                                <button class="action-sm-btn" onclick="addBonus('${uId}', ${gp})">+100 GP</button>
                             </div>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
-                countElem.innerText = count;
+                totalElem.innerText = total;
+                activeElem.innerText = active;
             } else {
                 container.innerHTML = `<small style="color: var(--text-muted);">No users found.</small>`;
-                countElem.innerText = 0;
+                totalElem.innerText = 0;
+                activeElem.innerText = 0;
             }
         });
 
-        function addBonus(targetId, currentGp, currentGold) {
+        function addBonus(targetId, currentGp) {
             let addGp = currentGp + 100;
             db.ref('users/' + targetId).update({ gp: addGp, points: addGp }).then(() => {
                 tg.showAlert(`✅ Added 100 GP to User ID: ${targetId}`);
             });
+        }
+
+        // গ্লোবাল নোটিফিকেশন ব্রডকাস্ট (Photo সহ)
+        function sendGlobalNotification() {
+            let title = document.getElementById('notifTitle').value.trim();
+            let message = document.getElementById('notifMessage').value.trim();
+            let image = document.getElementById('notifImage').value.trim();
+
+            if (!title || !message) {
+                tg.showAlert("⚠️ Please enter notification title and message!");
+                return;
+            }
+
+            let notifData = {
+                title: title,
+                message: message,
+                image: image || "",
+                timestamp: Date.now()
+            };
+
+            db.ref('users').once('value').then(snap => {
+                if (snap.exists()) {
+                    let updates = {};
+                    snap.forEach(child => {
+                        let uId = child.key;
+                        let pushKey = db.ref().child(`users/${uId}/notifications`).push().key;
+                        updates[`users/${uId}/notifications/${pushKey}`] = notifData;
+                    });
+                    db.ref().update(updates).then(() => {
+                        tg.showAlert("✅ Notification broadcasted to all users successfully!");
+                        document.getElementById('notifTitle').value = '';
+                        document.getElementById('notifMessage').value = '';
+                        document.getElementById('notifImage').value = '';
+                    });
+                }
+            });
+        }
+
+        // সাপোর্ট ইনবক্স / টিকিট ম্যানেজমেন্ট
+        db.ref('support_tickets').on('value', snap => {
+            let container = document.getElementById('supportTicketsContainer');
+            let html = "";
+
+            if (snap.exists()) {
+                snap.forEach(childSnap => {
+                    let ticketKey = childSnap.key;
+                    let t = childSnap.val();
+                    let dateStr = t.timestamp ? new Date(t.timestamp).toLocaleString() : 'N/A';
+
+                    html += `
+                        <div class="ticket-row" id="ticket-${ticketKey}">
+                            <div class="ticket-info">
+                                <b>From:</b> ${t.userName} (${t.userUsername})<br>
+                                <b>Subject:</b> <span style="color:#fbbf24;">${t.subject}</span><br>
+                                <b>Message:</b> ${t.message}<br>
+                                <span style="font-size:10px; color:var(--text-muted);">${dateStr}</span>
+                            </div>
+                            <button class="delete-btn" onclick="deleteTicket('${ticketKey}')">Close / Delete Ticket</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<small style="color: var(--text-muted);">No support messages in inbox.</small>`;
+            }
+        });
+
+        function deleteTicket(ticketKey) {
+            if(confirm("Are you sure you want to close/delete this support ticket?")) {
+                db.ref('support_tickets/' + ticketKey).remove().then(() => {
+                    tg.showAlert("🗑️ Ticket closed successfully!");
+                });
+            }
         }
     </script>
 </body>
