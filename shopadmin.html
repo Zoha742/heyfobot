@@ -30,7 +30,7 @@
         /* ট্যাব নেভিগেশন (Order & Product Add) */
         .tab-menu { display: flex; gap: 10px; margin-bottom: 16px; }
         .tab-btn { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 10px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
-        .tab-btn.active { background: var(--primary-gradient); background-color: #7c3aed; color: #fff; border-color: #7c3aed; }
+        .tab-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -54,7 +54,6 @@
         .reject-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; flex: 1; }
         .delete-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
 
-        /* রিজেক্ট করার কারণ লেখার ইনপুট মডাল বা বক্স */
         .reason-box { display: none; margin-top: 8px; }
     </style>
 </head>
@@ -66,7 +65,6 @@
             <a href="mainadmin.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
         </div>
 
-        <!-- ট্যাব বাটন -->
         <div class="tab-menu">
             <div class="tab-btn active" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Orders</div>
             <div class="tab-btn" onclick="switchTab('productTab', this)"><i class="fa-solid fa-plus-circle"></i> Product Add</div>
@@ -152,7 +150,6 @@
             btnElement.classList.add('active');
         }
 
-        // প্রডাক্ট অ্যাড করার ফাংশন
         function addNewItem() {
             let name = document.getElementById('itemName').value.trim();
             let cat = document.getElementById('itemCat').value;
@@ -164,14 +161,7 @@
                 return;
             }
 
-            let newItemData = {
-                name: name,
-                cat: cat,
-                price: price,
-                img: img,
-                timestamp: Date.now()
-            };
-
+            let newItemData = { name, cat, price, img, timestamp: Date.now() };
             db.ref('shop_items').push(newItemData).then(() => {
                 tg.showAlert("✅ Product added successfully to the shop!");
                 document.getElementById('itemName').value = '';
@@ -180,7 +170,6 @@
             });
         }
 
-        // প্রডাক্ট লিস্ট ও ডিলিট ম্যানেজমেন্ট
         db.ref('shop_items').on('value', snap => {
             let container = document.getElementById('shopItemsList');
             let html = "";
@@ -206,39 +195,46 @@
 
         function deleteShopItem(itemKey) {
             if(confirm("Are you sure you want to delete this product?")) {
-                db.ref('shop_items/' + itemKey).remove().then(() => {
-                    tg.showAlert("🗑️ Product deleted successfully!");
-                });
+                db.ref('shop_items/' + itemKey).remove();
             }
         }
 
-        // অর্ডার লিস্ট লোড এবং ম্যানেজমেন্ট (Accept / Reject with Fund Back & Reason Inbox)
+        // ফায়ারবেসের shop_orders থেকে সরাসরি লাইভ অর্ডার ফেচ করা
         db.ref('shop_orders').on('value', snap => {
             let container = document.getElementById('ordersListContainer');
             let html = "";
             if (snap.exists()) {
+                let ordersArray = [];
                 snap.forEach(childSnap => {
-                    let orderKey = childSnap.key;
                     let order = childSnap.val();
+                    order.id = childSnap.key;
+                    ordersArray.push(order);
+                });
+
+                // নতুন অর্ডারগুলো সবার উপরে দেখানোর জন্য সর্টিং
+                ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                ordersArray.forEach(order => {
                     let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
+                    let status = order.status || 'Pending';
 
                     html += `
-                        <div class="order-box" id="order-${orderKey}">
+                        <div class="order-box" id="order-${order.id}">
                             <div class="order-info">
-                                <b>User ID:</b> ${order.userId}<br>
+                                <b>User ID:</b> ${order.userId} (${order.userName || 'User'})<br>
                                 <b>Item:</b> <span style="color:#c084fc;">${order.itemName}</span><br>
                                 <b>Price:</b> 🪙 ${order.price} Gold<br>
-                                <b>Status:</b> <span style="color:${order.status === 'Accepted' ? '#22c55e' : (order.status === 'Rejected' ? '#ef4444' : '#fbbf24')}">${order.status || 'Pending'}</span><br>
+                                <b>Status:</b> <span style="color:${status === 'Accepted' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24')}">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${orderDate}</span>
                             </div>
-                            ${(!order.status || order.status === 'Pending') ? `
+                            ${status === 'Pending' ? `
                                 <div class="btn-group">
-                                    <button class="accept-btn" onclick="processOrder('${orderKey}', '${order.userId}', 'Accepted', 0)">Accept</button>
-                                    <button class="reject-btn" onclick="toggleReasonBox('${orderKey}')">Reject</button>
+                                    <button class="accept-btn" onclick="processOrder('${order.id}', '${order.userId}', 'Accepted', 0)">Accept</button>
+                                    <button class="reject-btn" onclick="toggleReasonBox('${order.id}')">Reject</button>
                                 </div>
-                                <div class="reason-box" id="reasonBox-${orderKey}">
-                                    <input type="text" id="reasonInput-${orderKey}" class="form-control" placeholder="Reason for rejection..." style="margin-top:6px; margin-bottom:6px;">
-                                    <button class="action-btn" style="padding:6px; font-size:11px;" onclick="processOrder('${orderKey}', '${order.userId}', 'Rejected', ${order.price})">Confirm Rejection & Refund</button>
+                                <div class="reason-box" id="reasonBox-${order.id}">
+                                    <input type="text" id="reasonInput-${order.id}" class="form-control" placeholder="Reason for rejection..." style="margin-top:6px; margin-bottom:6px;">
+                                    <button class="action-btn" style="padding:6px; font-size:11px;" onclick="processOrder('${order.id}', '${order.userId}', 'Rejected', ${order.price})">Confirm Rejection & Refund</button>
                                 </div>
                             ` : ''}
                         </div>
@@ -265,16 +261,13 @@
                 }
             }
 
-            // অর্ডারের স্ট্যাটাস আপডেট করা
             let updates = {};
             updates[`shop_orders/${orderKey}/status`] = status;
 
-            // যদি রিজেক্ট হয়, তবে ইউজারের ব্যালেন্সে গোল্ড রিফান্ড করা এবং নোটিফিকেশন/ইনবক্সে মেসেজ পাঠানো
             if (status === 'Rejected' && refundAmount > 0) {
                 db.ref(`users/${targetUserId}/gold`).once('value').then(snap => {
                     let currentGold = snap.val() || 0;
-                    let newGold = currentGold + refundAmount;
-                    db.ref(`users/${targetUserId}`).update({ gold: newGold });
+                    db.ref(`users/${targetUserId}`).update({ gold: currentGold + refundAmount });
                 });
 
                 let notifData = {
