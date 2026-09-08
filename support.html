@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Help & Support</title>
+    <title>Heyfo - Support Inbox</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -24,41 +24,114 @@
         }
         .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 50px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h3 { margin: 0; color: #fff; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-        .card h4 { margin: 0 0 10px 0; font-size: 15px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
-        .card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px 0; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
 
-        .support-btn { background: #0284c7; color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .support-btn:hover { background: #0369a1; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 12px; border-radius: 12px; box-sizing: border-box; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #7c3aed; }
+
+        textarea.form-control { resize: none; height: 100px; }
+
+        .action-btn { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3); }
+        .action-btn:hover { opacity: 0.9; }
+
+        .support-channels { display: flex; gap: 10px; margin-bottom: 16px; }
+        .channel-btn { flex: 1; background: #1a2642; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 12px; text-align: center; text-decoration: none; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <h3><i class="fa-solid fa-headset" style="color: #0891b2;"></i> Support Center</h3>
+            <h3><i class="fa-solid fa-headset" style="color: #0891b2;"></i> Heyfo Support Inbox</h3>
             <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
         </div>
 
-        <div class="card">
-            <h4><i class="fa-solid fa-circle-question"></i> Need Help with Heyfo?</h4>
-            <p>If you have any questions about earning GP Fuel, unlocking virtual wardrobe items, or facing any technical issues, feel free to contact our support team or admin directly.</p>
-            <a href="https://t.me/zoha742" target="_blank" class="support-btn"><i class="fa-brands fa-telegram"></i> Contact Admin on Telegram</a>
+        <div class="support-channels">
+            <a href="https://t.me/zoha742" target="_blank" class="channel-btn" style="background: rgba(2, 132, 199, 0.2); border-color: #0284c7; color: #38bdf8;">
+                <i class="fa-brands fa-telegram"></i> Telegram Admin
+            </a>
+            <a href="https://t.me/" target="_blank" class="channel-btn" style="background: rgba(124, 58, 237, 0.2); border-color: #7c3aed; color: #c084fc;">
+                <i class="fa-solid fa-bullhorn"></i> Official Channel
+            </a>
         </div>
 
+        <!-- সরাসরি ইনবক্স / বিশেষ অভিযোগ ফর্ম -->
         <div class="card">
-            <h4><i class="fa-solid fa-shield-halved"></i> Community & Updates</h4>
-            <p>Join our official Telegram community channel to get regular updates, event announcements, and tips to maximize your earnings!</p>
-            <a href="https://t.me/" target="_blank" class="support-btn" style="background: #7c3aed;"><i class="fa-brands fa-telegram"></i> Join Official Channel</a>
+            <h4><i class="fa-solid fa-envelope-open-text"></i> Send Direct Message & Complaint</h4>
+            <div class="form-group">
+                <label>Complaint Topic / Subject</label>
+                <select id="complaintSubject" class="form-control">
+                    <option value="Payment / Boost Issue">Payment / Boost Issue</option>
+                    <option value="Withdrawal / Balance Problem">Withdrawal / Balance Problem</option>
+                    <option value="Account Verification Issue">Account Verification Issue</option>
+                    <option value="Other Special Inquiry">Other Special Inquiry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Your Message / Details</label>
+                <textarea id="complaintMessage" class="form-control" placeholder="Describe your issue clearly here..."></textarea>
+            </div>
+            <button class="action-btn" onclick="sendSupportMessage()">Submit to Admin Inbox</button>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let tg = window.Telegram.WebApp;
         tg.expand();
+
+        let user = tg.initDataUnsafe.user;
+        let userId = user ? user.id.toString() : "7757851056";
+        let userName = user ? (user.first_name || "User") : "User";
+        let userUsername = user && user.username ? `@${user.username}` : `@user`;
+
+        function sendSupportMessage() {
+            let subject = document.getElementById('complaintSubject').value;
+            let message = document.getElementById('complaintMessage').value.trim();
+
+            if (!message) {
+                tg.showAlert("⚠️ Please type your message or complaint first!");
+                return;
+            }
+
+            let ticketData = {
+                userId: userId,
+                userName: userName,
+                userUsername: userUsername,
+                subject: subject,
+                message: message,
+                status: "Pending",
+                timestamp: Date.now()
+            };
+
+            // ফায়ারবেসের support_tickets নোডে ইউজারের মেসেজ সেভ হবে
+            db.ref('support_tickets/' + userId + '_' + Date.now()).set(ticketData).then(() => {
+                tg.showAlert("✅ Your message has been sent to Admin Inbox successfully!");
+                document.getElementById('complaintMessage').value = '';
+            }).catch((error) => {
+                tg.showAlert("❌ Failed to send message. Try again!");
+            });
+        }
     </script>
 </body>
 </html>
