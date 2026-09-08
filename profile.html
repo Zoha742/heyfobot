@@ -38,15 +38,46 @@
             background: linear-gradient(135deg, #131c2e 0%, #1e1b4b 100%);
             border: 1px solid var(--card-border); border-radius: 20px;
             padding: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+            transition: 0.3s;
+        }
+
+        /* ভেরিফাইড হলে প্রোফাইল কার্ডের ড্যাশবোর্ড কালার পরিবর্তন */
+        .profile-card.verified-card {
+            background: linear-gradient(135deg, #131c2e 0%, #064e3b 100%) !important;
+            border-color: #22c55e !important;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.25);
         }
 
         .profile-left { display: flex; align-items: center; gap: 14px; width: 100%; }
-        .avatar-container { width: 65px; height: 65px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #7c3aed, #ec4899); flex-shrink: 0; position: relative; }
+        
+        .avatar-container { width: 65px; height: 65px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #7c3aed, #ec4899); flex-shrink: 0; position: relative; transition: 0.3s; }
+        
+        /* ভেরিফাইড হলে অ্যাভাটার বর্ডার পরিবর্তন */
+        .avatar-container.verified-avatar {
+            background: linear-gradient(135deg, #22c55e, #3b82f6) !important;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+        }
+
         .avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
         
-        .profile-info h3 { margin: 0 0 2px 0; font-size: 16px; color: #fff; }
+        .profile-info h3 { margin: 0 0 2px 0; font-size: 16px; color: #fff; display: flex; align-items: center; flex-wrap: wrap; }
         .username-text { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
         .user-id-badge { font-size: 11px; color: #c084fc; font-weight: 650; background: rgba(124, 58, 237, 0.15); padding: 1px 6px; border-radius: 6px; }
+
+        /* ভেরিফাইড ব্যাজ স্টাইল */
+        .verified-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-left: 6px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
 
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px; text-align: center; }
@@ -102,11 +133,14 @@
 
         <div class="profile-card" id="profileCardElement">
             <div class="profile-left">
-                <div class="avatar-container">
+                <div class="avatar-container" id="avatarContainerBox">
                     <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Avatar">
                 </div>
                 <div class="profile-info">
-                    <h3 id="profile-name"><span id="name-text">User</span></h3>
+                    <h3 id="profile-name">
+                        <span id="name-text">User</span>
+                        <span id="verifiedBadgeContainer"></span>
+                    </h3>
                     <div class="username-text" id="profile-username">@user</div>
                     <div><span class="user-id-badge" id="profile-id">ID: Loading... 📋</span></div>
                 </div>
@@ -241,6 +275,18 @@
                 let gp = data.gp !== undefined ? data.gp : (data.points || 0);
                 document.getElementById('total-gp').innerText = gp.toLocaleString();
                 document.getElementById('total-gold').innerText = userGold.toLocaleString();
+
+                // ভেরিফিকেশন চেক এবং স্টাইল আপডেট
+                let isVerified = data.isVerified || false;
+                if (isVerified) {
+                    document.getElementById('avatarContainerBox').classList.add('verified-avatar');
+                    document.getElementById('profileCardElement').classList.add('verified-card');
+                    document.getElementById('verifiedBadgeContainer').innerHTML = `<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>`;
+                } else {
+                    document.getElementById('avatarContainerBox').classList.remove('verified-avatar');
+                    document.getElementById('profileCardElement').classList.remove('verified-card');
+                    document.getElementById('verifiedBadgeContainer').innerHTML = '';
+                }
             }
         });
 
