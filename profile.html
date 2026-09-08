@@ -304,8 +304,8 @@
 
         let cachedOrders = {};
 
-        // ফায়ারবেস থেকে ইউজারের শপ অর্ডারগুলো লাইভ ফেচ করা
-        db.ref('shop_orders').orderByChild('userId').equalTo(userId).on('value', snap => {
+        // সরাসরি `shop_orders` থেকে ফিল্টার করে এই ইউজারের অর্ডারগুলো লোড করা
+        db.ref('shop_orders').on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
             cachedOrders = {};
@@ -315,47 +315,53 @@
                 snap.forEach(child => {
                     let orderKey = child.key;
                     let order = child.val();
-                    order.id = orderKey;
-                    ordersArray.push(order);
-                    cachedOrders[orderKey] = order;
-                });
-
-                ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                ordersArray.forEach(order => {
-                    let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A';
-                    let status = order.status || 'Pending';
-                    
-                    // ৭ সংখ্যার অর্ডার নম্বর জেনারেট করা (যেমন: #8492014)
-                    let orderNum = order.orderNumber || Math.abs(hashCode(order.id)).toString().substring(0, 7).padEnd(7, '0');
-
-                    let badgeColor = '#f59e0b'; // Pending (Yellow)
-                    let badgeBg = 'rgba(245, 158, 11, 0.15)';
-                    if (status === 'Accepted') {
-                        badgeColor = '#22c55e'; // Green
-                        badgeBg = 'rgba(34, 197, 94, 0.15)';
-                    } else if (status === 'Rejected') {
-                        badgeColor = '#ef4444'; // Red
-                        badgeBg = 'rgba(239, 68, 68, 0.15)';
+                    // চেক করা হচ্ছে অর্ডারটি বর্তমান ইউজারের কি না
+                    if (order.userId && order.userId.toString() === userId.toString()) {
+                        order.id = orderKey;
+                        ordersArray.push(order);
+                        cachedOrders[orderKey] = order;
                     }
-
-                    html += `
-                        <div class="collection-item-box" onclick="openOrderDetails('${order.id}', '${orderNum}')">
-                            <div>
-                                <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
-                                <span style="color: #94a3b8; font-size: 10px;">Order: #${orderNum} | Date: ${orderDate}</span>
-                            </div>
-                            <span style="font-size: 10px; font-weight: bold; color: ${badgeColor}; background: ${badgeBg}; padding: 3px 8px; border-radius: 6px;">${status}</span>
-                        </div>
-                    `;
                 });
-                container.innerHTML = html;
+
+                if (ordersArray.length > 0) {
+                    ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                    ordersArray.forEach(order => {
+                        let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A';
+                        let status = order.status || 'Pending';
+                        
+                        // ৭ সংখ্যার অর্ডার নম্বর জেনারেট করা
+                        let orderNum = order.orderNumber || Math.abs(hashCode(order.id)).toString().substring(0, 7).padEnd(7, '0');
+
+                        let badgeColor = '#f59e0b'; // Pending
+                        let badgeBg = 'rgba(245, 158, 11, 0.15)';
+                        if (status === 'Accepted') {
+                            badgeColor = '#22c55e'; // Green
+                            badgeBg = 'rgba(34, 197, 94, 0.15)';
+                        } else if (status === 'Rejected') {
+                            badgeColor = '#ef4444'; // Red
+                            badgeBg = 'rgba(239, 68, 68, 0.15)';
+                        }
+
+                        html += `
+                            <div class="collection-item-box" onclick="openOrderDetails('${order.id}', '${orderNum}')">
+                                <div>
+                                    <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
+                                    <span style="color: #94a3b8; font-size: 10px;">Order: #${orderNum} | Date: ${orderDate}</span>
+                                </div>
+                                <span style="font-size: 10px; font-weight: bold; color: ${badgeColor}; background: ${badgeBg}; padding: 3px 8px; border-radius: 6px;">${status}</span>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<small style="color: var(--text-muted);">No order history found. Visit shop to make orders!</small>`;
+                }
             } else {
                 container.innerHTML = `<small style="color: var(--text-muted);">No order history found. Visit shop to make orders!</small>`;
             }
         });
 
-        // স্ট্রিং থেকে ৭ সংখ্যার ইউনিক নাম্বার তৈরির ফাংশন
         function hashCode(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
