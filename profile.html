@@ -135,8 +135,6 @@
         .menu-row-left { display: flex; align-items: center; gap: 14px; }
         .menu-row-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; }
 
-        .coming-soon-badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3); }
-
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-top: 10px; }
         .admin-box-item { background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6)); border: 1px solid #22c55e; border-radius: 14px; padding: 12px; text-align: center; text-decoration: none; color: #34d399; }
         .admin-box-item i { font-size: 18px; margin-bottom: 4px; display: block; }
@@ -306,7 +304,7 @@
 
         let cachedOrders = {};
 
-        // ফায়ারবেস থেকে ইউজারের শপ অর্ডারগুলো লোড করা (Pending, Accepted, Rejected স্ট্যাটাস সহ)
+        // ফায়ারবেস থেকে ইউজারের শপ অর্ডারগুলো লাইভ ফেচ করা
         db.ref('shop_orders').orderByChild('userId').equalTo(userId).on('value', snap => {
             let container = document.getElementById('my-collection-list');
             let html = "";
@@ -328,6 +326,9 @@
                     let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleDateString() : 'N/A';
                     let status = order.status || 'Pending';
                     
+                    // ৭ সংখ্যার অর্ডার নম্বর জেনারেট করা (যেমন: #8492014)
+                    let orderNum = order.orderNumber || Math.abs(hashCode(order.id)).toString().substring(0, 7).padEnd(7, '0');
+
                     let badgeColor = '#f59e0b'; // Pending (Yellow)
                     let badgeBg = 'rgba(245, 158, 11, 0.15)';
                     if (status === 'Accepted') {
@@ -339,10 +340,10 @@
                     }
 
                     html += `
-                        <div class="collection-item-box" onclick="openOrderDetails('${order.id}')">
+                        <div class="collection-item-box" onclick="openOrderDetails('${order.id}', '${orderNum}')">
                             <div>
                                 <b style="font-size: 12px; color: #fff;"><i class="fa-solid fa-bag-shopping" style="color: #c084fc;"></i> ${order.itemName}</b><br>
-                                <span style="color: #94a3b8; font-size: 10px;">Date: ${orderDate} | ID: #${order.id.slice(-6)}</span>
+                                <span style="color: #94a3b8; font-size: 10px;">Order: #${orderNum} | Date: ${orderDate}</span>
                             </div>
                             <span style="font-size: 10px; font-weight: bold; color: ${badgeColor}; background: ${badgeBg}; padding: 3px 8px; border-radius: 6px;">${status}</span>
                         </div>
@@ -354,7 +355,17 @@
             }
         });
 
-        function openOrderDetails(orderId) {
+        // স্ট্রিং থেকে ৭ সংখ্যার ইউনিক নাম্বার তৈরির ফাংশন
+        function hashCode(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString();
+        }
+
+        function openOrderDetails(orderId, orderNum) {
             let order = cachedOrders[orderId];
             if (!order) return;
 
@@ -362,12 +373,12 @@
             let status = order.status || 'Pending';
 
             let content = `
-                <b>Order Number:</b> <span style="color:#fff;">#${order.id}</span><br>
+                <b>Order Number:</b> <span style="color:#fff;">#${orderNum}</span><br>
                 <b>Item Name:</b> <span style="color:#c084fc;">${order.itemName}</span><br>
                 <b>Price:</b> 🪙 <span style="color:#fbbf24;">${order.price} Gold</span><br>
                 <b>Order Date:</b> ${orderDate}<br>
                 <b>Current Status:</b> <span style="color:${status === 'Accepted' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#f59e0b')}; font-weight:bold;">${status}</span><br>
-                ${status === 'Rejected' ? '<br><small style="color:#ef4444;">Note: This order was rejected and your gold has been refunded.</small>' : ''}
+                ${status === 'Rejected' ? '<br><small style="color:#ef4444;">Note: This order was rejected and your gold has been refunded to your account.</small>' : ''}
             `;
 
             document.getElementById('modalOrderContent').innerHTML = content;
