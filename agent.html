@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Agent Center</title>
+    <title>Heyfo - Agent & Verification</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,55 +23,184 @@
             display: flex; justify-content: center;
         }
         .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 50px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h3 { margin: 0; color: #fff; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
-        .card h4 { margin: 0 0 10px 0; font-size: 15px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
-        .card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px 0; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 12px 0; font-size: 15px; color: #fbbf24; display: flex; align-items: center; gap: 8px; }
 
-        .action-btn { background: #7c3aed; color: #fff; border: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-        .action-btn:hover { background: #6d28d9; }
+        /* অপশন ট্যাব স্টাইল */
+        .method-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+        .method-tab { flex: 1; background: #0b0f19; border: 1px solid var(--card-border); padding: 10px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+        .method-tab.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+        .method-content { display: none; }
+        .method-content.active { display: block; }
+
+        .info-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 12px; line-height: 1.6; }
+        .payment-number { font-size: 14px; font-weight: bold; color: #34d399; background: rgba(52, 211, 153, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #7c3aed; }
+
+        .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .action-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <h3><i class="fa-solid fa-handshake" style="color: #fbbf24;"></i> Agent Center</h3>
+            <h3><i class="fa-solid fa-user-check" style="color: #a855f7;"></i> Agent & Verification</h3>
             <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
         </div>
 
         <div class="card">
-            <h4><i class="fa-solid fa-user-tie"></i> Become a Heyfo Agent</h4>
-            <p>Promote Heyfo, invite friends, and manage your community tasks to earn extra rewards and bonuses directly from the platform.</p>
-            <button class="action-btn" onclick="tg.showAlert('Agent program is currently active for authorized partners!')">
-                <i class="fa-solid fa-star"></i> View Agent Status
-            </button>
-        </div>
+            <h4><i class="fa-solid fa-shield-halved"></i> Choose Verification Method</h4>
+            
+            <!-- দুটি অপশন ট্যাব -->
+            <div class="method-tabs">
+                <div class="method-tab active" onclick="switchMethod('freeTab', this)">1. Free Work (200K Gold)</div>
+                <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($30 / Crypto / MFS)</div>
+            </div>
 
-        <div class="card">
-            <h4><i class="fa-solid fa-link"></i> Referral Program</h4>
-            <p>Share your unique referral link with your friends and earn bonus GP and Gold points when they join Heyfo!</p>
-            <button class="action-btn" style="background: #22c55e;" onclick="copyReferralLink()">
-                <i class="fa-solid fa-copy"></i> Copy Referral Link
-            </button>
+            <!-- অপশন ১: ফ্রি কাজ করে ভেরিফাই (200k Gold) -->
+            <div id="freeTab" class="method-content active">
+                <div class="info-box">
+                    <b>Free Task Verification:</b><br>
+                    আপনি যদি ফ্রিতে কাজ করে ভেরিফাইড হতে চান, তবে আপনার অ্যাকাউন্ট থেকে পেমেন্ট হিসেবে মোট **200,000 Gold** কাটা হবে। আপনার বর্তমান গোল্ড ব্যালেন্স পর্যাপ্ত থাকলে নিচের বাটনে ক্লিক করুন।
+                </div>
+                <button class="action-btn" onclick="submitFreeVerification()">Verify Using 200,000 Gold</button>
+            </div>
+
+            <!-- অপশন ২: সরাসরি ৩০ ডলার পেমেন্ট (Crypto, Bkash, Nagad) -->
+            <div id="directTab" class="method-content">
+                <div class="info-box">
+                    <b>Direct Paid Verification ($30):</b><br>
+                    সরাসরি ভেরিফাইড হতে **$30 USD সমপরিমাণ** নিচের মাধ্যমে পেমেন্ট করুন:<br><br>
+                    <b>🔹 Crypto (USDT / Binance Pay):</b><br>
+                    <span style="color:#fbbf24; word-break:break-all;">0x75C834921b7f83921b3b2910283491023849102a</span><br><br>
+                    <b>🔹 Nagad & Bkash (Personal):</b><br>
+                    <span class="payment-number">01601642742</span> (Send Money / Cash In)
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method Used</label>
+                    <select id="payMethod" class="form-control">
+                        <option value="Bkash">Bkash (01601642742)</option>
+                        <option value="Nagad">Nagad (01601642742)</option>
+                        <option value="Crypto">Crypto USDT / Binance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sender Account / Wallet Address & TrxID</label>
+                    <input type="text" id="trxId" class="form-control" placeholder="e.g. 017xxxxxxxx or TrxID / TxHash">
+                </div>
+                <div class="form-group">
+                    <label>Upload Payment Screenshot (Proof)</label>
+                    <input type="file" id="payScreenshot" class="form-control" accept="image/*" style="color: #94a3b8;">
+                </div>
+                <button class="action-btn" onclick="submitPaidVerification()">Submit Verification Request</button>
+            </div>
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let tg = window.Telegram.WebApp;
         tg.expand();
 
         let user = tg.initDataUnsafe.user;
         let userId = user ? user.id.toString() : "7757851056";
+        let firstName = user ? (user.first_name || "User") : "User";
+        let userGold = 0;
 
-        function copyReferralLink() {
-            let refLink = `https://t.me/Feldobot/App?start=ref_${userId}`;
-            navigator.clipboard.writeText(refLink).then(() => {
-                tg.showAlert("✅ Referral link copied to clipboard!");
-            });
+        db.ref('users/' + userId).on('value', snap => {
+            let data = snap.val();
+            if(data) {
+                userGold = data.gold !== undefined ? data.gold : 0;
+            }
+        });
+
+        function switchMethod(tabId, tabElement) {
+            document.querySelectorAll('.method-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.method-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            tabElement.classList.add('active');
+        }
+
+        // অপশন ১: ফ্রি ভেরিফিকেশন (200k Gold কেটে নেওয়া)
+        function submitFreeVerification() {
+            let requiredGold = 200000;
+            if (userGold >= requiredGold) {
+                if (confirm(`Are you sure you want to spend ${requiredGold.toLocaleString()} Gold for verification?`)) {
+                    let newGold = userGold - requiredGold;
+                    db.ref('users/' + userId).update({
+                        gold: newGold,
+                        isVerified: true
+                    }).then(() => {
+                        tg.showAlert("🎉 Congratulations! Your account has been successfully verified using Gold.");
+                        window.location.href = "profile.html";
+                    });
+                }
+            } else {
+                tg.showAlert(`❌ Insufficient Gold! You need at least ${requiredGold.toLocaleString()} Gold. Current balance: ${userGold.toLocaleString()} Gold.`);
+            }
+        }
+
+        // অপশন ২: পেইড ভেরিফিকেশন ($30 / স্ক্রিনশট সহ এডমিনের কাছে রিকোয়েস্ট পাঠানো)
+        function submitPaidVerification() {
+            let method = document.getElementById('payMethod').value;
+            let trxId = document.getElementById('trxId').value.trim();
+            let fileInput = document.getElementById('payScreenshot');
+
+            if (!trxId) {
+                tg.showAlert("⚠️ Please enter your sender number or TrxID / Wallet hash!");
+                return;
+            }
+
+            if (fileInput.files.length === 0) {
+                tg.showAlert("⚠️ Please upload a payment screenshot as proof!");
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onloadend = function () {
+                let imgData = reader.result;
+
+                let verificationReq = {
+                    userId: userId,
+                    userName: firstName,
+                    method: method,
+                    trxId: trxId,
+                    screenshot: imgData,
+                    status: "Pending",
+                    timestamp: Date.now()
+                };
+
+                db.ref('verification_requests').push(verificationReq).then(() => {
+                    tg.showAlert("✅ Verification request submitted successfully! Admin will review your payment and screenshot.");
+                    window.location.href = "profile.html";
+                });
+            };
+            reader.readAsDataURL(fileInput.files[0]);
         }
     </script>
 </body>
