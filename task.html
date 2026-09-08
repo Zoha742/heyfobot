@@ -59,26 +59,65 @@
 
         .section-title { font-size: 15px; font-weight: 700; color: #c084fc; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
+        /* Ad কার্ডগুলোর জন্য 2-column grid */
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
         /* ১টি ভিডিও অ্যাড সেকশন কার্ড */
         .ad-task-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 14px 16px;
+            border-radius: 18px;
+            padding: 16px 12px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            transition: 0.2s;
+            text-align: center;
+            gap: 8px;
+            transition: 0.25s;
+            position: relative;
+            overflow: hidden;
         }
-        .ad-task-card:hover { border-color: #7c3aed; }
-        .ad-info { display: flex; align-items: center; gap: 12px; }
-        .ad-icon { width: 42px; height: 42px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .ad-details h4 { margin: 0 0 4px 0; font-size: 14px; font-weight: 700; color: #fff; }
-        .ad-details p { margin: 0; font-size: 11px; color: #fbbf24; font-weight: 600; }
-        
-        .ad-action-btn { background: #ef4444; color: #fff; border: none; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .ad-action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+        .ad-task-card:active { transform: scale(0.97); }
+
+        /* OnClicka কার্ডের কালার থিম (কমলা-লাল) */
+        .ad-task-card.onclicka-card {
+            background: linear-gradient(150deg, rgba(249, 115, 22, 0.22), rgba(127, 29, 29, 0.35));
+            border: 1px solid rgba(251, 146, 60, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(239, 68, 68, 0.55);
+        }
+        .ad-task-card.onclicka-card:hover { border-color: #fb923c; }
+        .ad-task-card.onclicka-card .ad-icon { background: rgba(251, 146, 60, 0.22); color: #fdba74; }
+        .ad-task-card.onclicka-card .ad-action-btn { background: linear-gradient(135deg, #fb923c, #ef4444); box-shadow: 0 4px 12px -3px rgba(239, 68, 68, 0.6); }
+
+        /* Monetag কার্ডের কালার থিম (সায়ান-টিল) */
+        .ad-task-card.monetag-card {
+            background: linear-gradient(150deg, rgba(6, 182, 212, 0.22), rgba(8, 47, 73, 0.4));
+            border: 1px solid rgba(34, 211, 238, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(8, 145, 178, 0.55);
+        }
+        .ad-task-card.monetag-card:hover { border-color: #22d3ee; }
+        .ad-task-card.monetag-card .ad-icon { background: rgba(34, 211, 238, 0.22); color: #67e8f9; }
+        .ad-task-card.monetag-card .ad-action-btn { background: linear-gradient(135deg, #22d3ee, #0891b2); box-shadow: 0 4px 12px -3px rgba(8, 145, 178, 0.6); }
+
+        /* Monetag Bonus (popup) কার্ডের কালার থিম (গোলাপি-বেগুনি) — একটু আলাদা shade */
+        .ad-task-card.monetag-bonus-card {
+            background: linear-gradient(150deg, rgba(217, 70, 239, 0.22), rgba(88, 28, 135, 0.4));
+            border: 1px solid rgba(232, 121, 249, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(192, 38, 211, 0.55);
+        }
+        .ad-task-card.monetag-bonus-card:hover { border-color: #e879f9; }
+        .ad-task-card.monetag-bonus-card .ad-icon { background: rgba(232, 121, 249, 0.22); color: #f0abfc; }
+        .ad-task-card.monetag-bonus-card .ad-action-btn { background: linear-gradient(135deg, #e879f9, #c026d3); box-shadow: 0 4px 12px -3px rgba(192, 38, 211, 0.6); }
+
+        .ad-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .ad-details h4 { margin: 0 0 2px 0; font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.25; }
+        .ad-details p { margin: 0; font-size: 10.5px; color: #fbbf24; font-weight: 600; }
+
+        .ad-action-btn { width: 100%; color: #fff; border: none; padding: 8px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .ad-action-btn:disabled { background: #334155 !important; color: #94a3b8; cursor: not-allowed; box-shadow: none !important; }
 
         .task-grid {
             display: grid;
@@ -160,92 +199,78 @@
 
         <div class="section-title"><i class="fa-solid fa-play-circle"></i> Rewarded Video Ad</div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+        <div class="ad-grid">
+            <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
                     <h4>Watch Video Ad #1</h4>
-                    <p>Reward: +20 GP Fuel</p>
+                    <p>+20 GP Fuel</p>
                 </div>
+                <button id="adBtn1" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn1', 'lastOcAdTime1')">Watch Ad</button>
             </div>
-            <button id="adBtn1" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn1', 'lastOcAdTime1')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
                     <h4>Watch Video Ad #2</h4>
-                    <p>Reward: +20 GP Fuel</p>
+                    <p>+20 GP Fuel</p>
                 </div>
+                <button id="adBtn2" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn2', 'lastOcAdTime2')">Watch Ad</button>
             </div>
-            <button id="adBtn2" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn2', 'lastOcAdTime2')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
                     <h4>Watch Video Ad #3</h4>
-                    <p>Reward: +20 GP Fuel</p>
+                    <p>+20 GP Fuel</p>
                 </div>
+                <button id="adBtn3" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn3', 'lastOcAdTime3')">Watch Ad</button>
             </div>
-            <button id="adBtn3" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn3', 'lastOcAdTime3')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
                     <h4>Watch Video Ad #4</h4>
-                    <p>Reward: +20 GP Fuel</p>
+                    <p>+20 GP Fuel</p>
                 </div>
+                <button id="adBtn4" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn4', 'lastOcAdTime4')">Watch Ad</button>
             </div>
-            <button id="adBtn4" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn4', 'lastOcAdTime4')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card monetag-card">
                 <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
                 <div class="ad-details">
                     <h4>Watch Daily Ad #1</h4>
-                    <p>Reward: +30 GP Fuel</p>
+                    <p>+30 GP Fuel</p>
                 </div>
+                <button id="adBtn5" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn5', 'lastMtAdTime1')">Watch Ad</button>
             </div>
-            <button id="adBtn5" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn5', 'lastMtAdTime1')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card monetag-card">
                 <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
                 <div class="ad-details">
                     <h4>Watch Daily Ad #2</h4>
-                    <p>Reward: +30 GP Fuel</p>
+                    <p>+30 GP Fuel</p>
                 </div>
+                <button id="adBtn6" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn6', 'lastMtAdTime2')">Watch Ad</button>
             </div>
-            <button id="adBtn6" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn6', 'lastMtAdTime2')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card monetag-bonus-card">
                 <div class="ad-icon"><i class="fa-solid fa-bolt"></i></div>
                 <div class="ad-details">
                     <h4>Watch Bonus Ad #1</h4>
-                    <p>Reward: +30 GP Fuel</p>
+                    <p>+30 GP Fuel</p>
                 </div>
+                <button id="adBtn7" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn7', 'lastMtPopTime1')">Watch Ad</button>
             </div>
-            <button id="adBtn7" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn7', 'lastMtPopTime1')">Watch Ad</button>
-        </div>
 
-        <div class="ad-task-card">
-            <div class="ad-info">
+            <div class="ad-task-card monetag-bonus-card">
                 <div class="ad-icon"><i class="fa-solid fa-bolt"></i></div>
                 <div class="ad-details">
                     <h4>Watch Bonus Ad #2</h4>
-                    <p>Reward: +30 GP Fuel</p>
+                    <p>+30 GP Fuel</p>
                 </div>
+                <button id="adBtn8" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn8', 'lastMtPopTime2')">Watch Ad</button>
             </div>
-            <button id="adBtn8" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn8', 'lastMtPopTime2')">Watch Ad</button>
         </div>
 
         <div class="section-title"><i class="fa-brands fa-telegram"></i> Telegram Channel Tasks</div>
