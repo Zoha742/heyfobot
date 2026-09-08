@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Support Center</title>
+    <title>Heyfo - Help & Support</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -14,283 +13,52 @@
             --card-border: #2a1b4e;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+            --primary-purple: #7c3aed;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 0 0 90px 0;
-            display: flex;
-            justify-content: center;
-            overflow-x: hidden;
+            margin: 0; padding: 16px;
+            display: flex; justify-content: center;
         }
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 16px;
-            box-sizing: border-box;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 50px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h3 { margin: 0; color: #fff; }
+        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        /* সোয়াইপ অ্যানিমেশন ক্লাস */
-        .page-slide-left { transform: translateX(-100px); opacity: 0; }
-        .page-slide-right { transform: translateX(100px); opacity: 0; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 10px 0; font-size: 15px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
+        .card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px 0; }
 
-        .header { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        .header h3 { margin: 0; font-size: 18px; color: #fbbf24; }
-        .back-btn { background: none; border: none; color: white; font-size: 18px; cursor: pointer; }
-
-        .card { 
-            background: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 16px; 
-            border: 1px solid var(--card-border); 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-        }
-
-        label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
-        
-        select, textarea { 
-            width: 100%; 
-            padding: 12px; 
-            margin-bottom: 14px; 
-            background: #050a14; 
-            color: white; 
-            border: 1px solid #2a3b68; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            font-size: 13px;
-            outline: none;
-        }
-        select:focus, textarea:focus { border-color: #7c3aed; }
-        select { cursor: pointer; }
-
-        .send-btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
-            border: none; 
-            border-radius: 10px; 
-            color: white; 
-            font-weight: 700; 
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-            transition: 0.2s;
-        }
-        .send-btn:hover { opacity: 0.9; }
-
-        .history-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .msg-box { 
-            background: #050a14; 
-            border: 1px solid #2a3b68;
-            padding: 14px; 
-            border-radius: 12px; 
-            margin-bottom: 10px; 
-            font-size: 13px; 
-            line-height: 1.4;
-        }
-        .msg-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .msg-type { color: #fbbf24; font-weight: bold; font-size: 12px; }
-        .msg-date { color: var(--text-muted); font-size: 10px; }
-        .msg-text { color: #f8fafc; margin-bottom: 8px; }
-        
-        .reply { 
-            color: #22c55e; 
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px dashed rgba(34, 197, 94, 0.4);
-            margin-top: 8px; 
-            padding: 10px; 
-            border-radius: 8px;
-            font-size: 12px; 
-        }
-        .no-msg { text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px; }
-
-        /* নিচে সেন্টারে ব্যাক অ্যারো বাটন স্টাইল */
-        .center-back-container {
-            text-align: center;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-        .center-back-icon-btn {
-            background: linear-gradient(135deg, #7c3aed, #4c1d95);
-            border: 1px solid #9333ea;
-            color: white;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .center-back-icon-btn:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-
-        /* ৫টি অপশনসহ নেভিগেশন বার */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; background: var(--card-bg);
-            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around;
-            padding: 10px 0; box-sizing: border-box; z-index: 100;
-            transition: background 0.3s ease;
-        }
-        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 10px; font-weight: 600; cursor: pointer; flex: 1; }
-        .nav-item.active { color: #c084fc; }
-        .nav-item i { font-size: 16px; display: block; margin-bottom: 3px; }
+        .support-btn { background: #0284c7; color: #fff; text-decoration: none; padding: 12px; border-radius: 12px; text-align: center; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .support-btn:hover { background: #0369a1; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="mainContainer">
+    <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="location.href='profile.html'"><i class="fas fa-arrow-left"></i></button>
-            <h3>Support Center</h3>
+            <h3><i class="fa-solid fa-headset" style="color: #0891b2;"></i> Support Center</h3>
+            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
         </div>
 
         <div class="card">
-            <label>Type of Problem:</label>
-            <select id="issue-type">
-                <option value="GP/Gold Balance Issue">GP/Gold Balance Issue</option>
-                <option value="Game Not Working">Game Not Working</option>
-                <option value="Wardrobe Item Missing">Wardrobe Item Missing</option>
-                <option value="Login/Account Issue">Login/Account Issue</option>
-                <option value="Others">Others</option>
-            </select>
-
-            <label>Provide Details:</label>
-            <textarea id="issue-details" rows="4" placeholder="Please describe your problem in detail..."></textarea>
-            
-            <button class="send-btn" onclick="sendMsg()">Send Message</button>
+            <h4><i class="fa-solid fa-circle-question"></i> Need Help with Heyfo?</h4>
+            <p>If you have any questions about earning GP Fuel, unlocking virtual wardrobe items, or facing any technical issues, feel free to contact our support team or admin directly.</p>
+            <a href="https://t.me/zoha742" target="_blank" class="support-btn"><i class="fa-brands fa-telegram"></i> Contact Admin on Telegram</a>
         </div>
 
-        <div class="history-title"><i class="fa-solid fa-comments"></i> Your Messages:</div>
-        <div id="msg-list">
-            <div class="no-msg">Loading messages...</div>
-        </div>
-
-        <!-- নিচে সেন্টারে ব্যাক অ্যারো বাটন -->
-        <div class="center-back-container">
-            <button class="center-back-icon-btn" onclick="location.href='profile.html'" title="Back to Profile">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
+        <div class="card">
+            <h4><i class="fa-solid fa-shield-halved"></i> Community & Updates</h4>
+            <p>Join our official Telegram community channel to get regular updates, event announcements, and tips to maximize your earnings!</p>
+            <a href="https://t.me/" target="_blank" class="support-btn" style="background: #7c3aed;"><i class="fa-brands fa-telegram"></i> Join Official Channel</a>
         </div>
     </div>
-
-    <!-- নেভিগেশন বার -->
-    <div class="bottom-nav" id="bottomNav">
-        <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
-        <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
-        <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
-        <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
-            authDomain: "heycen-9a9d8.firebaseapp.com",
-            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
-            projectId: "heycen-9a9d8",
-            storageBucket: "heycen-9a9d8.firebasestorage.app",
-            messagingSenderId: "442359961958",
-            appId: "1:442359961958:web:815606d4836a66003d50a7",
-            measurementId: "G-XNQSP1R3JR"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
         let tg = window.Telegram.WebApp;
         tg.expand();
-
-        let user = tg.initDataUnsafe.user;
-        let userId = user ? user.id.toString() : "7757851056";
-        let userName = user ? (user.first_name || "User") : "User";
-
-        function sendMsg() {
-            const type = document.getElementById('issue-type').value;
-            const text = document.getElementById('issue-details').value.trim();
-            
-            if(!text) {
-                tg.showAlert("Please write your message details!");
-                return;
-            }
-            
-            db.ref('support/' + userId).push({
-                userName: userName,
-                type: type, 
-                text: text, 
-                date: new Date().toLocaleString(), 
-                reply: ""
-            }).then(() => {
-                tg.showAlert("Message sent successfully!");
-                document.getElementById('issue-details').value = "";
-            });
-        }
-
-        db.ref('support/' + userId).on('value', snap => {
-            let listContainer = document.getElementById('msg-list');
-            let html = "";
-            
-            if (!snap.exists()) {
-                listContainer.innerHTML = `<div class="no-msg">There are no messages.</div>`;
-                return;
-            }
-
-            snap.forEach(c => {
-                let m = c.val();
-                html += `
-                    <div class="msg-box">
-                        <div class="msg-header">
-                            <span class="msg-type"><i class="fa-solid fa-circle-exclamation"></i> ${m.type}</span>
-                            <span class="msg-date">${m.date}</span>
-                        </div>
-                        <div class="msg-text">${m.text}</div>
-                        ${m.reply ? `<div class="reply"><strong>Admin Reply:</strong> ${m.reply}</div>` : `<div style="color:#f59e0b; font-size:11px;"><i class="fa-solid fa-clock"></i> Pending admin response...</div>`}
-                    </div>
-                `;
-            });
-            listContainer.innerHTML = html;
-        });
-
-        // সোয়াইপ অ্যানিমেশন লজিক
-        let touchStartX = 0;
-        window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
-        window.addEventListener('touchend', e => {
-            let touchEndX = e.changedTouches[0].screenX;
-            let diff = touchEndX - touchStartX;
-            const container = document.getElementById('mainContainer');
-
-            if (Math.abs(diff) > 50) {
-                container.classList.add('page-slide-left');
-                setTimeout(() => { window.location.href = "profile.html"; }, 250);
-            }
-        });
     </script>
 </body>
 </html>
