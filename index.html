@@ -6,8 +6,6 @@
     <title>Heyfo - Home</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=2.4"> 
-    <!-- Monetag SDK Script -->
-    <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
     
     <style>
         :root {
@@ -85,7 +83,7 @@
         }
         .currency-box span { font-size: 20px; font-weight: 800; }
         
-        /* কুইক মেনু গ্রিড */
+        /* কুইক মেনু গ্রিড (৪ কলাম) */
         .quick-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }
         .menu-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 4px; border-radius: 14px; text-align: center; cursor: pointer; text-decoration: none; color: var(--text-main); transition: transform 0.2s, background 0.2s; }
         .menu-item:hover { transform: translateY(-3px); background: #1a2642; }
@@ -115,54 +113,9 @@
         .dollar-buy-btn { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; text-decoration: none; display: block; transition: 0.2s; }
         .dollar-buy-btn:hover { opacity: 0.9; }
 
-        /* ইভেন্ট এডস কার্ড গ্রিড (৪৮ ঘণ্টা কুলডাউন সহ) */
-        .event-ads-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
-        .event-ad-card { background: linear-gradient(150deg, rgba(132, 204, 22, 0.15), rgba(13, 148, 136, 0.25)); border: 1px solid rgba(132, 204, 22, 0.4); border-radius: 16px; padding: 14px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .event-ad-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(132, 204, 22, 0.2); color: #a3e635; display: flex; align-items: center; justify-content: center; font-size: 18px; margin: 0 auto 8px auto; }
-        .event-ad-card h4 { margin: 0 0 2px 0; font-size: 13px; color: #fff; font-weight: 700; }
-        .event-ad-card p { margin: 0 0 10px 0; font-size: 11px; color: #fbbf24; font-weight: 600; }
-        .event-ad-btn { width: 100%; background: linear-gradient(135deg, #84cc16, #15803d); color: #fff; border: none; padding: 8px; border-radius: 10px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .event-ad-btn:disabled { background: #334155 !important; color: #94a3b8; cursor: not-allowed; }
-
         .sponsor-banner { background: var(--card-bg); border-radius: 16px; padding: 20px; color: #fff; text-align: center; margin-bottom: 24px; border: 1px dashed #7c3aed; }
         .sponsor-banner h3 { margin: 0 0 6px 0; font-size: 16px; color: #c084fc; }
         .sponsor-banner p { margin: 0; font-size: 12px; color: var(--text-muted); }
-
-        /* Notice Modal Popup Styling */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
-        .notice-modal {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--modal-bg);
-            border: 2px solid #7c3aed;
-            border-radius: 22px;
-            padding: 24px;
-            width: 90%;
-            max-width: 400px;
-            z-index: 1001;
-            box-sizing: border-box;
-            text-align: left;
-            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
-        }
-        .notice-modal h3 { margin: 0 0 12px 0; font-size: 18px; color: #fbbf24; font-weight: 800; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .notice-modal ul { margin: 0 0 20px 0; padding-left: 18px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-        .notice-modal ul li { margin-bottom: 8px; }
-        .notice-modal ul li strong { color: #f8fafc; }
-        .close-notice-btn {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            width: 100%;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .close-notice-btn:hover { background: #6d28d9; }
 
         .bottom-nav { 
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
@@ -177,19 +130,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Notice Modal Popup -->
-    <div class="overlay" id="noticeOverlay"></div>
-    <div class="notice-modal" id="noticeModal">
-        <h3><i class="fa-solid fa-bullhorn" style="color: #c084fc;"></i> How to Play & Earn</h3>
-        <ul>
-            <li><strong>Complete Tasks:</strong> Complete daily tasks and watch ads to earn <strong>GP (Fuel)</strong> points.</li>
-            <li><strong>Play Game:</strong> Use your GP points to play the drop mini-game.</li>
-            <li><strong>Earn Gold:</strong> Catch items in the game to score and earn <strong>Gold Points</strong>.</li>
-            <li><strong>Dollar Cards:</strong> Use your Gold coins to redeem Dollar Card rewards in the shop.</li>
-        </ul>
-        <button class="close-notice-btn" onclick="closeNoticeModal()">Got It, Let's Play!</button>
-    </div>
 
     <div class="container" id="mainContainer">
         <div class="header">
@@ -211,7 +151,7 @@
             </div>
         </div>
 
-        <!-- কুইক মেনু গ্রিড -->
+        <!-- কুইক মেনু (ইভেন্ট অপশন সহ) -->
         <div class="quick-menu">
             <div class="menu-item" onclick="claimDailyBonus()">
                 <div class="menu-icon" style="background: #8b5cf6;"><i class="fa-solid fa-calendar-check"></i></div>
@@ -237,9 +177,9 @@
                 <div class="menu-icon" style="background: #db2777;"><i class="fa-solid fa-store"></i></div>
                 <div class="menu-label">Shop</div>
             </a>
-            <a href="wallet.html" class="menu-item">
-                <div class="menu-icon" style="background: #10b981;"><i class="fa-solid fa-wallet"></i></div>
-                <div class="menu-label">Wallet</div>
+            <a href="event.html" class="menu-item">
+                <div class="menu-icon" style="background: #84cc16;"><i class="fa-solid fa-calendar-star"></i></div>
+                <div class="menu-label">Event</div>
             </a>
             <div class="menu-item" onclick="tg.showAlert('Fire feature is coming soon!')">
                 <div class="menu-icon" style="background: #ef4444;"><i class="fa-solid fa-fire"></i></div>
@@ -253,51 +193,7 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <!-- ইভেন্ট এডস সেকশন (৪৮ ঘণ্টা কুলডাউন সহ ৪টি কার্ড) -->
-        <div class="section-header">
-            <div class="section-title">🎁 Event Bonus Ads</div>
-            <span style="font-size: 11px; color: var(--text-muted);">48h Cooldown</span>
-        </div>
-
-        <div class="event-ads-grid">
-            <div class="event-ad-card">
-                <div>
-                    <div class="event-ad-icon"><i class="fa-solid fa-gift"></i></div>
-                    <h4>Event Ad #1</h4>
-                    <p>+30 GP Fuel</p>
-                </div>
-                <button id="eventAdBtn1" class="event-ad-btn" onclick="watchEventAd(30, 'eventAdBtn1', 'lastEventAdTime1')">Watch Ad</button>
-            </div>
-
-            <div class="event-ad-card">
-                <div>
-                    <div class="event-ad-icon"><i class="fa-solid fa-gift"></i></div>
-                    <h4>Event Ad #2</h4>
-                    <p>+30 GP Fuel</p>
-                </div>
-                <button id="eventAdBtn2" class="event-ad-btn" onclick="watchEventAd(30, 'eventAdBtn2', 'lastEventAdTime2')">Watch Ad</button>
-            </div>
-
-            <div class="event-ad-card">
-                <div>
-                    <div class="event-ad-icon"><i class="fa-solid fa-gift"></i></div>
-                    <h4>Event Ad #3</h4>
-                    <p>+30 GP Fuel</p>
-                </div>
-                <button id="eventAdBtn3" class="event-ad-btn" onclick="watchEventAd(30, 'eventAdBtn3', 'lastEventAdTime3')">Watch Ad</button>
-            </div>
-
-            <div class="event-ad-card">
-                <div>
-                    <div class="event-ad-icon"><i class="fa-solid fa-gift"></i></div>
-                    <h4>Event Ad #4</h4>
-                    <p>+30 GP Fuel</p>
-                </div>
-                <button id="eventAdBtn4" class="event-ad-btn" onclick="watchEventAd(30, 'eventAdBtn4', 'lastEventAdTime4')">Watch Ad</button>
-            </div>
-        </div>
-
-        <!-- ডলার টোকেন কার্ড ডিসপ্লে সেকশন (ড্রেস বা আউটফিটের পরিবর্তে) -->
+        <!-- ডলার টোকেন কার্ড ডিসপ্লে সেকশন (সঠিক প্রাইসিং সহ) -->
         <div class="section-header">
             <div class="section-title">💵 Dollar Token Cards</div>
             <a href="shop.html" style="font-size: 12px; color: #c084fc; text-decoration: none; font-weight: 600;">View Shop</a>
@@ -308,7 +204,7 @@
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$5 Dollar Card</h4>
-                    <p>50,000 Gold</p>
+                    <p>80,000 Gold</p>
                 </div>
                 <a href="shop.html" class="dollar-buy-btn">Redeem Now</a>
             </div>
@@ -316,7 +212,7 @@
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$10 Dollar Card</h4>
-                    <p>95,000 Gold</p>
+                    <p>150,000 Gold (150L)</p>
                 </div>
                 <a href="shop.html" class="dollar-buy-btn">Redeem Now</a>
             </div>
@@ -324,7 +220,7 @@
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$20 Dollar Card</h4>
-                    <p>180,000 Gold</p>
+                    <p>290,000 Gold</p>
                 </div>
                 <a href="shop.html" class="dollar-buy-btn">Redeem Now</a>
             </div>
@@ -332,7 +228,7 @@
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$50 Dollar Card</h4>
-                    <p>430,000 Gold</p>
+                    <p>700,000 Gold</p>
                 </div>
                 <a href="shop.html" class="dollar-buy-btn">Redeem Now</a>
             </div>
@@ -344,7 +240,7 @@
         </div>
     </div>
 
-    <!-- নেভিগেশন বারে Shop অপশন যুক্ত করা হয়েছে -->
+    <!-- পূর্বের নেভিগেশন অপশন বজায় রাখা হয়েছে (ওয়ালেট বাদ দিয়ে) -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -407,7 +303,6 @@
             document.getElementById('gold-balance').innerText = gold.toLocaleString();
             document.getElementById('streak-text').innerHTML = `<i class="fa-solid fa-fire"></i> ${userData.streakDay || 1} Days Streak`;
             renderDailyBonus();
-            renderEventAds();
         }
 
         function renderDailyBonus() {
@@ -450,86 +345,6 @@
                 tg.showAlert(`Claimed Daily Bonus! +${rewardAmount} GP added.`);
             });
         }
-
-        // ৪৮ ঘণ্টা (48 Hours) কুলডাউন সিস্টেম সহ ইভেন্ট এডস লজিক
-        const INTERVAL_48H = 48 * 60 * 60 * 1000;
-
-        function renderEventAds() {
-            renderEventAdButton('eventAdBtn1', userData.lastEventAdTime1 || 0);
-            renderEventAdButton('eventAdBtn2', userData.lastEventAdTime2 || 0);
-            renderEventAdButton('eventAdBtn3', userData.lastEventAdTime3 || 0);
-            renderEventAdButton('eventAdBtn4', userData.lastEventAdTime4 || 0);
-        }
-
-        function renderEventAdButton(btnId, lastTime) {
-            let btn = document.getElementById(btnId);
-            let now = Date.now();
-            let timeLeft = (lastTime + INTERVAL_48H) - now;
-
-            if (timeLeft > 0) {
-                btn.disabled = true;
-                let hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                btn.innerText = `${hours}h ${minutes}m ${seconds}s`;
-            } else {
-                btn.disabled = false;
-                btn.innerText = "Watch Ad";
-            }
-        }
-
-        function watchEventAd(rewardAmount, btnId, cooldownKey) {
-            let btn = document.getElementById(btnId);
-            if(btn.disabled) return;
-
-            if (typeof show_11752857 === 'function') {
-                show_11752857().then(() => {
-                    grantEventAdReward(rewardAmount, cooldownKey);
-                }).catch((err) => {
-                    console.error("Event Ad error:", err);
-                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
-                });
-            } else {
-                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
-            }
-        }
-
-        function grantEventAdReward(rewardAmount, cooldownKey) {
-            let now = Date.now();
-            let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
-            let updateObj = { gp: currentGp + rewardAmount, points: currentGp + rewardAmount };
-            updateObj[cooldownKey] = now;
-
-            userRef.update(updateObj).then(() => {
-                tg.showAlert(`Event Ad watched successfully! +${rewardAmount} GP added.`);
-            });
-        }
-
-        // প্রতি ১ সেকেন্ড পরপর কাউন্টডাউন আপডেট করার জন্য ইন্টারভাল
-        setInterval(() => {
-            renderEventAds();
-        }, 1000);
-
-        function checkAndShowNotice() {
-            const SIX_HOURS = 6 * 60 * 60 * 1000;
-            let lastShownTime = localStorage.getItem('heyfo_notice_time_' + userId);
-            let currentTime = Date.now();
-
-            if (!lastShownTime || (currentTime - parseInt(lastShownTime)) >= SIX_HOURS) {
-                document.getElementById('noticeOverlay').style.display = 'block';
-                document.getElementById('noticeModal').style.display = 'block';
-            }
-        }
-
-        function closeNoticeModal() {
-            document.getElementById('noticeOverlay').style.display = 'none';
-            document.getElementById('noticeModal').style.display = 'none';
-            localStorage.setItem('heyfo_notice_time_' + userId, Date.now());
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(checkAndShowNotice, 1000);
-        });
     </script>
 </body>
 </html>
