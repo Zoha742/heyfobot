@@ -3,104 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfobot - Wardrobe Store</title>
+    <title>Heyfo - Dollar Card Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #0b0f19; color: #f8fafc; margin: 0; padding: 0 0 80px 0; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 480px; padding: 16px; box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .header h3 { color: #fff; margin: 0; }
-        .balance-badge { background: rgba(254, 240, 138, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; }
-
-        .promo-banner {
-            background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
-            border-radius: 16px; padding: 16px 18px; margin-bottom: 16px;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 8px 20px -8px rgba(124, 58, 237, 0.55); position: relative; overflow: hidden;
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131c2e;
+            --card-border: #2a1b4e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-purple: #7c3aed;
         }
-        .promo-text h4 { margin: 0 0 4px 0; font-size: 15px; color: #fff; font-weight: 800; }
-        .promo-text p { margin: 0; font-size: 11px; color: rgba(255,255,255,0.85); }
-        .promo-icon { font-size: 38px; color: rgba(255,255,255,0.4); }
-
-        .shop-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scrollbar-width: none; }
-        .cat-btn { background: #131c2e; border: 1px solid #2a1b4e; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; color: #94a3b8; }
-        .cat-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-
-        .dress-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-
-        .dress-card {
-            background: #131c2e; border: 1px solid #2a1b4e; border-radius: 14px;
-            padding: 10px; text-align: center; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative;
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 16px;
+            display: flex; justify-content: center;
         }
-        .card-img-wrap { position: relative; margin-bottom: 8px; }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 70px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
+
+        .balance-card {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+        }
+        .balance-card h4 { margin: 0 0 4px 0; font-size: 12px; opacity: 0.9; }
+        .balance-card h2 { margin: 0; font-size: 22px; color: #fbbf24; }
+
+        .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card-item {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 16px; text-align: center; display: flex;
+            flex-direction: column; justify-content: space-between;
+        }
+        .card-item i { font-size: 28px; color: #34d399; margin-bottom: 8px; }
+        .card-item h4 { margin: 0 0 4px 0; font-size: 16px; color: #fff; }
+        .card-item p { margin: 0 0 12px 0; font-size: 12px; color: #fbbf24; font-weight: bold; }
         
-        .card-badge {
-            position: absolute; top: 6px; left: 6px; z-index: 2;
-            font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 6px;
-            color: #fff; text-transform: uppercase;
+        .buy-btn {
+            background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none;
+            padding: 8px 12px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.2s;
         }
-        .badge-hot { background: linear-gradient(135deg, #ef4444, #f97316); }
-        .badge-new { background: linear-gradient(135deg, #22c55e, #16a34a); }
-        .badge-sale { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .buy-btn:active { transform: scale(0.95); }
 
-        .love-btn {
-            position: absolute; top: 6px; right: 6px; z-index: 2;
-            background: rgba(0,0,0,0.6); border: none; color: #fff;
-            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 13px;
-            transition: 0.2s;
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; background: var(--card-bg); 
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
+            padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
         }
-        .love-btn.active { color: #ef4444; }
-
-        .dress-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #0b0f19; cursor: pointer; display: block; }
-        .dress-title { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dress-price { font-size: 12px; font-weight: 700; color: #fbbf24; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-
-        .size-selector { width: 100%; background: #0b0f19; border: 1px solid #2a1b4e; color: #fff; padding: 6px; border-radius: 8px; font-size: 11px; margin-bottom: 6px; outline: none; }
-        
-        .btn-flex { display: flex; gap: 4px; }
-        .cart-btn { background: #3b82f6; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
-        .buy-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; }
-
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal img { max-width: 100%; max-height: 80vh; border-radius: 12px; object-fit: contain; }
-        .close-modal { position: absolute; top: 20px; right: 25px; color: #fff; font-size: 28px; cursor: pointer; background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #131c2e; border-top: 1px solid #2a1b4e; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
-        .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 11px; font-weight: 600; flex: 1; cursor: pointer; }
+        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
         .nav-item.active { color: #c084fc; }
-        .nav-item i { font-size: 18px; display: block; margin-bottom: 4px; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="header">
-            <h3>🛍️ Wardrobe Store</h3>
-            <div class="balance-badge" id="shopBalance">0 Gold</div>
+            <h3><i class="fa-solid fa-credit-card" style="color: #34d399;"></i> Dollar Card Shop</h3>
+            <a href="profile.html" class="back-btn"><i class="fa-solid fa-user"></i> Profile</a>
         </div>
 
-        <div class="promo-banner">
-            <div class="promo-text">
-                <h4>🔥 Mega Wardrobe Sale</h4>
-                <p>Unlock exclusive outfits with your Gold today!</p>
+        <div class="balance-card">
+            <h4>Your Available Balance</h4>
+            <h2>🪙 <span id="userGoldDisplay">0</span> Gold</h2>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card-item">
+                <div>
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>$5 Dollar Card</h4>
+                    <p>50,000 Gold</p>
+                </div>
+                <button class="buy-btn" onclick="buyDollarCard(5, 50000)">Buy Now</button>
             </div>
-            <i class="fa-solid fa-gift promo-icon"></i>
+
+            <div class="card-item">
+                <div>
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>$10 Dollar Card</h4>
+                    <p>95,000 Gold</p>
+                </div>
+                <button class="buy-btn" onclick="buyDollarCard(10, 95000)">Buy Now</button>
+            </div>
+
+            <div class="card-item">
+                <div>
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>$20 Dollar Card</h4>
+                    <p>180,000 Gold</p>
+                </div>
+                <button class="buy-btn" onclick="buyDollarCard(20, 180000)">Buy Now</button>
+            </div>
+
+            <div class="card-item">
+                <div>
+                    <i class="fa-solid fa-wallet"></i>
+                    <h4>$50 Dollar Card</h4>
+                    <p>430,000 Gold</p>
+                </div>
+                <button class="buy-btn" onclick="buyDollarCard(50, 430000)">Buy Now</button>
+            </div>
         </div>
-
-        <div class="shop-nav">
-            <button class="cat-btn active" onclick="filterCategory('All', this)">All Outfits</button>
-            <button class="cat-btn" onclick="filterCategory('Dress', this)">👗 Female Wardrobe</button>
-            <button class="cat-btn" onclick="filterCategory('Boys', this)">👕 Boys Wardrobe</button>
-        </div>
-
-        <div class="dress-grid" id="dressGrid"></div>
-    </div>
-
-    <div class="modal" id="imageModal" onclick="closeZoomModal()">
-        <span class="close-modal">&times;</span>
-        <img id="zoomedImg" src="" alt="Zoomed View">
     </div>
 
     <div class="bottom-nav">
@@ -131,157 +142,52 @@
 
         let user = tg.initDataUnsafe.user;
         let userId = user ? user.id.toString() : "7757851056";
-        let username = user ? (user.first_name || "User") : "User";
-        let userUsername = user && user.username ? `@${user.username}` : `@user`;
+        let firstName = user ? (user.first_name || "User") : "User";
+        let username = user && user.username ? `@${user.username}` : `@user`;
+
         let userGold = 0;
-        let wishlist = [];
+        let userWallet = {};
 
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
                 userGold = data.gold !== undefined ? data.gold : 0;
-                document.getElementById('shopBalance').innerText = userGold.toLocaleString() + " Gold";
-                wishlist = data.wishlist || [];
+                userWallet = data.wallet_info || {};
+                document.getElementById('userGoldDisplay').innerText = userGold.toLocaleString();
             }
         });
 
-        const storeItems = [
-            { name: "Royal Floral Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" },
-            { name: "Classic Party Dress", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/4_jwi1bs.webp" },
-            { name: "Elegance Evening Wear", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/7_zz8gga.webp" },
-            { name: "Casual Denim Outfit", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/1_ufizyp.webp" },
-            { name: "Summer Breeze Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/3_tm4w9f.webp" },
-            { name: "Chic Party Frock", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/5_lphyur.webp" },
-            { name: "Modern Denim Style", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/6_a7nrjj.webp" },
-            { name: "Velvet Night Outfit", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180132/9_pyynus.webp" },
-            { name: "Designer Casual Wear", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/8_rnhjh5.webp" },
-            { name: "Luxury Party Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/10_l7enmg.webp" },
-            { name: "Graceful Maxi Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/19_fazthb.webp" },
-            { name: "Stylish Evening Look", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/16_ff8bo3.webp" },
-            { name: "Premium Party Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/11_nmuqvi.webp" },
-            { name: "Trend Setter Denim", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180131/17_nevt22.webp" },
-            { name: "Royal Blue Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/21_g8xdy3.webp" },
-            { name: "Classic Evening Style", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/18_vtbuam.webp" },
-            { name: "Modest Casual Fit", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/12_lxoxkk.webp" },
-            { name: "Special Event Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/14_vv3edn.webp" },
-            { name: "Vibrant Party Frock", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180130/13_j1iqqj.webp" },
-            { name: "Urban Denim Wear", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/20_nl0iqq.webp" },
-            { name: "Exquisite Evening Gown", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/22_ostfn4.webp" },
-            { name: "Daily Casual Set", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/24_pbzdij.webp" },
-            { name: "Chic Designer Dress", cat: "Dress", price: 15000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/23_exv5bf.webp" },
-            { name: "Elite Collection Gown", cat: "Dress", price: 20000, img: "https://res.cloudinary.com/dyqegwdme/image/upload/v1788180129/15_vgqlvi.webp" },
-            { name: "Formal Blazer Suit", cat: "Boys", price: 15000, img: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=300" },
-            { name: "Casual Hoodie & Jeans", cat: "Boys", price: 20000, img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300" }
-        ];
-
-        function getBadge(index) {
-            let mod = index % 3;
-            if (mod === 0) return { cls: 'badge-hot', text: 'HOT' };
-            if (mod === 1) return { cls: 'badge-new', text: 'NEW' };
-            return { cls: 'badge-sale', text: 'SALE' };
-        }
-
-        function renderItems(list) {
-            const dressGrid = document.getElementById('dressGrid');
-            dressGrid.innerHTML = '';
-
-            list.forEach((item, index) => {
-                let badge = getBadge(index);
-                let uniqueId = `size-${index}`;
-                let isLoved = wishlist.includes(item.name);
-
-                dressGrid.innerHTML += `
-                    <div class="dress-card">
-                        <div class="card-img-wrap">
-                            <span class="card-badge ${badge.cls}">${badge.text}</span>
-                            <button class="love-btn ${isLoved ? 'active' : ''}" onclick="toggleWishlist('${item.name.replace(/'/g, "\\'")}')">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                            <img src="${item.img}" class="dress-img" alt="Virtual Item" onclick="openZoomModal('${item.img}')" title="Click to zoom">
-                        </div>
-                        <div class="dress-title">${item.name}</div>
-                        <div class="dress-price"><i class="fa-solid fa-coins"></i> ${item.price.toLocaleString()} Gold</div>
-                        
-                        <select id="${uniqueId}" class="size-selector">
-                            <option value="S">Size: S</option>
-                            <option value="M" selected>Size: M</option>
-                            <option value="L">Size: L</option>
-                            <option value="XL">Size: XL</option>
-                            <option value="XXL">Size: XXL</option>
-                        </select>
-
-                        <div class="btn-flex">
-                            <button class="cart-btn" onclick="addToCart('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${uniqueId}')">Cart</button>
-                            <button class="buy-btn" onclick="buyNow('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${uniqueId}')">Buy</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        renderItems(storeItems);
-
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (cat === 'All') renderItems(storeItems);
-            else renderItems(storeItems.filter(i => i.cat === cat));
-        }
-
-        function openZoomModal(imgSrc) {
-            document.getElementById('zoomedImg').src = imgSrc;
-            document.getElementById('imageModal').style.display = 'flex';
-        }
-
-        function closeZoomModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-
-        function toggleWishlist(itemName) {
-            let index = wishlist.indexOf(itemName);
-            if (index > -1) {
-                wishlist.splice(index, 1);
-            } else {
-                wishlist.push(itemName);
+        function buyDollarCard(dollarAmount, goldPrice) {
+            // ১. বাধ্যতামূলক পেমেন্ট ইনফো (USDT Address ও UID) চেক করা
+            if (!userWallet.usdtAddress || !userWallet.exchangeUid) {
+                tg.showAlert("⚠️ Please setup your USDT Address and Exchange UID in your Profile before purchasing!");
+                window.location.href = "profile.html";
+                return;
             }
-            db.ref('users/' + userId).update({ wishlist: wishlist }).then(() => {
-                renderItems(storeItems);
-            });
-        }
 
-        function addToCart(itemName, price, sizeSelectId) {
-            let selectedSize = document.getElementById(sizeSelectId).value;
-            let cartItem = {
-                itemName: `${itemName} (Size: ${selectedSize})`,
-                price: price,
-                timestamp: Date.now()
-            };
+            if (userGold >= goldPrice) {
+                if (confirm(`Confirm purchase of $${dollarAmount} Dollar Card for ${goldPrice.toLocaleString()} Gold?`)) {
+                    let newGold = userGold - goldPrice;
+                    
+                    db.ref('users/' + userId).update({ gold: newGold }).then(() => {
+                        let orderData = {
+                            userId: userId,
+                            userName: firstName,
+                            userUsername: username,
+                            cardName: `$${dollarAmount} Dollar Card`,
+                            price: goldPrice,
+                            usdtAddress: userWallet.usdtAddress,
+                            exchangeUid: userWallet.exchangeUid,
+                            status: "Pending",
+                            timestamp: Date.now()
+                        };
 
-            db.ref('users/' + userId + '/cart').push(cartItem).then(() => {
-                tg.showAlert(`🛒 Added to Cart successfully!`);
-            });
-        }
-
-        function buyNow(itemName, price, sizeSelectId) {
-            let selectedSize = document.getElementById(sizeSelectId).value;
-            let finalItemName = `${itemName} (Size: ${selectedSize})`;
-
-            if (userGold >= price) {
-                let newGold = userGold - price;
-                db.ref('users/' + userId).update({ gold: newGold }).then(() => {
-                    let orderData = {
-                        userId: userId,
-                        userName: username,
-                        userUsername: userUsername,
-                        itemName: finalItemName,
-                        price: price,
-                        status: "Pending",
-                        timestamp: Date.now()
-                    };
-                    db.ref('shop_orders').push(orderData).then(() => {
-                        tg.showAlert(`🎉 Order placed successfully for "${finalItemName}"!`);
+                        db.ref('dollar_card_orders').push(orderData).then(() => {
+                            tg.showAlert(`🎉 Successfully ordered $${dollarAmount} Dollar Card! Check your Profile for status.`);
+                            window.location.href = "profile.html";
+                        });
                     });
-                });
+                }
             } else {
                 tg.showAlert("❌ Insufficient Gold Balance!");
             }
