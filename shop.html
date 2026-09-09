@@ -159,8 +159,11 @@
         });
 
         function buyDollarCard(dollarAmount, goldPrice) {
-            if (!userWallet.usdtAddress || !userWallet.exchangeUid) {
-                tg.showAlert("⚠️ Please setup your USDT Address and Exchange UID in your Profile before purchasing!");
+            // আপডেট করা চেক: ইউজার ওয়ালেট ইনফো বা পেমেন্ট ডিটেইলস সেট করেছে কিনা তা চেক করা হচ্ছে
+            let hasWalletInfo = userWallet.usdtAddress || userWallet.exchangeUid || userWallet.bkashNumber || userWallet.nagadNumber;
+
+            if (!hasWalletInfo) {
+                tg.showAlert("⚠️ Please setup your Wallet / Payment details in your Profile before purchasing!");
                 window.location.href = "profile.html";
                 return;
             }
@@ -176,8 +179,10 @@
                             userUsername: username,
                             cardName: `$${dollarAmount} Dollar Card`,
                             price: goldPrice,
-                            usdtAddress: userWallet.usdtAddress,
-                            exchangeUid: userWallet.exchangeUid,
+                            usdtAddress: userWallet.usdtAddress || 'N/A',
+                            exchangeUid: userWallet.exchangeUid || 'N/A',
+                            bkashNumber: userWallet.bkashNumber || 'N/A',
+                            nagadNumber: userWallet.nagadNumber || 'N/A',
                             status: "Pending",
                             timestamp: Date.now()
                         };
