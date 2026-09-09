@@ -337,7 +337,6 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('startBtn').innerText = "Game Running...";
 
-                // আইটেম আসার হার (interval) আগের স্লো ও স্বাভাবিক রাখা হলো (650ms)
                 itemSpawner = setInterval(spawnItem, 650);
                 gameInterval = requestAnimationFrame(updateGame);
 
@@ -369,13 +368,13 @@
                 type = "freeze"; text = "❄️"; points = 0;
             }
 
-            // একদম স্লো এবং আসল স্পিড ফর্মুলা (Speed Multiplier: 1.0)
-            let speedMultiplier = isFrozen ? 0.4 : 1.0;
+            // গেমের স্পিড অনেক কমিয়ে দেওয়া হলো (খুব আস্তে আস্তে পড়বে)
+            let speedMultiplier = isFrozen ? 0.3 : 0.8;
 
             items.push({
                 x: Math.random() * (canvas.width - 40) + 20,
                 y: -30,
-                speed: (Math.random() * 1.0 + 1.5) * speedMultiplier,
+                speed: (Math.random() * 0.8 + 1.0) * speedMultiplier,
                 type: type,
                 text: text,
                 points: points
