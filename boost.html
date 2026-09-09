@@ -217,6 +217,7 @@
             color: #ffffff; border: none; width: 100%; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
+        .btn-submit-proof:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .cancel-text { color: #ef4444; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block; }
 
         /* বটম নেভিগেশন বার */
@@ -278,9 +279,11 @@
         <input type="text" id="transaction-id" class="form-input" placeholder="Enter TXID / TrxID">
 
         <div class="input-label">Upload Payment Proof / Screenshot:</div>
-        <input type="file" id="proof-file" class="form-input" accept="image/*">
+        <input type="file" id="proof-file" class="form-input" accept="image/*" onchange="uploadBoostScreenshot(this)">
+        <input type="hidden" id="screenshotUrl">
+        <small id="uploadStatus" style="color: #38bdf8; font-size: 10px; display: block; margin-bottom: 12px; text-align: left;"></small>
 
-        <button class="btn-submit-proof" onclick="submitBoostProof()">Submit Proof</button>
+        <button class="btn-submit-proof" id="submitProofBtn" onclick="submitBoostProof()">Submit Proof</button>
         <br>
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
@@ -466,6 +469,9 @@
             document.getElementById('sender-number').value = "";
             document.getElementById('transaction-id').value = "";
             document.getElementById('proof-file').value = "";
+            document.getElementById('screenshotUrl').value = "";
+            document.getElementById('uploadStatus').innerText = "";
+            document.getElementById('submitProofBtn').disabled = false;
 
             document.getElementById('proofModal').style.display = 'block';
         }
@@ -476,47 +482,78 @@
             });
         }
 
+        // ক্লাউডিনারির 'Heyfo MiniApp/boost' ফোল্ডারে পেমেন্ট প্রুফ স্ক্রিনশট আপলোড করার ফাংশন
+        function uploadBoostScreenshot(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let statusEl = document.getElementById('uploadStatus');
+                let submitBtn = document.getElementById('submitProofBtn');
+                
+                statusEl.innerText = "Uploading screenshot...";
+                submitBtn.disabled = true;
+
+                let formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'ml_default');
+                formData.append('folder', 'Heyfo MiniApp/boost'); // নির্দিষ্ট বুস্ট ফোল্ডার
+
+                fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.secure_url) {
+                        document.getElementById('screenshotUrl').value = data.secure_url;
+                        statusEl.innerText = "✅ Screenshot uploaded successfully!";
+                        submitBtn.disabled = false;
+                    } else {
+                        statusEl.innerText = "❌ Upload failed. Try again.";
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    statusEl.innerText = "❌ Error uploading image.";
+                    submitBtn.disabled = false;
+                });
+            }
+        }
+
         function submitBoostProof() {
             let senderNumber = document.getElementById('sender-number').value.trim();
             let transactionId = document.getElementById('transaction-id').value.trim();
-            let fileInput = document.getElementById('proof-file');
+            let screenshotUrl = document.getElementById('screenshotUrl').value.trim();
 
             if (!senderNumber || !transactionId) {
                 tg.showAlert("⚠️ Please enter your Sender Number and Transaction ID (TXID)!");
                 return;
             }
 
-            if (fileInput.files.length === 0) {
-                tg.showAlert("⚠️ Please upload payment proof screenshot!");
+            if (!screenshotUrl) {
+                tg.showAlert("⚠️ Please wait for the payment screenshot to upload completely!");
                 return;
             }
 
-            let file = fileInput.files[0];
-            let reader = new FileReader();
-            reader.onloadend = function() {
-                let base64Image = reader.result;
-
-                let boostRequest = {
-                    userId: userId,
-                    userName: userName,
-                    serviceId: selectedBoostId,
-                    serviceName: selectedBoostName,
-                    duration: selectedDuration,
-                    price: selectedPrice,
-                    method: selectedMethod,
-                    senderNumber: senderNumber,
-                    transactionId: transactionId,
-                    screenshot: base64Image,
-                    status: "Pending",
-                    timestamp: Date.now()
-                };
-
-                db.ref(`users/${userId}/pending_boosts/${selectedBoostId}`).set(boostRequest).then(() => {
-                    closeModals();
-                    tg.showAlert("🎉 Boost payment proof submitted successfully! Admin will review and activate your service.");
-                });
+            let boostRequest = {
+                userId: userId,
+                userName: userName,
+                serviceId: selectedBoostId,
+                serviceName: selectedBoostName,
+                duration: selectedDuration,
+                price: selectedPrice,
+                method: selectedMethod,
+                senderNumber: senderNumber,
+                transactionId: transactionId,
+                screenshot: screenshotUrl,
+                status: "Pending",
+                timestamp: Date.now()
             };
-            reader.readAsDataURL(file);
+
+            db.ref(`users/${userId}/pending_boosts/${selectedBoostId}`).set(boostRequest).then(() => {
+                closeModals();
+                tg.showAlert("🎉 Boost payment proof submitted successfully! Admin will review and activate your service.");
+            });
         }
 
         function closeModals() {
