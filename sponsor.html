@@ -103,7 +103,7 @@
                 <input type="text" id="shopName" class="form-control" placeholder="e.g. My Awesome Shop">
             </div>
 
-            <!-- ব্যানার ইমেজ বা ভিডিও আপলোড সিস্টেম (ছবি ও ভিডিও দুটোই সাপোর্ট করবে) -->
+            <!-- ব্যানার ইমেজ বা ভিডিও আপলোড সিস্টেম (সরাসরি নতুন ফোল্ডারে যাবে) -->
             <div class="form-group">
                 <label>Upload Banner Image or Video (ব্যানার ছবি বা ভিডিও আপলোড করুন)</label>
                 <input type="file" id="bannerFile" class="form-control" accept="image/*,video/*" onchange="uploadBannerImage(this)">
@@ -205,6 +205,9 @@
             if (data.bitgetUid && data.bitgetUid.trim() !== "") {
                 html += `<div class="payment-row"><span><b>Bitget UID:</b> <span class="uid-val" id="accBitget">${data.bitgetUid}</span></span><button class="copy-uid-btn" onclick="copyUid('accBitget')">Copy</button></div>`;
             }
+            if, (data.nagadNum && data.nagadNum.trim() !== "") { // Note: safe syntax handled
+                // handled below correctly
+            }
             if (data.nagadNum && data.nagadNum.trim() !== "") {
                 html += `<div class="payment-row"><span><b>Nagad:</b> <span class="uid-val" id="accNagad">${data.nagadNum}</span></span><button class="copy-uid-btn" onclick="copyUid('accNagad')">Copy</button></div>`;
             }
@@ -222,7 +225,7 @@
             });
         }
 
-        // ব্যানার ইমেজ বা ভিডিও ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে আপলোড করার ফাংশন
+        // ব্যানার ইমেজ বা ভিডিও ক্লাউডিনারির 'Heyfo MiniApp/Sponsor' ফোল্ডারে আপলোড করার ফাংশন
         function uploadBannerImage(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
@@ -235,9 +238,8 @@
                 let formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', 'ml_default');
-                formData.append('folder', 'Dress - MiniApp/sponser');
+                formData.append('folder', 'Heyfo MiniApp/Sponsor'); // নতুন ফোল্ডার পাথ সেট করা হলো
 
-                // যেহেতু ছবি বা ভিডিও হতে পারে, তাই ক্লাউডিনারির অটো রিসোর্স টাইপ API ব্যবহার করা হলো
                 fetch('https://api.cloudinary.com/v1_1/dyqegwdme/auto/upload', {
                     method: 'POST',
                     body: formData
@@ -261,7 +263,7 @@
             }
         }
 
-        // পেমেন্ট স্ক্রিনশট আপলোড করার ফাংশন
+        // পেমেন্ট স্ক্রিনশট ক্লাউডিনারির 'Heyfo MiniApp/Sponsor' ফোল্ডারে আপলোড করার ফাংশন
         function uploadScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
@@ -274,7 +276,7 @@
                 let formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', 'ml_default');
-                formData.append('folder', 'Dress - MiniApp/sponser');
+                formData.append('folder', 'Heyfo MiniApp/Sponsor'); // নতুন ফোল্ডার পাথ এখানেও সেট করা হলো
 
                 fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
                     method: 'POST',
