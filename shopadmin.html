@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heyfo - Shop Admin Dashboard</title>
+    <title>Heyfo - Dollar Card Orders Admin</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -27,90 +27,37 @@
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        /* ট্যাব নেভিগেশন (Order & Product Add) */
-        .tab-menu { display: flex; gap: 10px; margin-bottom: 16px; }
-        .tab-btn { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 10px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
-        .tab-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
         .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
         .form-control:focus { border-color: #7c3aed; }
 
         .action-btn { background: #7c3aed; color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .action-btn:hover { background: #6d28d9; }
 
-        .item-box, .order-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .item-info, .order-info { font-size: 12px; margin-bottom: 8px; }
+        .order-box { background: #0b0f19; border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; margin-bottom: 12px; }
+        .order-info { font-size: 12px; margin-bottom: 10px; line-height: 1.6; }
         
-        .btn-group { display: flex; gap: 6px; }
-        .accept-btn { background: #22c55e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; flex: 1; }
-        .reject-btn { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; flex: 1; }
-        .delete-btn { background: #ef4444; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-group { display: flex; gap: 8px; }
+        .accept-btn { background: #22c55e; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
+        .reject-btn { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
 
-        .reason-box { display: none; margin-top: 8px; }
+        .reason-box { display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <h3><i class="fa-solid fa-store" style="color: #22c55e;"></i> Shop Admin Dashboard</h3>
+            <h3><i class="fa-solid fa-credit-card" style="color: #34d399;"></i> Dollar Card Orders</h3>
             <a href="mainadmin.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
         </div>
 
-        <div class="tab-menu">
-            <div class="tab-btn active" onclick="switchTab('ordersTab', this)"><i class="fa-solid fa-box-open"></i> Orders</div>
-            <div class="tab-btn" onclick="switchTab('productTab', this)"><i class="fa-solid fa-plus-circle"></i> Product Add</div>
-        </div>
-
-        <!-- ১. অর্ডার ম্যানেজমেন্ট ট্যাব -->
-        <div id="ordersTab" class="tab-content active">
-            <div class="card">
-                <h4><i class="fa-solid fa-clipboard-list"></i> Customer Orders & Requests</h4>
-                <div id="ordersListContainer">
-                    <small style="color: var(--text-muted);">Loading customer orders...</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- ২. প্রডাক্ট অ্যাড ও ম্যানেজমেন্ট ট্যাব -->
-        <div id="productTab" class="tab-content">
-            <div class="card">
-                <h4><i class="fa-solid fa-circle-plus"></i> Add New Dress / Product</h4>
-                <div class="form-group">
-                    <label>Product / Dress Name</label>
-                    <input type="text" id="itemName" class="form-control" placeholder="e.g. Royal Gown">
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="itemCat" class="form-control">
-                        <option value="Dress">Female Wardrobe</option>
-                        <option value="Boys">Boys Wardrobe</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Price (Gold Coins)</label>
-                    <input type="number" id="itemPrice" class="form-control" placeholder="15000">
-                </div>
-                <div class="form-group">
-                    <label>Image URL (Cloudinary / Direct Link)</label>
-                    <input type="text" id="itemImg" class="form-control" placeholder="https://...">
-                </div>
-                <button class="action-btn" onclick="addNewItem()">Add Product to Shop</button>
-            </div>
-
-            <div class="card">
-                <h4><i class="fa-solid fa-list"></i> Manage Existing Products</h4>
-                <div id="shopItemsList">
-                    <small style="color: var(--text-muted);">Loading shop items...</small>
-                </div>
+        <div class="card">
+            <h4><i class="fa-solid fa-clipboard-list"></i> Pending Customer Orders</h4>
+            <div id="dollarOrdersListContainer">
+                <small style="color: var(--text-muted);">Loading dollar card orders...</small>
             </div>
         </div>
     </div>
@@ -143,65 +90,9 @@
             window.location.href = "index.html";
         }
 
-        function switchTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btnElement.classList.add('active');
-        }
-
-        function addNewItem() {
-            let name = document.getElementById('itemName').value.trim();
-            let cat = document.getElementById('itemCat').value;
-            let price = parseInt(document.getElementById('itemPrice').value);
-            let img = document.getElementById('itemImg').value.trim();
-
-            if (!name || !price || !img) {
-                tg.showAlert("⚠️ Please fill in all fields correctly!");
-                return;
-            }
-
-            let newItemData = { name, cat, price, img, timestamp: Date.now() };
-            db.ref('shop_items').push(newItemData).then(() => {
-                tg.showAlert("✅ Product added successfully to the shop!");
-                document.getElementById('itemName').value = '';
-                document.getElementById('itemPrice').value = '';
-                document.getElementById('itemImg').value = '';
-            });
-        }
-
-        db.ref('shop_items').on('value', snap => {
-            let container = document.getElementById('shopItemsList');
-            let html = "";
-            if (snap.exists()) {
-                snap.forEach(childSnap => {
-                    let key = childSnap.key;
-                    let item = childSnap.val();
-                    html += `
-                        <div class="item-box" style="display:flex; justify-content:space-between; align-items:center;">
-                            <div class="item-info">
-                                <b>${item.name}</b> (${item.cat})<br>
-                                <span style="color: #fbbf24;">🪙 ${item.price.toLocaleString()} Gold</span>
-                            </div>
-                            <button class="delete-btn" onclick="deleteShopItem('${key}')">Delete</button>
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No products found.</small>`;
-            }
-        });
-
-        function deleteShopItem(itemKey) {
-            if(confirm("Are you sure you want to delete this product?")) {
-                db.ref('shop_items/' + itemKey).remove();
-            }
-        }
-
-        // ফায়ারবেসের shop_orders থেকে সরাসরি লাইভ অর্ডার ফেচ করা
-        db.ref('shop_orders').on('value', snap => {
-            let container = document.getElementById('ordersListContainer');
+        // ফায়ারবেসের dollar_card_orders থেকে লাইভ অর্ডার ফেচ করা
+        db.ref('dollar_card_orders').on('value', snap => {
+            let container = document.getElementById('dollarOrdersListContainer');
             let html = "";
             if (snap.exists()) {
                 let ordersArray = [];
@@ -218,19 +109,25 @@
                     let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
                     let status = order.status || 'Pending';
 
+                    let statusColor = '#fbbf24';
+                    if (status === 'Approved') statusColor = '#22c55e';
+                    else if (status === 'Rejected') statusColor = '#ef4444';
+
                     html += `
                         <div class="order-box" id="order-${order.id}">
                             <div class="order-info">
-                                <b>User ID:</b> ${order.userId} (${order.userName || 'User'})<br>
-                                <b>Item:</b> <span style="color:#c084fc;">${order.itemName}</span><br>
-                                <b>Price:</b> 🪙 ${order.price} Gold<br>
-                                <b>Status:</b> <span style="color:${status === 'Accepted' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24')}">${status}</span><br>
+                                <b>User:</b> ${order.userName || 'User'} (ID: ${order.userId})<br>
+                                <b>Card Item:</b> <span style="color:#34d399; font-weight:bold;">${order.cardName}</span><br>
+                                <b>Cost:</b> 🪙 ${order.price.toLocaleString()} Gold<br>
+                                <b>USDT Address:</b> <span style="color:#38bdf8; font-family:monospace;">${order.usdtAddress}</span><br>
+                                <b>Exchange UID:</b> <span style="color:#c084fc; font-family:monospace; font-weight:bold;">${order.exchangeUid}</span><br>
+                                <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${orderDate}</span>
                             </div>
                             ${status === 'Pending' ? `
                                 <div class="btn-group">
-                                    <button class="accept-btn" onclick="processOrder('${order.id}', '${order.userId}', 'Accepted', 0)">Accept</button>
-                                    <button class="reject-btn" onclick="toggleReasonBox('${order.id}')">Reject</button>
+                                    <button class="accept-btn" onclick="processOrder('${order.id}', '${order.userId}', 'Approved', 0)">Approve</button>
+                                    <button class="reject-btn" onclick="toggleReasonBox('${order.id}')">Reject & Refund</button>
                                 </div>
                                 <div class="reason-box" id="reasonBox-${order.id}">
                                     <input type="text" id="reasonInput-${order.id}" class="form-control" placeholder="Reason for rejection..." style="margin-top:6px; margin-bottom:6px;">
@@ -242,7 +139,7 @@
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No orders found.</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No dollar card orders found.</small>`;
             }
         });
 
@@ -262,7 +159,7 @@
             }
 
             let updates = {};
-            updates[`shop_orders/${orderKey}/status`] = status;
+            updates[`dollar_card_orders/${orderKey}/status`] = status;
 
             if (status === 'Rejected' && refundAmount > 0) {
                 db.ref(`users/${targetUserId}/gold`).once('value').then(snap => {
@@ -271,22 +168,22 @@
                 });
 
                 let notifData = {
-                    title: "Order Rejected & Refunded",
-                    message: `Your order was rejected. Reason: ${reason}. 🪙 ${refundAmount} Gold has been refunded to your account.`,
+                    title: "Dollar Order Rejected & Refunded",
+                    message: `Your dollar card order was rejected. Reason: ${reason}. 🪙 ${refundAmount.toLocaleString()} Gold has been refunded.`,
                     timestamp: Date.now()
                 };
                 db.ref(`users/${targetUserId}/notifications`).push(notifData);
-            } else if (status === 'Accepted') {
+            } else if (status === 'Approved') {
                 let notifData = {
-                    title: "Order Accepted",
-                    message: `Congratulations! Your dress order has been accepted successfully.`,
+                    title: "Dollar Card Approved! 🎉",
+                    message: `Congratulations! Your dollar card order has been approved and sent to your UID/USDT address.`,
                     timestamp: Date.now()
                 };
                 db.ref(`users/${targetUserId}/notifications`).push(notifData);
             }
 
             db.ref().update(updates).then(() => {
-                tg.showAlert(`Order ${status} successfully!`);
+                tg.showAlert(`Order status updated to ${status} successfully!`);
             });
         }
     </script>
