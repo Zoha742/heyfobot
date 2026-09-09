@@ -91,6 +91,16 @@
         .menu-row-left { display: flex; align-items: center; gap: 14px; }
         .menu-row-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
 
+        /* অর্ডার হিস্টোরি সেকশন ডিজাইন */
+        .section-title { font-size: 14px; font-weight: 700; color: #c084fc; margin: 20px 0 10px 4px; display: flex; align-items: center; gap: 8px; }
+        .orders-container { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; }
+        .order-card-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .order-info h5 { margin: 0 0 2px 0; font-size: 13px; color: #fff; }
+        .order-info p { margin: 0; font-size: 10px; color: var(--text-muted); }
+        .order-status { font-weight: bold; padding: 4px 8px; border-radius: 6px; font-size: 10px; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .status-approved { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; margin-top: 10px; }
         .admin-box-item { background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(2, 44, 34, 0.6)); border: 1px solid #22c55e; border-radius: 14px; padding: 12px; text-align: center; text-decoration: none; color: #34d399; }
         .admin-box-item i { font-size: 18px; margin-bottom: 4px; display: block; }
@@ -144,6 +154,18 @@
 
         <!-- ক্লিন ও প্রিমিয়াম মেনু অপশন -->
         <div class="menu-list">
+            <!-- ভেরিফাই অপশন (এজেন্ট পেজে রিডাইরেক্ট করবে) -->
+            <a class="menu-row-item" href="agent.html">
+                <div class="menu-row-left">
+                    <div class="menu-row-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"><i class="fa-solid fa-shield-check"></i></div>
+                    <div class="menu-row-info">
+                        <h5 style="margin:0; font-size:13px; color:#fff;">Account Verification</h5>
+                        <p style="margin:0; font-size:11px; color:#38bdf8;">Want to earn more? Verify your account now!</p>
+                    </div>
+                </div>
+                <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
+            </a>
+
             <a class="menu-row-item" href="wallet.html">
                 <div class="menu-row-left">
                     <div class="menu-row-icon" style="background: linear-gradient(135deg, #22c55e, #15803d);"><i class="fa-solid fa-wallet"></i></div>
@@ -155,7 +177,7 @@
                 <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
             </a>
 
-            <!-- নতুন রেফারেল অপশন -->
+            <!-- রেফারেল অপশন -->
             <a class="menu-row-item" href="referral.html">
                 <div class="menu-row-left">
                     <div class="menu-row-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fa-solid fa-users"></i></div>
@@ -188,6 +210,12 @@
                     <h5>Shop Admin</h5>
                 </a>
             </div>
+        </div>
+
+        <!-- ডলার কার্ড অর্ডার হিস্টোরি সেকশন -->
+        <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Dollar Card Orders</div>
+        <div class="orders-container" id="ordersHistoryList">
+            <p style="text-align: center; font-size: 11px; color: var(--text-muted); padding: 10px;">Loading orders...</p>
         </div>
     </div>
 
@@ -240,15 +268,54 @@
                 document.getElementById('total-gold').innerText = (data.gold !== undefined ? data.gold : 0).toLocaleString();
 
                 if (data.isVerified) {
-                    document.getElementById('avatarContainerBox').classList.verify = true; // safe check
-                    document.getElementById('avatarContainerBox').classList.add('verified-avatar');
-                    document.getElementById('profileCardElement').classList.add('verified-card');
-                    document.getElementById('verifiedBadgeContainer').innerHTML = `<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>`;
+                    let avatarBox = document.getElementById('avatarContainerBox');
+                    if (avatarBox) avatarBox.classList.add('verified-avatar');
+                    let profileCard = document.getElementById('profileCardElement');
+                    if (profileCard) profileCard.classList.add('verified-card');
+                    let badgeContainer = document.getElementById('verifiedBadgeContainer');
+                    if (badgeContainer) badgeContainer.innerHTML = `<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>`;
                 }
             }
         });
 
-        // সোয়াইপ নেভিগেশন ফিক্সড (বামে সোয়াইপ করলে সরাসরি Task পেজে যাবে)
+        // ইউজারের অর্ডার হিস্টোরি ফায়ারবেস থেকে ফেচ করা
+        db.ref('dollar_card_orders').orderByChild('userId').equalTo(userId).on('value', snap => {
+            let container = document.getElementById('ordersHistoryList');
+            container.innerHTML = '';
+            
+            if (!snap.exists()) {
+                container.innerHTML = `<p style="text-align: center; font-size: 11px; color: var(--text-muted); padding: 10px;">No card orders found yet!</p>`;
+                return;
+            }
+
+            let orders = [];
+            snap.forEach(childSnap => {
+                let order = childSnap.val();
+                order.id = childSnap.key;
+                orders.push(order);
+            });
+
+            orders.sort((a, b) => b.timestamp - a.timestamp);
+
+            orders.forEach(order => {
+                let dateStr = new Date(order.timestamp).toLocaleDateString() + ' ' + new Date(order.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                let statusClass = order.status === 'Approved' ? 'status-approved' : 'status-pending';
+
+                container.innerHTML += `
+                    <div class="order-card-item">
+                        <div class="order-info">
+                            <h5>${order.cardName} (${order.price.toLocaleString()} Gold)</h5>
+                            <p>${dateStr} | Target: ${order.exchangeUid}</p>
+                        </div>
+                        <div>
+                            <span class="order-status ${statusClass}">${order.status}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // সোয়াইপ নেভিগেশন ফিক্সড
         let touchStartX = 0;
         window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
         window.addEventListener('touchend', e => {
