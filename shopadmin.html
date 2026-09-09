@@ -27,9 +27,8 @@
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
 
-        /* ট্যাব নেভিগেশন (Dollar Orders & Sponsor Requests) */
-        .tab-menu { display: flex; gap: 8px; margin-bottom: 16px; }
-        .tab-btn { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 10px 6px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .tab-menu { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 4px; border-radius: 10px; font-weight: 700; font-size: 11px; cursor: pointer; text-align: center; transition: 0.2s; }
         .tab-btn.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
         .tab-content { display: none; }
@@ -38,6 +37,8 @@
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
 
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
         .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
         .form-control:focus { border-color: #7c3aed; }
 
@@ -63,8 +64,9 @@
         </div>
 
         <div class="tab-menu">
-            <div class="tab-btn active" onclick="switchTab('dollarTab', this)"><i class="fa-solid fa-credit-card"></i> Dollar Orders</div>
-            <div class="tab-btn" onclick="switchTab('sponsorTab', this)"><i class="fa-solid fa-rectangle-ad"></i> Sponsor Requests</div>
+            <div class="tab-btn active" onclick="switchTab('dollarTab', this)">Dollar Orders</div>
+            <div class="tab-btn" onclick="switchTab('sponsorTab', this)">Sponsor Requests</div>
+            <div class="tab-btn" onclick="switchTab('settingsTab', this)">Payment Settings</div>
         </div>
 
         <!-- ১. ডলার কার্ড অর্ডার ট্যাব -->
@@ -84,6 +86,33 @@
                 <div id="sponsorRequestsContainer">
                     <small style="color: var(--text-muted);">Loading sponsor requests...</small>
                 </div>
+            </div>
+        </div>
+
+        <!-- ৩. স্পন্সর পেমেন্ট সেটিংস ট্যাব (নম্বর পরিবর্তন বা খালি রাখার কন্ট্রোল) -->
+        <div id="settingsTab" class="tab-content">
+            <div class="card">
+                <h4><i class="fa-solid fa-gear"></i> Sponsor Payment Accounts</h4>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Leave any field empty if you do not want to display that payment method.</p>
+                
+                <div class="form-group">
+                    <label>Binance UID</label>
+                    <input type="text" id="setBinance" class="form-control" placeholder="Enter Binance UID">
+                </div>
+                <div class="form-group">
+                    <label>Bitget UID</label>
+                    <input type="text" id="setBitget" class="form-control" placeholder="Enter Bitget UID">
+                </div>
+                <div class="form-group">
+                    <label>Nagad Number</label>
+                    <input type="text" id="setNagad" class="form-control" placeholder="Enter Nagad number">
+                </div>
+                <div class="form-group">
+                    <label>Bkash Number</label>
+                    <input type="text" id="setBkash" class="form-control" placeholder="Enter Bkash number">
+                </div>
+
+                <button class="action-btn" onclick="savePaymentSettings()">Save Settings</button>
             </div>
         </div>
     </div>
@@ -123,6 +152,30 @@
             btnElement.classList.add('active');
         }
 
+        // বর্তমান পেমেন্ট সেটিংস ইনপুটে লোড করা
+        db.ref('sponsor_payment_settings').once('value', snap => {
+            let data = snap.val() || {};
+            document.getElementById('setBinance').value = data.binanceUid || "";
+            document.getElementById('setBitget').value = data.bitgetUid || "";
+            document.getElementById('setNagad').value = data.nagadNum || "01601642742";
+            document.getElementById('setBkash').value = data.bkashNum || "01601642742";
+        });
+
+        // পেমেন্ট সেটিংস সেভ বা আপডেট করা
+        function savePaymentSettings() {
+            let settingsData = {
+                binanceUid: document.getElementById('setBinance').value.trim(),
+                bitgetUid: document.getElementById('setBitget').value.trim(),
+                nagadNum: document.getElementById('setNagad').value.trim(),
+                bkashNum: document.getElementById('setBkash').value.trim(),
+                updatedAt: Date.now()
+            };
+
+            db.ref('sponsor_payment_settings').set(settingsData).then(() => {
+                tg.showAlert("✅ Payment settings updated successfully!");
+            });
+        }
+
         // ডলার কার্ড অর্ডার রেন্ডার ও প্রসেস করা
         db.ref('dollar_card_orders').on('value', snap => {
             let container = document.getElementById('dollarOrdersListContainer');
@@ -148,7 +201,8 @@
                                 <b>User:</b> ${order.userName || 'User'} (ID: ${order.userId})<br>
                                 <b>Card Item:</b> <span style="color:#34d399; font-weight:bold;">${order.cardName}</span><br>
                                 <b>Cost:</b> 🪙 ${order.price.toLocaleString()} Gold<br>
-                                <b>Exchange:</b> ${order.exchangeChoice || 'Crypto'} | <b>UID:</b> <span style="color:#c084fc; font-weight:bold;">${order.exchangeUid}</span><br>
+                                <b>USDT Addr:</b> <span style="color:#38bdf8;">${order.usdtAddress || 'N/A'}</span><br>
+                                <b>Exchange UID:</b> <span style="color:#c084fc; font-weight:bold;">${order.exchangeUid || 'N/A'}</span><br>
                                 <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${orderDate}</span>
                             </div>
@@ -204,7 +258,7 @@
             } else if (status === 'Approved') {
                 let notifData = {
                     title: "Dollar Card Approved! 🎉",
-                    message: `Congratulations! Your dollar card order has been approved and sent to your UID.`,
+                    message: `Congratulations! Your dollar card order has been approved and sent to your address/UID.`,
                     timestamp: Date.now()
                 };
                 db.ref(`users/${targetUserId}/notifications`).push(notifData);
@@ -215,7 +269,7 @@
             });
         }
 
-        // স্পন্সর রিকোয়েস্ট রেন্ডার ও লাইভ একটিভ করার সিস্টেম
+        // স্পন্সর রিকোয়েস্ট ম্যানেজমেন্ট
         db.ref('sponsor_requests').on('value', snap => {
             let container = document.getElementById('sponsorRequestsContainer');
             let html = "";
@@ -239,8 +293,10 @@
                             <div class="order-info">
                                 <b>Shop Name:</b> <span style="color:#34d399; font-weight:bold;">${req.shopName}</span><br>
                                 <b>User:</b> ${req.userName} (ID: ${req.userId})<br>
-                                <b>Banner URL:</b> <a href="${req.bannerUrl}" target="_blank" style="color:#38bdf8;">View Link</a><br>
-                                <b>Target URL:</b> <a href="${req.targetUrl}" target="_blank" style="color:#38bdf8;">Target Link</a><br>
+                                <b>Type:</b> ${req.targetType || 'Website'}<br>
+                                <b>Banner URL:</b> <a href="${req.bannerUrl}" target="_blank" style="color:#38bdf8;">View Banner</a><br>
+                                <b>Target URL:</b> <a href="${req.targetUrl}" target="_blank" style="color:#38bdf8;">${req.targetUrl}</a><br>
+                                <b>Payment TXID:</b> <span style="color:#fbbf24; font-weight:bold;">${req.paymentTxId}</span><br>
                                 <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${date}</span>
                             </div>
@@ -265,7 +321,6 @@
                 updatedAt: Date.now()
             };
 
-            // ডাটাবেজের active_sponsor নোডে সেট করা এবং রিকোয়েস্ট স্ট্যাটাস Active করা
             let updates = {};
             updates[`active_sponsor`] = activeData;
             updates[`sponsor_requests/${reqKey}/status`] = "Active";
