@@ -181,7 +181,7 @@
     <div class="notice-modal" id="noticeModal">
         <h3><i class="fa-solid fa-shield-halved" style="color: #c084fc;"></i> Heyfo Arcade Rules & Guidelines</h3>
         <ul>
-            <li><strong>Daily Check-in:</strong> Claim your daily bonus every 24 hours to keep your streak alive and earn free GP![cite: 4]</li>
+            <li><strong>Daily Check-in:</strong> Claim your daily bonus every 24 hours to keep your streak alive and earn free Gold coins!</li>
             <li><strong>Fair Play Policy:</strong> Multiple accounts or cheating in games/tasks will result in a permanent ban.</li>
             <li><strong>Shop Orders:</strong> Make sure to setup your correct wallet/MFS number in your Profile before ordering dollar cards[cite: 2].</li>
             <li><strong>Account Verification:</strong> Verify your account via the Agent section if you want to unlock higher earning limits[cite: 3].</li>
@@ -251,7 +251,7 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <!-- স্পন্সর ব্যানার সেকশন (নতুন ইমেজ এবং ক্লিক করলে sponsor.html এ যাবে) -->
+        <!-- স্পন্সর ব্যানার সেকশন -->
         <div class="section-header">
             <div class="section-title">📢 Featured Sponsor</div>
             <a href="sponsor.html" style="font-size: 11px; color: #c084fc; text-decoration: none; font-weight: 600;">Ad with Us</a>
@@ -373,7 +373,8 @@
         function renderDailyBonus() {
             const container = document.getElementById('daily-bonus-container');
             container.innerHTML = '';
-            const rewards = [10, 15, 20, 25, 30, 35, 50];
+            // ৭ দিনের জন্য ১০ থেকে ৭০ গোল্ড পয়েন্ট সেট করা হলো
+            const rewards = [10, 20, 30, 40, 50, 60, 70]; 
             let currentStreak = userData.streakDay || 1;
             
             for (let i = 1; i <= 7; i++) {
@@ -386,7 +387,7 @@
                     <div class="${cardClass}">
                         <div class="day">Day ${i}</div>
                         <div class="icon"><i class="${iconClass}"></i></div>
-                        <div class="reward">+${rewards[i-1]} GP</div>
+                        <div class="reward">+${rewards[i-1]} Gold</div>
                     </div>
                 `;
             }
@@ -398,20 +399,21 @@
                 tg.showAlert('You have already claimed today!');
                 return;
             }
-            const rewards = [10, 15, 20, 25, 30, 35, 50];
+            // ৭ দিনের জন্য ১০ থেকে ৭০ গোল্ড পয়েন্ট
+            const rewards = [10, 20, 30, 40, 50, 60, 70];
             let rewardAmount = rewards[(userData.streakDay || 1) - 1] || 10;
 
-            let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
-            userData.gp = currentGp + rewardAmount;
+            let currentGold = userData.gold !== undefined ? userData.gold : 0;
+            userData.gold = currentGold + rewardAmount;
             userData.lastCheckInDate = today;
             userData.streakDay = (userData.streakDay || 1) < 7 ? (userData.streakDay || 1) + 1 : 1;
 
             userRef.set(userData).then(() => {
-                tg.showAlert(`Claimed Daily Bonus! +${rewardAmount} GP added.`);
+                tg.showAlert(`Claimed Daily Bonus! +${rewardAmount} Gold added to your balance.`);
             });
         }
 
-        // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা (যদি না থাকে তবে নতুন ব্যানারসহ ডিফল্ট স্পন্সর পেজে যাওয়ার অপশন দেখাবে)
+        // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা
         db.ref('active_sponsor').on('value', snap => {
             let sponsor = snap.val();
             let container = document.getElementById('activeSponsorContainer');
@@ -423,10 +425,10 @@
                     `<img src="${sponsor.bannerUrl}" class="sponsor-media" alt="Sponsor Banner">`;
 
                 container.innerHTML = `
-                    <div class="sponsor-display-box" onclick="claimSponsorBonus('${sponsor.targetUrl || 'sponsor.html'}')">
+                    <div class="sponsor-display-box" onclick="location.href='sponsor.html'">
                         ${mediaHtml}
                         <h4>${sponsor.shopName || 'Sponsored Promotion'}</h4>
-                        <p>Click to visit & earn +30 GP Fuel! ⚡</p>
+                        <p>Click to create or view your ad campaigns! 🚀</p>
                     </div>
                 `;
             } else {
@@ -439,33 +441,6 @@
                 `;
             }
         });
-
-        function claimSponsorBonus(targetUrl) {
-            if (!targetUrl || targetUrl === 'sponsor.html') {
-                location.href = 'sponsor.html';
-                return;
-            }
-
-            let lastClaim = localStorage.getItem('last_sponsor_click_' + userId);
-            let now = Date.now();
-            let cooldown = 24 * 60 * 60 * 1000;
-
-            if (lastClaim && (now - parseInt(lastClaim)) < cooldown) {
-                window.open(targetUrl, '_blank');
-                return;
-            }
-
-            userRef.once('value').then(snap => {
-                let data = snap.val() || {};
-                let currentGp = data.gp !== undefined ? data.gp : (data.points || 0);
-                
-                userRef.update({ gp: currentGp + 30, points: currentGp + 30 }).then(() => {
-                    localStorage.setItem('last_sponsor_click_' + userId, now);
-                    tg.showAlert("🎉 You earned +30 GP Fuel for visiting the sponsor!");
-                    window.open(targetUrl, '_blank');
-                });
-            });
-        }
 
         function checkAndShowNotice() {
             const SIX_HOURS = 6 * 60 * 60 * 1000;
