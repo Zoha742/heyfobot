@@ -50,6 +50,7 @@
         .form-control:focus { border-color: #7c3aed; }
 
         .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -117,9 +118,11 @@
                 </div>
                 <div class="form-group">
                     <label>Upload Payment Screenshot (Proof)</label>
-                    <input type="file" id="payScreenshot" class="form-control" accept="image/*" style="color: #94a3b8;">
+                    <input type="file" id="payScreenshot" class="form-control" accept="image/*" onchange="uploadVerificationScreenshot(this)" style="color: #94a3b8;">
+                    <input type="hidden" id="screenshotUrl">
+                    <small id="uploadStatus" style="color: #38bdf8; font-size: 10px; display: block; margin-top: 4px;"></small>
                 </div>
-                <button class="action-btn" onclick="submitPaidVerification()">Submit Verification Request</button>
+                <button class="action-btn" id="submitPaidBtn" onclick="submitPaidVerification()">Submit Verification Request</button>
             </div>
         </div>
     </div>
@@ -170,6 +173,44 @@
             });
         }
 
+        // ক্লাউডিনারির 'Heyfo MiniApp/agent' ফোল্ডারে স্ক্রিনশট আপলোড করার ফাংশন
+        function uploadVerificationScreenshot(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let statusEl = document.getElementById('uploadStatus');
+                let submitBtn = document.getElementById('submitPaidBtn');
+                
+                statusEl.innerText = "Uploading screenshot...";
+                submitBtn.disabled = true;
+
+                let formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'ml_default');
+                formData.append('folder', 'Heyfo MiniApp/agent'); // নির্দিষ্ট এজেন্ট ফোল্ডার
+
+                fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.secure_url) {
+                        document.getElementById('screenshotUrl').value = data.secure_url;
+                        statusEl.innerText = "✅ Screenshot uploaded successfully!";
+                        submitBtn.disabled = false;
+                    } else {
+                        statusEl.innerText = "❌ Upload failed. Try again.";
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    statusEl.innerText = "❌ Error uploading image.";
+                    submitBtn.disabled = false;
+                });
+            }
+        }
+
         function submitGoldVerification() {
             let requiredGold = 200000;
             if (userGold >= requiredGold) {
@@ -200,39 +241,33 @@
         function submitPaidVerification() {
             let method = document.getElementById('payMethod').value;
             let trxId = document.getElementById('trxId').value.trim();
-            let fileInput = document.getElementById('payScreenshot');
+            let screenshotUrl = document.getElementById('screenshotUrl').value.trim();
 
             if (!trxId) {
                 tg.showAlert("⚠️ Please enter your sender number or TrxID / Hash!");
                 return;
             }
 
-            if (fileInput.files.length === 0) {
-                tg.showAlert("⚠️ Please upload a payment screenshot as proof!");
+            if (!screenshotUrl) {
+                tg.showAlert("⚠️ Please wait for the payment screenshot to upload completely!");
                 return;
             }
 
-            let reader = new FileReader();
-            reader.onloadend = function () {
-                let imgData = reader.result;
-
-                let verificationReq = {
-                    userId: userId,
-                    userName: firstName,
-                    userUsername: username,
-                    method: method,
-                    trxId: trxId,
-                    screenshot: imgData,
-                    status: "Pending",
-                    timestamp: Date.now()
-                };
-
-                db.ref('verification_requests').push(verificationReq).then(() => {
-                    tg.showAlert("✅ Verification request submitted successfully! Admin will review your payment and screenshot.");
-                    window.location.href = "profile.html";
-                });
+            let verificationReq = {
+                userId: userId,
+                userName: firstName,
+                userUsername: username,
+                method: method,
+                trxId: trxId,
+                screenshot: screenshotUrl,
+                status: "Pending",
+                timestamp: Date.now()
             };
-            reader.readAsDataURL(fileInput.files[0]);
+
+            db.ref('verification_requests').push(verificationReq).then(() => {
+                tg.showAlert("✅ Verification request submitted successfully! Admin will review your payment and screenshot.");
+                window.location.href = "profile.html";
+            });
         }
     </script>
 </body>
