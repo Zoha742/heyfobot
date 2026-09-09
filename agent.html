@@ -22,7 +22,7 @@
             margin: 0; padding: 16px;
             display: flex; justify-content: center;
         }
-        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 80px; }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 90px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
@@ -51,9 +51,9 @@
         .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
-        /* নিচের দিকে সিম্পল ব্যাক অ্যারো বাটন */
-        .bottom-back-box { text-align: center; margin-top: 20px; }
-        .bottom-back-btn { background: #131c2e; border: 1px solid var(--card-border); color: #c084fc; width: 45px; height: 45px; border-radius: 50%; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        /* নিচের দিকে দুটি সুন্দর ব্যাক অপশন বাটন স্টাইল */
+        .bottom-back-container { display: flex; gap: 10px; margin-top: 20px; }
+        .bottom-back-btn { flex: 1; background: #131c2e; border: 1px solid var(--card-border); color: #c084fc; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 700; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .bottom-back-btn:hover { background: #1a2642; border-color: #7c3aed; color: #fff; }
     </style>
 </head>
@@ -129,9 +129,10 @@
             </div>
         </div>
 
-        <!-- নিচে ব্যাক অ্যারো বাটন এবং টেলিগ্রাম ব্যাক বাটন সিস্টেম -->
-        <div class="bottom-back-box">
-            <button class="bottom-back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+        <!-- নিচে দুটি ব্যাক অপশন (Back to Profile এবং Back to Home) -->
+        <div class="bottom-back-container">
+            <a href="profile.html" class="bottom-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
+            <a href="index.html" class="bottom-back-btn"><i class="fa-solid fa-house"></i> Back to Home</a>
         </div>
     </div>
 
@@ -153,17 +154,6 @@
 
         let tg = window.Telegram.WebApp;
         tg.expand();
-
-        // টেলিগ্রাম মিনি অ্যাপের নেটিভ ব্যাক বাটন এবং সোয়াইপ হ্যান্ডেল করা
-        let backButton = tg.BackButton;
-        backButton.show();
-        backButton.onClick(() => {
-            window.location.href = "profile.html";
-        });
-
-        function goBack() {
-            window.location.href = "profile.html";
-        }
 
         let user = tg.initDataUnsafe.user;
         let userId = user ? user.id.toString() : "7757851056";
