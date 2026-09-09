@@ -148,7 +148,7 @@
         .notice-modal ul li { margin-bottom: 8px; }
         .notice-modal ul li strong { color: #f8fafc; }
         .close-notice-btn {
-            background: #7c3aed;
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
             color: white;
             border: none;
             padding: 12px;
@@ -158,8 +158,9 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
         }
-        .close-notice-btn:hover { background: #6d28d9; }
+        .close-notice-btn:hover { opacity: 0.9; }
 
         .bottom-nav { 
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
@@ -178,14 +179,14 @@
     <!-- Notice Modal Popup -->
     <div class="overlay" id="noticeOverlay"></div>
     <div class="notice-modal" id="noticeModal">
-        <h3><i class="fa-solid fa-bullhorn" style="color: #c084fc;"></i> How to Play & Earn</h3>
+        <h3><i class="fa-solid fa-shield-halved" style="color: #c084fc;"></i> Heyfo Arcade Rules & Guidelines</h3>
         <ul>
-            <li><strong>Complete Tasks:</strong> Complete daily tasks and watch ads to earn <strong>GP (Fuel)</strong> points.</li>
-            <li><strong>Play Game:</strong> Use your GP points to play the drop mini-game.</li>
-            <li><strong>Earn Gold:</strong> Catch items in the game to score and earn <strong>Gold Points</strong>.</li>
-            <li><strong>Dollar Cards:</strong> Use your Gold coins to redeem Dollar Card rewards in the shop.</li>
+            <li><strong>Daily Check-in:</strong> Claim your daily bonus every 24 hours to keep your streak alive and earn free GP![cite: 4]</li>
+            <li><strong>Fair Play Policy:</strong> Multiple accounts or cheating in games/tasks will result in a permanent ban.</li>
+            <li><strong>Shop Orders:</strong> Make sure to setup your correct wallet/MFS number in your Profile before ordering dollar cards[cite: 2].</li>
+            <li><strong>Account Verification:</strong> Verify your account via the Agent section if you want to unlock higher earning limits[cite: 3].</li>
         </ul>
-        <button class="close-notice-btn" onclick="closeNoticeModal()">Got It, Let's Play!</button>
+        <button class="close-notice-btn" onclick="closeNoticeModal()">I Understand & Agree</button>
     </div>
 
     <div class="container" id="mainContainer">
@@ -208,7 +209,7 @@
             </div>
         </div>
 
-        <!-- কুইক মেনু (Fire অপশনটি Sponsor নামে রিনেম করা হয়েছে) -->
+        <!-- কুইক মেনু (Sponsor অপশন) -->
         <div class="quick-menu">
             <div class="menu-item" onclick="claimDailyBonus()">
                 <div class="menu-icon" style="background: #8b5cf6;"><i class="fa-solid fa-calendar-check"></i></div>
@@ -250,16 +251,16 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <!-- ডাইনামিক স্পন্সর ব্যানার বা ভিডিও ডিসপ্লে সেকশন (যেটিতে ক্লিক করলে 30 GP পাবো) -->
+        <!-- স্পন্সর ব্যানার সেকশন -->
         <div class="section-header">
             <div class="section-title">📢 Featured Sponsor</div>
             <a href="sponsor.html" style="font-size: 11px; color: #c084fc; text-decoration: none; font-weight: 600;">Ad with Us</a>
         </div>
         <div id="activeSponsorContainer">
-            <div class="sponsor-display-box" onclick="claimSponsorBonus('https://t.me/heyfobot')">
+            <div class="sponsor-display-box" onclick="location.href='sponsor.html'">
                 <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="sponsor-media" alt="Sponsor Banner">
-                <h4>Default Sponsor Promotion</h4>
-                <p>Click to visit & earn +30 GP Fuel! ⚡</p>
+                <h4>Create Your First Sponsor Ad!</h4>
+                <p>No active sponsor yet. Click here to create your ad 🚀</p>
             </div>
         </div>
 
@@ -410,34 +411,47 @@
             });
         }
 
-        // ফায়ারবেস থেকে একটিভ স্পন্সর ব্যানার বা ভিডিও ফেচ করা (shopadmin থেকে কন্ট্রোলযোগ্য)
+        // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা
         db.ref('active_sponsor').on('value', snap => {
             let sponsor = snap.val();
             let container = document.getElementById('activeSponsorContainer');
-            if (sponsor) {
-                let isVideo = sponsor.bannerUrl && (sponsor.bannerUrl.endsWith('.mp4') || sponsor.bannerUrl.includes('video'));
+            
+            if (sponsor && sponsor.bannerUrl) {
+                let isVideo = sponsor.bannerUrl.endsWith('.mp4') || sponsor.bannerUrl.includes('video');
                 let mediaHtml = isVideo ? 
                     `<video src="${sponsor.bannerUrl}" class="sponsor-media" autoplay muted loop playsinline></video>` : 
                     `<img src="${sponsor.bannerUrl}" class="sponsor-media" alt="Sponsor Banner">`;
 
                 container.innerHTML = `
-                    <div class="sponsor-display-box" onclick="claimSponsorBonus('${sponsor.targetUrl || '#'}')">
+                    <div class="sponsor-display-box" onclick="claimSponsorBonus('${sponsor.targetUrl || 'sponsor.html'}')">
                         ${mediaHtml}
                         <h4>${sponsor.shopName || 'Sponsored Promotion'}</h4>
                         <p>Click to visit & earn +30 GP Fuel! ⚡</p>
                     </div>
                 `;
+            } else {
+                container.innerHTML = `
+                    <div class="sponsor-display-box" onclick="location.href='sponsor.html'">
+                        <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="sponsor-media" alt="Sponsor Banner">
+                        <h4>Create Your First Sponsor Ad!</h4>
+                        <p>No active sponsor yet. Click here to create your ad 🚀</p>
+                    </div>
+                `;
             }
         });
 
-        // স্পন্সর ব্যানারে ক্লিক করলে 30 GP পাওয়ার লজিক
         function claimSponsorBonus(targetUrl) {
+            if (!targetUrl || targetUrl === 'sponsor.html') {
+                location.href = 'sponsor.html';
+                return;
+            }
+
             let lastClaim = localStorage.getItem('last_sponsor_click_' + userId);
             let now = Date.now();
-            let cooldown = 24 * 60 * 60 * 1000; // ২৪ ঘণ্টা কুলডাউন
+            let cooldown = 24 * 60 * 60 * 1000;
 
             if (lastClaim && (now - parseInt(lastClaim)) < cooldown) {
-                if(targetUrl && targetUrl !== '#') window.open(targetUrl, '_blank');
+                window.open(targetUrl, '_blank');
                 return;
             }
 
@@ -448,7 +462,7 @@
                 userRef.update({ gp: currentGp + 30, points: currentGp + 30 }).then(() => {
                     localStorage.setItem('last_sponsor_click_' + userId, now);
                     tg.showAlert("🎉 You earned +30 GP Fuel for visiting the sponsor!");
-                    if(targetUrl && targetUrl !== '#') window.open(targetUrl, '_blank');
+                    window.open(targetUrl, '_blank');
                 });
             });
         }
