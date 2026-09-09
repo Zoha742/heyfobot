@@ -231,6 +231,19 @@
         let freePlaysLeft = 1;
         let paidPlaysLeft = 3;
 
+        // অ্যাডমিন প্যানেল থেকে কন্ট্রোল করার জন্য ডিফল্ট সেটিংস
+        let dynamicSpawnInterval = 500;  // মিলিসেকেন্ড (কম হলে বেশি আইটেম পড়বে)
+        let dynamicSpeedMultiplier = 1.0; // স্পিড মাল্টিপ্লায়ার
+
+        // রিয়েল-টাইম গেম সেটিংস ফেচ করা
+        db.ref('game_settings').on('value', snap => {
+            let settings = snap.val();
+            if (settings) {
+                dynamicSpawnInterval = settings.spawnInterval || 500;
+                dynamicSpeedMultiplier = settings.speedMultiplier || 1.0;
+            }
+        });
+
         userRef.on('value', snap => {
             let data = snap.val() || {};
             userGp = data.gp !== undefined ? data.gp : (data.points || 0);
@@ -337,7 +350,8 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('startBtn').innerText = "Game Running...";
 
-                itemSpawner = setInterval(spawnItem, 650);
+                // অ্যাডমিন প্যানেল থেকে সেট করা ইন্টারভাল অনুযায়ী আইটেম স্পন হবে
+                itemSpawner = setInterval(spawnItem, dynamicSpawnInterval);
                 gameInterval = requestAnimationFrame(updateGame);
 
                 countdownTimer = setInterval(() => {
@@ -368,13 +382,13 @@
                 type = "freeze"; text = "❄️"; points = 0;
             }
 
-            // গেমের স্পিড অনেক কমিয়ে দেওয়া হলো (খুব আস্তে আস্তে পড়বে)
-            let speedMultiplier = isFrozen ? 0.3 : 0.8;
+            // অ্যাডমিন প্যানেল থেকে নিয়ন্ত্রিত স্পিড মাল্টিপ্লায়ার এখানে কাজ করবে
+            let currentMultiplier = isFrozen ? (dynamicSpeedMultiplier * 0.4) : dynamicSpeedMultiplier;
 
             items.push({
                 x: Math.random() * (canvas.width - 40) + 20,
                 y: -30,
-                speed: (Math.random() * 0.8 + 1.0) * speedMultiplier,
+                speed: (Math.random() * 1.0 + 1.5) * currentMultiplier,
                 type: type,
                 text: text,
                 points: points
