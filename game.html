@@ -187,16 +187,15 @@
     <div class="modal" id="rulesModal">
         <h3>🎮 Game Rules</h3>
         <ul>
-            <li>First <strong>2 plays every day are FREE!</strong></li>
-            <li>After free plays, you can play up to <strong>5 times</strong> using <strong>50 GP (Fuel)</strong> per play.</li>
-            <li>Catch Gold (🪙 +2), Stars (⭐️ +5), and Diamonds (💎 +5)!</li>
-            <li>Catch <strong>Freeze (❄️)</strong> to slow down falling items.</li>
-            <li>Avoid Bombs (💣 -2 points). Time limit: <strong>15 seconds</strong>!</li>
+            <li>First <strong>1 play every day is FREE!</strong>[cite: 14]</li>
+            <li>After the free play, you can play up to <strong>3 times</strong> using <strong>50 GP (Fuel)</strong> per play.</li>
+            <li>Catch Gold (🪙 +2), Stars (⭐️ +5), and Diamonds (💎 +5)![cite: 14]</li>
+            <li>Catch <strong>Freeze (❄️)</strong> to slow down falling items.[cite: 14]</li>
+            <li>Avoid Bombs (💣 -2 points). Time limit: <strong>15 seconds</strong>![cite: 14]</li>
         </ul>
         <button class="close-modal-btn" onclick="closeRulesModal()">Got It</button>
     </div>
 
-    <!-- বটম নেভিগেশন বার থেকে Hotcake অপশন বাদ দেওয়া হয়েছে -->
     <div class="bottom-nav">
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item active" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -229,8 +228,8 @@
 
         let userGp = 0;
         let userGold = 0;
-        let freePlaysLeft = 2;
-        let paidPlaysLeft = 5;
+        let freePlaysLeft = 1; // ১টি গেম ফ্রি
+        let paidPlaysLeft = 3; // ৫০ GP দিয়ে ৩ বার
 
         userRef.on('value', snap => {
             let data = snap.val() || {};
@@ -239,12 +238,12 @@
             
             let today = new Date().toDateString();
             if (data.lastPlayDate !== today) {
-                freePlaysLeft = 2;
-                paidPlaysLeft = 5;
-                userRef.update({ lastPlayDate: today, freePlaysLeft: 2, paidPlaysLeft: 5 });
+                freePlaysLeft = 1;
+                paidPlaysLeft = 3;
+                userRef.update({ lastPlayDate: today, freePlaysLeft: 1, paidPlaysLeft: 3 });
             } else {
-                freePlaysLeft = data.freePlaysLeft !== undefined ? data.freePlaysLeft : 2;
-                paidPlaysLeft = data.paidPlaysLeft !== undefined ? data.paidPlaysLeft : 5;
+                freePlaysLeft = data.freePlaysLeft !== undefined ? data.freePlaysLeft : 1;
+                paidPlaysLeft = data.paidPlaysLeft !== undefined ? data.paidPlaysLeft : 3;
             }
 
             document.getElementById('topGp').innerText = userGp.toLocaleString();
@@ -254,7 +253,7 @@
         function updatePlayButtonText() {
             let btn = document.getElementById('startBtn');
             if (freePlaysLeft > 0) {
-                btn.innerText = `Play Game (${freePlaysLeft} Free Left)`;
+                btn.innerText = `Play Game (1 Free Left)`;
                 btn.disabled = false;
             } else if (paidPlaysLeft > 0) {
                 btn.innerText = `Play Game (-50 GP) [${paidPlaysLeft} Left]`;
@@ -338,7 +337,7 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('startBtn').innerText = "Game Running...";
 
-                itemSpawner = setInterval(spawnItem, 500);
+                itemSpawner = setInterval(spawnItem, 400); // আইটেম স্পন রেট বাড়িয়ে দ্রুত করা হয়েছে
                 gameInterval = requestAnimationFrame(updateGame);
 
                 countdownTimer = setInterval(() => {
@@ -369,12 +368,13 @@
                 type = "freeze"; text = "❄️"; points = 0;
             }
 
-            let speedMultiplier = isFrozen ? 0.4 : 1.0;
+            // গেমের স্পিড আগের চেয়ে বাড়িয়ে দেওয়া হলো (Multiplied speed)
+            let speedMultiplier = isFrozen ? 0.6 : 1.8;
 
             items.push({
                 x: Math.random() * (canvas.width - 40) + 20,
                 y: -30,
-                speed: (Math.random() * 1.5 + 2) * speedMultiplier,
+                speed: (Math.random() * 2.0 + 3.5) * speedMultiplier,
                 type: type,
                 text: text,
                 points: points
@@ -410,7 +410,7 @@
             for (let i = items.length - 1; i >= 0; i--) {
                 let item = items[i];
                 let dist = Math.hypot(clickX - item.x, clickY - item.y);
-                if (dist < 40) {
+                if (dist < 45) {
                     if (item.type === "freeze") {
                         isFrozen = true;
                         if (freezeTimeout) clearTimeout(freezeTimeout);
