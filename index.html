@@ -6,6 +6,8 @@
     <title>Heyfo - Home</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=2.4"> 
+    <!-- Monetag SDK Script -->
+    <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
     
     <style>
         :root {
@@ -113,9 +115,51 @@
         .dollar-buy-btn { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; text-decoration: none; display: block; transition: 0.2s; }
         .dollar-buy-btn:hover { opacity: 0.9; }
 
-        .sponsor-banner { background: var(--card-bg); border-radius: 16px; padding: 20px; color: #fff; text-align: center; margin-bottom: 24px; border: 1px dashed #7c3aed; }
-        .sponsor-banner h3 { margin: 0 0 6px 0; font-size: 16px; color: #c084fc; }
-        .sponsor-banner p { margin: 0; font-size: 12px; color: var(--text-muted); }
+        /* ডাইনামিক স্পন্সর ব্যানার বা ভিডিও ডিসপ্লে বক্স */
+        .sponsor-display-box {
+            background: var(--card-bg); border: 1px dashed #7c3aed; border-radius: 16px;
+            padding: 14px; text-align: center; margin-bottom: 24px; cursor: pointer; transition: 0.2s;
+        }
+        .sponsor-display-box:hover { border-color: #34d399; }
+        .sponsor-media { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; background: #000; }
+        .sponsor-display-box h4 { margin: 0 0 4px 0; font-size: 14px; color: #fff; }
+        .sponsor-display-box p { margin: 0; font-size: 11px; color: #fbbf24; font-weight: bold; }
+
+        /* Notice Modal Popup Styling */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(6px); }
+        .notice-modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--modal-bg);
+            border: 2px solid #7c3aed;
+            border-radius: 22px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1001;
+            box-sizing: border-box;
+            text-align: left;
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4);
+        }
+        .notice-modal h3 { margin: 0 0 12px 0; font-size: 18px; color: #fbbf24; font-weight: 800; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .notice-modal ul { margin: 0 0 20px 0; padding-left: 18px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .notice-modal ul li { margin-bottom: 8px; }
+        .notice-modal ul li strong { color: #f8fafc; }
+        .close-notice-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .close-notice-btn:hover { background: #6d28d9; }
 
         .bottom-nav { 
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
@@ -130,6 +174,19 @@
     </style>
 </head>
 <body>
+
+    <!-- Notice Modal Popup -->
+    <div class="overlay" id="noticeOverlay"></div>
+    <div class="notice-modal" id="noticeModal">
+        <h3><i class="fa-solid fa-bullhorn" style="color: #c084fc;"></i> How to Play & Earn</h3>
+        <ul>
+            <li><strong>Complete Tasks:</strong> Complete daily tasks and watch ads to earn <strong>GP (Fuel)</strong> points.</li>
+            <li><strong>Play Game:</strong> Use your GP points to play the drop mini-game.</li>
+            <li><strong>Earn Gold:</strong> Catch items in the game to score and earn <strong>Gold Points</strong>.</li>
+            <li><strong>Dollar Cards:</strong> Use your Gold coins to redeem Dollar Card rewards in the shop.</li>
+        </ul>
+        <button class="close-notice-btn" onclick="closeNoticeModal()">Got It, Let's Play!</button>
+    </div>
 
     <div class="container" id="mainContainer">
         <div class="header">
@@ -151,7 +208,7 @@
             </div>
         </div>
 
-        <!-- কুইক মেনু (ইভেন্ট অপশন সহ) -->
+        <!-- কুইক মেনু (Fire অপশনটি Sponsor নামে রিনেম করা হয়েছে) -->
         <div class="quick-menu">
             <div class="menu-item" onclick="claimDailyBonus()">
                 <div class="menu-icon" style="background: #8b5cf6;"><i class="fa-solid fa-calendar-check"></i></div>
@@ -181,10 +238,10 @@
                 <div class="menu-icon" style="background: #84cc16;"><i class="fa-solid fa-calendar-star"></i></div>
                 <div class="menu-label">Event</div>
             </a>
-            <div class="menu-item" onclick="tg.showAlert('Fire feature is coming soon!')">
-                <div class="menu-icon" style="background: #ef4444;"><i class="fa-solid fa-fire"></i></div>
-                <div class="menu-label">Fire</div>
-            </div>
+            <a href="sponsor.html" class="menu-item">
+                <div class="menu-icon" style="background: #ef4444;"><i class="fa-solid fa-rectangle-ad"></i></div>
+                <div class="menu-label">Sponsor</div>
+            </a>
         </div>
 
         <div class="section-header">
@@ -193,7 +250,20 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <!-- ডলার টোকেন কার্ড ডিসপ্লে সেকশন (সঠিক প্রাইসিং সহ) -->
+        <!-- ডাইনামিক স্পন্সর ব্যানার বা ভিডিও ডিসপ্লে সেকশন (যেটিতে ক্লিক করলে 30 GP পাবো) -->
+        <div class="section-header">
+            <div class="section-title">📢 Featured Sponsor</div>
+            <a href="sponsor.html" style="font-size: 11px; color: #c084fc; text-decoration: none; font-weight: 600;">Ad with Us</a>
+        </div>
+        <div id="activeSponsorContainer">
+            <div class="sponsor-display-box" onclick="claimSponsorBonus('https://t.me/heyfobot')">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="sponsor-media" alt="Sponsor Banner">
+                <h4>Default Sponsor Promotion</h4>
+                <p>Click to visit & earn +30 GP Fuel! ⚡</p>
+            </div>
+        </div>
+
+        <!-- ডলার টোকেন কার্ড ডিসপ্লে সেকশন -->
         <div class="section-header">
             <div class="section-title">💵 Dollar Token Cards</div>
             <a href="shop.html" style="font-size: 12px; color: #c084fc; text-decoration: none; font-weight: 600;">View Shop</a>
@@ -233,14 +303,8 @@
                 <a href="shop.html" class="dollar-buy-btn">Redeem Now</a>
             </div>
         </div>
-
-        <div class="sponsor-banner">
-            <h3>📢 Sponsor Ad Space Available</h3>
-            <p>Promote your brand here! Coming Soon...</p>
-        </div>
     </div>
 
-    <!-- পূর্বের নেভিগেশন অপশন বজায় রাখা হয়েছে (ওয়ালেট বাদ দিয়ে) -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item active" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -345,6 +409,70 @@
                 tg.showAlert(`Claimed Daily Bonus! +${rewardAmount} GP added.`);
             });
         }
+
+        // ফায়ারবেস থেকে একটিভ স্পন্সর ব্যানার বা ভিডিও ফেচ করা (shopadmin থেকে কন্ট্রোলযোগ্য)
+        db.ref('active_sponsor').on('value', snap => {
+            let sponsor = snap.val();
+            let container = document.getElementById('activeSponsorContainer');
+            if (sponsor) {
+                let isVideo = sponsor.bannerUrl && (sponsor.bannerUrl.endsWith('.mp4') || sponsor.bannerUrl.includes('video'));
+                let mediaHtml = isVideo ? 
+                    `<video src="${sponsor.bannerUrl}" class="sponsor-media" autoplay muted loop playsinline></video>` : 
+                    `<img src="${sponsor.bannerUrl}" class="sponsor-media" alt="Sponsor Banner">`;
+
+                container.innerHTML = `
+                    <div class="sponsor-display-box" onclick="claimSponsorBonus('${sponsor.targetUrl || '#'}')">
+                        ${mediaHtml}
+                        <h4>${sponsor.shopName || 'Sponsored Promotion'}</h4>
+                        <p>Click to visit & earn +30 GP Fuel! ⚡</p>
+                    </div>
+                `;
+            }
+        });
+
+        // স্পন্সর ব্যানারে ক্লিক করলে 30 GP পাওয়ার লজিক
+        function claimSponsorBonus(targetUrl) {
+            let lastClaim = localStorage.getItem('last_sponsor_click_' + userId);
+            let now = Date.now();
+            let cooldown = 24 * 60 * 60 * 1000; // ২৪ ঘণ্টা কুলডাউন
+
+            if (lastClaim && (now - parseInt(lastClaim)) < cooldown) {
+                if(targetUrl && targetUrl !== '#') window.open(targetUrl, '_blank');
+                return;
+            }
+
+            userRef.once('value').then(snap => {
+                let data = snap.val() || {};
+                let currentGp = data.gp !== undefined ? data.gp : (data.points || 0);
+                
+                userRef.update({ gp: currentGp + 30, points: currentGp + 30 }).then(() => {
+                    localStorage.setItem('last_sponsor_click_' + userId, now);
+                    tg.showAlert("🎉 You earned +30 GP Fuel for visiting the sponsor!");
+                    if(targetUrl && targetUrl !== '#') window.open(targetUrl, '_blank');
+                });
+            });
+        }
+
+        function checkAndShowNotice() {
+            const SIX_HOURS = 6 * 60 * 60 * 1000;
+            let lastShownTime = localStorage.getItem('heyfo_notice_time_' + userId);
+            let currentTime = Date.now();
+
+            if (!lastShownTime || (currentTime - parseInt(lastShownTime)) >= SIX_HOURS) {
+                document.getElementById('noticeOverlay').style.display = 'block';
+                document.getElementById('noticeModal').style.display = 'block';
+            }
+        }
+
+        function closeNoticeModal() {
+            document.getElementById('noticeOverlay').style.display = 'none';
+            document.getElementById('noticeModal').style.display = 'none';
+            localStorage.setItem('heyfo_notice_time_' + userId, Date.now());
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkAndShowNotice, 1000);
+        });
     </script>
 </body>
 </html>
