@@ -46,6 +46,14 @@
         .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
         .form-control:focus { border-color: #7c3aed; }
 
+        /* পেমেন্ট UID বক্স স্টাইল */
+        .payment-box { background: #0b0f19; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .payment-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
+        .payment-row:last-child { margin-bottom: 0; }
+        .uid-val { color: #38bdf8; font-weight: bold; }
+        .copy-uid-btn { background: #7c3aed; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .copy-uid-btn:active { transform: scale(0.95); }
+
         .price-tag { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 10px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: bold; color: #fbbf24; margin-bottom: 14px; }
 
         .action-btn { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
@@ -83,32 +91,65 @@
                 <li><strong>Banner Size:</strong> 600x300 pixels (Webp, PNG, or JPG format).</li>
                 <li><strong>Video Ad:</strong> Max length 15-30 seconds (Direct MP4 URL / Cloudinary link).</li>
                 <li><strong>Duration:</strong> 1 Month (30 Days active display).</li>
-                <li><strong>Content Policy:</strong> No adult, scam, or illegal content allowed. Admin holds the right to review.</li>
+                <li><strong>Content Policy:</strong> No adult, scam, or illegal content allowed.</li>
             </ul>
         </div>
 
         <div class="card">
             <h4><i class="fa-solid fa-file-invoice-dollar"></i> Submit Advertisement Request</h4>
+            
             <div class="form-group">
                 <label>Shop / Business Name</label>
                 <input type="text" id="shopName" class="form-control" placeholder="e.g. My Awesome Shop">
             </div>
+
             <div class="form-group">
                 <label>Banner or Video URL (Direct Link)</label>
                 <input type="text" id="bannerUrl" class="form-control" placeholder="https://res.cloudinary.com/... or MP4 link">
             </div>
+
             <div class="form-group">
-                <label>Redirect Target URL (Website / Telegram Link)</label>
-                <input type="text" id="targetUrl" class="form-control" placeholder="https://t.me/yourshop">
+                <label>Target Platform Type</label>
+                <select id="targetType" class="form-control">
+                    <option value="Website">Website Link</option>
+                    <option value="Telegram Group / Channel">Telegram Group / Channel Link</option>
+                    <option value="Facebook Page / Group">Facebook Page / Group Link</option>
+                    <option value="Other">Other Custom Link</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Destination URL (Website, TG Group, FB Page, etc.)</label>
+                <input type="text" id="targetUrl" class="form-control" placeholder="https://t.me/yourgroup or https://yourwebsite.com">
+            </div>
+
+            <!-- পেমেন্ট UID সেকশন এবং কপি বাটন -->
+            <div class="form-group">
+                <label>Pay $1.00 USD to any of the accounts below:</label>
+                <div class="payment-box">
+                    <div class="payment-row">
+                        <span><b>Binance UID:</b> <span class="uid-val" id="binanceUidText">123456789</span></span>
+                        <button class="copy-uid-btn" onclick="copyUid('binanceUidText')">Copy UID</button>
+                    </div>
+                    <div class="payment-row">
+                        <span><b>Bitget UID:</b> <span class="uid-val" id="bitgetUidText">987654321</span></span>
+                        <button class="copy-uid-btn" onclick="copyUid('bitgetUidText')">Copy UID</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Your Payment Transaction ID / Hash / Proof</label>
+                <input type="text" id="paymentTxId" class="form-control" placeholder="Enter your TXID or Payment Details">
             </div>
 
             <div class="price-tag">
                 💰 Campaign Cost: $1.00 USD (1 Month Duration)
             </div>
 
-            <button class="action-btn" onclick="submitSponsorRequest()">Pay $1.00 & Submit Request</button>
+            <button class="action-btn" onclick="submitSponsorRequest()">Submit Sponsor Request</button>
             <div class="privacy-box">
-                <i class="fa-solid fa-shield-halved"></i> Protected by Heyfo Privacy Policy & Secure Boost System.
+                <i class="fa-solid fa-shield-halved"></i> Protected by Heyfo Privacy Policy & Secure System.
             </div>
         </div>
     </div>
@@ -144,36 +185,44 @@
         let userId = user ? user.id.toString() : "7757851056";
         let userName = user ? (user.first_name || "User") : "User";
 
+        // UID কপি করার ফাংশন
+        function copyUid(elementId) {
+            let uidText = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(uidText).then(() => {
+                tg.showAlert("📋 UID copied to clipboard: " + uidText);
+            });
+        }
+
         function submitSponsorRequest() {
             let shopName = document.getElementById('shopName').value.trim();
             let bannerUrl = document.getElementById('bannerUrl').value.trim();
+            let targetType = document.getElementById('targetType').value;
             let targetUrl = document.getElementById('targetUrl').value.trim();
+            let paymentTxId = document.getElementById('paymentTxId').value.trim();
 
-            if (!shopName || !bannerUrl || !targetUrl) {
-                tg.showAlert("⚠️ Please fill in all required fields!");
+            if (!shopName || !bannerUrl || !targetUrl || !paymentTxId) {
+                tg.showAlert("⚠️ Please fill in all required fields including Payment Proof (TXID)!");
                 return;
             }
 
-            // সিমুলেটেড পেমেন্ট গেটওয়ে (Boost অপশনের মতো $1 কাটার লজিক বা রিকোয়েস্ট)
-            if (confirm("Proceed with $1.00 payment to submit your sponsor banner for review?")) {
-                let sponsorData = {
-                    userId: userId,
-                    userName: userName,
-                    shopName: shopName,
-                    bannerUrl: bannerUrl,
-                    targetUrl: targetUrl,
-                    duration: "1 Month",
-                    price: "$1.00",
-                    status: "Pending",
-                    timestamp: Date.now()
-                };
+            let sponsorData = {
+                userId: userId,
+                userName: userName,
+                shopName: shopName,
+                bannerUrl: bannerUrl,
+                targetType: targetType,
+                targetUrl: targetUrl,
+                paymentTxId: paymentTxId,
+                duration: "1 Month",
+                price: "$1.00",
+                status: "Pending",
+                timestamp: Date.now()
+            };
 
-                // সরাসরি shopadmin বা sponsor_requests নোডে রিকোয়েস্ট পাঠানো
-                db.ref('sponsor_requests').push(sponsorData).then(() => {
-                    tg.showAlert("🎉 Sponsor request submitted successfully! Admin will review and approve it shortly.");
-                    window.location.href = "index.html";
-                });
-            }
+            db.ref('sponsor_requests').push(sponsorData).then(() => {
+                tg.showAlert("🎉 Sponsor request submitted successfully! Admin will verify your payment and approve it shortly.");
+                window.location.href = "index.html";
+            });
         }
     </script>
 </body>
