@@ -25,7 +25,7 @@
         .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 50px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
+        .back-btn { background: #2a1b4e; color: #fff; border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
 
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 15px; color: #fbbf24; display: flex; align-items: center; gap: 8px; }
@@ -58,7 +58,7 @@
     <div class="container">
         <div class="header">
             <h3><i class="fa-solid fa-user-check" style="color: #a855f7;"></i> Agent & Verification</h3>
-            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
+            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
         </div>
 
         <div class="card">
@@ -117,7 +117,7 @@
                     <input type="text" id="trxId" class="form-control" placeholder="e.g. 017xxxxxxxx or TrxID / TxHash">
                 </div>
                 <div class="form-group">
-                    <label>Upload Payment Screenshot (Proof)</label>
+                    <label>Upload Payment SS (Proof)</label>
                     <input type="file" id="payScreenshot" class="form-control" accept="image/*" onchange="uploadVerificationScreenshot(this)" style="color: #94a3b8;">
                     <input type="hidden" id="screenshotUrl">
                     <small id="uploadStatus" style="color: #38bdf8; font-size: 10px; display: block; margin-top: 4px;"></small>
@@ -173,20 +173,20 @@
             });
         }
 
-        // ক্লাউডিনারির 'Heyfo MiniApp/agent' ফোল্ডারে স্ক্রিনশট আপলোড করার ফাংশন
+        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন
         function uploadVerificationScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
                 let statusEl = document.getElementById('uploadStatus');
                 let submitBtn = document.getElementById('submitPaidBtn');
                 
-                statusEl.innerText = "Uploading screenshot...";
+                statusEl.innerText = "Uploading SS...";
                 submitBtn.disabled = true;
 
                 let formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', 'ml_default');
-                formData.append('folder', 'Heyfo MiniApp/agent'); // নির্দিষ্ট এজেন্ট ফোল্ডার
+                formData.append('folder', 'Heyfo MiniApp/agent');
 
                 fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
                     method: 'POST',
@@ -196,7 +196,7 @@
                 .then(data => {
                     if (data.secure_url) {
                         document.getElementById('screenshotUrl').value = data.secure_url;
-                        statusEl.innerText = "✅ Screenshot uploaded successfully!";
+                        statusEl.innerText = "✅ SS uploaded successfully!";
                         submitBtn.disabled = false;
                     } else {
                         statusEl.innerText = "❌ Upload failed. Try again.";
@@ -249,7 +249,7 @@
             }
 
             if (!screenshotUrl) {
-                tg.showAlert("⚠️ Please wait for the payment screenshot to upload completely!");
+                tg.showAlert("⚠️ Please wait for the payment SS to upload completely!");
                 return;
             }
 
@@ -265,7 +265,7 @@
             };
 
             db.ref('verification_requests').push(verificationReq).then(() => {
-                tg.showAlert("✅ Verification request submitted successfully! Admin will review your payment and screenshot.");
+                tg.showAlert("✅ Verification request submitted successfully! Admin will review your payment and SS.");
                 window.location.href = "profile.html";
             });
         }
