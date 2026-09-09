@@ -187,11 +187,11 @@
     <div class="modal" id="rulesModal">
         <h3>🎮 Game Rules</h3>
         <ul>
-            <li>First <strong>1 play every day is FREE!</strong>[cite: 14]</li>
+            <li>First <strong>1 play every day is FREE!</strong></li>
             <li>After the free play, you can play up to <strong>3 times</strong> using <strong>50 GP (Fuel)</strong> per play.</li>
-            <li>Catch Gold (🪙 +2), Stars (⭐️ +5), and Diamonds (💎 +5)![cite: 14]</li>
-            <li>Catch <strong>Freeze (❄️)</strong> to slow down falling items.[cite: 14]</li>
-            <li>Avoid Bombs (💣 -2 points). Time limit: <strong>15 seconds</strong>![cite: 14]</li>
+            <li>Catch Gold (🪙 +2), Stars (⭐️ +5), and Diamonds (💎 +5)!</li>
+            <li>Catch <strong>Freeze (❄️)</strong> to slow down falling items.</li>
+            <li>Avoid Bombs (💣 -2 points). Time limit: <strong>15 seconds</strong>!</li>
         </ul>
         <button class="close-modal-btn" onclick="closeRulesModal()">Got It</button>
     </div>
@@ -228,8 +228,8 @@
 
         let userGp = 0;
         let userGold = 0;
-        let freePlaysLeft = 1; // ১টি গেম ফ্রি
-        let paidPlaysLeft = 3; // ৫০ GP দিয়ে ৩ বার
+        let freePlaysLeft = 1;
+        let paidPlaysLeft = 3;
 
         userRef.on('value', snap => {
             let data = snap.val() || {};
@@ -337,7 +337,8 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('startBtn').innerText = "Game Running...";
 
-                itemSpawner = setInterval(spawnItem, 400); // আইটেম স্পন রেট বাড়িয়ে দ্রুত করা হয়েছে
+                // আইটেম আসার ইন্টারভাল সময় কিছুটা বাড়িয়ে ধীর করা হলো (650ms)
+                itemSpawner = setInterval(spawnItem, 650);
                 gameInterval = requestAnimationFrame(updateGame);
 
                 countdownTimer = setInterval(() => {
@@ -368,13 +369,13 @@
                 type = "freeze"; text = "❄️"; points = 0;
             }
 
-            // গেমের স্পিড আগের চেয়ে বাড়িয়ে দেওয়া হলো (Multiplied speed)
-            let speedMultiplier = isFrozen ? 0.6 : 1.8;
+            // আইটেমের পড়ার গতি (Speed) কমিয়ে দেওয়া হয়েছে যাতে ইউজার সহজে সব না ধরতে পারে
+            let speedMultiplier = isFrozen ? 0.4 : 1.0;
 
             items.push({
                 x: Math.random() * (canvas.width - 40) + 20,
                 y: -30,
-                speed: (Math.random() * 2.0 + 3.5) * speedMultiplier,
+                speed: (Math.random() * 1.0 + 1.5) * speedMultiplier,
                 type: type,
                 text: text,
                 points: points
