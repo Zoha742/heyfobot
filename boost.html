@@ -241,27 +241,30 @@
     <div class="modal" id="paymentMethodModal">
         <h3>Boost <span id="modal-coin-name">Service</span></h3>
         <p>Choose your preferred payment method to boost this item.</p>
-        <button class="modal-btn" onclick="openProofModal('Binance Pay', '9950270208')">
-            <i class="fa-solid fa-wallet" style="color: #f59e0b; font-size: 18px;"></i> Binance Pay
-        </button>
-        <button class="modal-btn" onclick="openProofModal('Bitget Wallet', '521132367')">
-            <i class="fa-solid fa-shield-halved" style="color: #38bdf8; font-size: 18px;"></i> Bitget Wallet
-        </button>
+        <div id="paymentMethodsContainer">
+            <!-- Dynamic Payment Buttons -->
+        </div>
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
 
     <!-- Modal 2: Submit Proof -->
     <div class="modal" id="proofModal">
         <h3 id="proof-title">Payment Proof</h3>
-        <p>Copy admin UID to pay, then check your Telegram User ID and upload screenshot.</p>
+        <p>Send payment to the account below, then submit details and screenshot.</p>
         
         <div class="uid-box">
-            <span id="admin-uid-text">UID - 9950270208</span>
+            <span id="admin-uid-text">Account - </span>
             <button class="copy-uid-btn" onclick="copyAdminUid()">Copy</button>
         </div>
 
         <div class="input-label">Telegram User ID:</div>
         <input type="text" id="user-tg-id" class="form-input" readonly style="color: #fbbf24; font-weight: bold;">
+
+        <div class="input-label">Sender Number / Account Details:</div>
+        <input type="text" id="sender-number" class="form-input" placeholder="e.g. 017xxxxxxxx or Wallet ID">
+
+        <div class="input-label">Transaction ID / TXID / Hash:</div>
+        <input type="text" id="transaction-id" class="form-input" placeholder="Enter TXID or TrxID">
 
         <div class="input-label">Upload Payment Proof / Screenshot:</div>
         <input type="file" id="proof-file" class="form-input" accept="image/*">
@@ -306,7 +309,7 @@
         let userName = user ? (user.first_name || "User") : "User";
         let userRef = db.ref('users/' + userId);
 
-        const COOLDOWN_TIME = 12 * 60 * 60 * 1000; // ১২ ঘণ্টা কুলডাউন
+        const COOLDOWN_TIME = 12 * 60 * 60 * 1000;
 
         let boostItems = [
             { id: 'item1', name: 'Boost Alpha', icon: 'fa-fire', normalGp: 50, boostedGp: 500, duration: '5 Days', price: '$2.5' },
@@ -321,7 +324,13 @@
         let selectedBoostId = "";
         let selectedBoostName = "";
         let selectedMethod = "";
-        let currentAdminUid = "";
+        let currentAdminAccount = "";
+        let paymentSettings = {};
+
+        // পেমেন্ট সেটিংস ফায়ারবেস থেকে লোড করা
+        db.ref('sponsor_payment_settings').on('value', snap => {
+            paymentSettings = snap.val() || {};
+        });
 
         userRef.on('value', (snapshot) => {
             userData = snapshot.val() || {};
@@ -411,33 +420,63 @@
             selectedPrice = price;
 
             document.getElementById('modal-coin-name').innerText = `${boostName} (${duration} - ${price})`;
+            
+            // ডাইনামিক পেমেন্ট মেথড বাটন তৈরি (যদি অ্যাডমিন নম্বর দিয়ে থাকে)
+            let methodsBox = document.getElementById('paymentMethodsContainer');
+            let html = "";
+
+            if (paymentSettings.binanceUid && paymentSettings.binanceUid.trim() !== "") {
+                html += `<button class="modal-btn" onclick="openProofModal('Binance Pay', '${paymentSettings.binanceUid}')"><i class="fa-solid fa-wallet" style="color: #f59e0b; font-size: 18px;"></i> Binance Pay</button>`;
+            }
+            if (paymentSettings.bitgetUid && paymentSettings.bitgetUid.trim() !== "") {
+                html += `<button class="modal-btn" onclick="openProofModal('Bitget Wallet', '${paymentSettings.bitgetUid}')"><i class="fa-solid fa-shield-halved" style="color: #38bdf8; font-size: 18px;"></i> Bitget Wallet</button>`;
+            }
+            if (paymentSettings.nagadNum && paymentSettings.nagadNum.trim() !== "") {
+                html += `<button class="modal-btn" onclick="openProofModal('Nagad', '${paymentSettings.nagadNum}')"><i class="fa-solid fa-mobile-screen" style="color: #f97316; font-size: 18px;"></i> Nagad: ${paymentSettings.nagadNum}</button>`;
+            }
+            if (paymentSettings.bkashNum && paymentSettings.bkashNum.trim() !== "") {
+                html += `<button class="modal-btn" onclick="openProofModal('Bkash', '${paymentSettings.bkashNum}')"><i class="fa-solid fa-mobile-screen" style="color: #ec4899; font-size: 18px;"></i> Bkash: ${paymentSettings.bkashNum}</button>`;
+            }
+
+            methodsBox.innerHTML = html !== "" ? html : `<p style="color:#ef4444;">No payment methods active currently!</p>`;
+
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('paymentMethodModal').style.display = 'block';
         }
 
-        function openProofModal(method, adminUid) {
+        function openProofModal(method, adminAccount) {
             selectedMethod = method;
-            currentAdminUid = adminUid;
+            currentAdminAccount = adminAccount;
             document.getElementById('paymentMethodModal').style.display = 'none';
             
             document.getElementById('proof-title').innerText = `${method} Proof (${selectedBoostName})`;
-            document.getElementById('admin-uid-text').innerText = `UID - ${adminUid}`;
+            document.getElementById('admin-uid-text').innerText = `${method} Account - ${adminAccount}`;
             document.getElementById('user-tg-id').value = userId;
+            document.getElementById('sender-number').value = "";
+            document.getElementById('transaction-id').value = "";
             document.getElementById('proof-file').value = "";
 
             document.getElementById('proofModal').style.display = 'block';
         }
 
         function copyAdminUid() {
-            navigator.clipboard.writeText(currentAdminUid).then(() => {
-                tg.showAlert(`Admin UID copied: ${currentAdminUid}`);
+            navigator.clipboard.writeText(currentAdminAccount).then(() => {
+                tg.showAlert(`Copied: ${currentAdminAccount}`);
             });
         }
 
         function submitBoostProof() {
+            let senderNumber = document.getElementById('sender-number').value.trim();
+            let transactionId = document.getElementById('transaction-id').value.trim();
             let fileInput = document.getElementById('proof-file');
+
+            if (!senderNumber || !transactionId) {
+                tg.showAlert("⚠️ Please enter your Sender Number and Transaction ID (TXID)!");
+                return;
+            }
+
             if (fileInput.files.length === 0) {
-                tg.showAlert("Please upload payment proof screenshot!");
+                tg.showAlert("⚠️ Please upload payment proof screenshot!");
                 return;
             }
 
@@ -454,6 +493,8 @@
                     duration: selectedDuration,
                     price: selectedPrice,
                     method: selectedMethod,
+                    senderNumber: senderNumber,
+                    transactionId: transactionId,
                     screenshot: base64Image,
                     status: "Pending",
                     timestamp: Date.now()
@@ -461,7 +502,7 @@
 
                 db.ref(`users/${userId}/pending_boosts/${selectedBoostId}`).set(boostRequest).then(() => {
                     closeModals();
-                    tg.showAlert("Boost payment proof submitted successfully! Admin will review and activate your service.");
+                    tg.showAlert("🎉 Boost payment proof submitted successfully! Admin will review and activate your service.");
                 });
             };
             reader.readAsDataURL(file);
