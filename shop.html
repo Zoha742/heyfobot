@@ -147,22 +147,29 @@
         let username = user && user.username ? `@${user.username}` : `@user`;
 
         let userGold = 0;
-        let userWallet = {};
+        let userDataCache = {};
 
         db.ref('users/' + userId).on('value', snap => {
             let data = snap.val();
             if(data) {
+                userDataCache = data;
                 userGold = data.gold !== undefined ? data.gold : 0;
-                userWallet = data.wallet_info || {};
                 document.getElementById('userGoldDisplay').innerText = userGold.toLocaleString();
             }
         });
 
         function buyDollarCard(dollarAmount, goldPrice) {
-            // আপডেট করা চেক: ইউজার ওয়ালেট ইনফো বা পেমেন্ট ডিটেইলস সেট করেছে কিনা তা চেক করা হচ্ছে
-            let hasWalletInfo = userWallet.usdtAddress || userWallet.exchangeUid || userWallet.bkashNumber || userWallet.nagadNumber;
+            let wInfo = userDataCache.wallet_info || {};
+            let mfsInfo = userDataCache.mfs_info || {};
 
-            if (!hasWalletInfo) {
+            // যেকোনো একটি ওয়ালেট বা পেমেন্ট মেথড (যেমন এক্সচেঞ্জ ইউআইডি, ইউএসডিটি অ্যাড্রেস, বিকাশ বা নগদ নম্বর) থাকলেই অর্ডার করতে পারবে
+            let hasValidWallet = (wInfo.exchangeUid && wInfo.exchangeUid.trim() !== "") || 
+                                 (wInfo.usdtAddress && wInfo.usdtAddress.trim() !== "") || 
+                                 (mfsInfo.accountNumber && mfsInfo.accountNumber.trim() !== "") ||
+                                 (wInfo.bkashNumber && wInfo.bkashNumber.trim() !== "") || 
+                                 (wInfo.nagadNumber && wInfo.nagadNumber.trim() !== "");
+
+            if (!hasValidWallet) {
                 tg.showAlert("⚠️ Please setup your Wallet / Payment details in your Profile before purchasing!");
                 window.location.href = "profile.html";
                 return;
@@ -179,10 +186,8 @@
                             userUsername: username,
                             cardName: `$${dollarAmount} Dollar Card`,
                             price: goldPrice,
-                            usdtAddress: userWallet.usdtAddress || 'N/A',
-                            exchangeUid: userWallet.exchangeUid || 'N/A',
-                            bkashNumber: userWallet.bkashNumber || 'N/A',
-                            nagadNumber: userWallet.nagadNumber || 'N/A',
+                            exchangeUid: wInfo.exchangeUid || mfsInfo.accountNumber || wInfo.bkashNumber || wInfo.nagadNumber || 'N/A',
+                            walletType: wInfo.exchangeName || mfsInfo.provider || 'MFS/Wallet',
                             status: "Pending",
                             timestamp: Date.now()
                         };
