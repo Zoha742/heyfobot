@@ -337,8 +337,8 @@
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('startBtn').innerText = "Game Running...";
 
-                // স্পিড ঠিক রাখা হয়েছে, শুধু আইটেম আসার হার (interval) বাড়িয়ে দেওয়া হলো যাতে স্ক্রিনে প্রচুর আইটেম থাকে
-                itemSpawner = setInterval(spawnItem, 180);
+                // স্পিড ঠিক রেখে শুধু আইটেম আসার হার (interval) কমিয়ে দ্রুত করা হলো যাতে স্ক্রিনে প্রচুর আইটেম পড়ে
+                itemSpawner = setInterval(spawnItem, 200);
                 gameInterval = requestAnimationFrame(updateGame);
 
                 countdownTimer = setInterval(() => {
@@ -369,7 +369,7 @@
                 type = "freeze"; text = "❄️"; points = 0;
             }
 
-            // আগের অরিজিনাল স্পিড (Speed multiplier 1.8) বহাল রাখা হয়েছে
+            // একদম আসল ও অপরিবর্তিত স্পিড ফর্মুলা (Speed Multiplier: 1.8)
             let speedMultiplier = isFrozen ? 0.6 : 1.8;
 
             items.push({
