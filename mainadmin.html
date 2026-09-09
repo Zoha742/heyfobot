@@ -109,6 +109,29 @@
             </div>
         </div>
 
+        <!-- পেমেন্ট সেটিংস কন্ট্রোল (bKash, Nagad, Binance, Bitget) -->
+        <div class="card">
+            <h4><i class="fa-solid fa-wallet"></i> Payment Accounts Settings</h4>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Leave empty to hide any method from users.</p>
+            <div class="form-group">
+                <label>Binance UID</label>
+                <input type="text" id="setBinance" class="form-control" placeholder="Enter Binance UID">
+            </div>
+            <div class="form-group">
+                <label>Bitget UID</label>
+                <input type="text" id="setBitget" class="form-control" placeholder="Enter Bitget UID">
+            </div>
+            <div class="form-group">
+                <label>Nagad Number</label>
+                <input type="text" id="setNagad" class="form-control" placeholder="Enter Nagad number">
+            </div>
+            <div class="form-group">
+                <label>Bkash Number</label>
+                <input type="text" id="setBkash" class="form-control" placeholder="Enter Bkash number">
+            </div>
+            <button class="action-btn" onclick="savePaymentSettings()">Save Payment Settings</button>
+        </div>
+
         <!-- ভেরিফিকেশন রিকোয়েস্ট ম্যানেজমেন্ট -->
         <div class="card">
             <h4><i class="fa-solid fa-user-check"></i> Account Verification Requests</h4>
@@ -201,6 +224,29 @@
 
         let allUsersData = {};
 
+        // পেমেন্ট সেটিংস লোড করা
+        db.ref('sponsor_payment_settings').once('value', snap => {
+            let data = snap.val() || {};
+            document.getElementById('setBinance').value = data.binanceUid || "";
+            document.getElementById('setBitget').value = data.bitgetUid || "";
+            document.getElementById('setNagad').value = data.nagadNum || "";
+            document.getElementById('setBkash').value = data.bkashNum || "";
+        });
+
+        function savePaymentSettings() {
+            let settingsData = {
+                binanceUid: document.getElementById('setBinance').value.trim(),
+                bitgetUid: document.getElementById('setBitget').value.trim(),
+                nagadNum: document.getElementById('setNagad').value.trim(),
+                bkashNum: document.getElementById('setBkash').value.trim(),
+                updatedAt: Date.now()
+            };
+
+            db.ref('sponsor_payment_settings').set(settingsData).then(() => {
+                tg.showAlert("✅ Payment accounts settings updated successfully!");
+            });
+        }
+
         db.ref('users').on('value', snap => {
             let total = 0, active = 0, banned = 0, pendingReq = 0, totalGp = 0;
             let now = Date.now();
@@ -232,7 +278,7 @@
             renderUsersList(allUsersData);
         });
 
-        // ভেরিফিকেশন রিকোয়েস্ট লোড করা এবং এডমিন কর্তৃক অ্যাপ্রুভ/রিজেক্ট[cite: 10, 11, 12]
+        // ভেরিফিকেশন রিকোয়েস্ট ম্যানেজমেন্ট
         db.ref('verification_requests').on('value', snap => {
             let container = document.getElementById('verificationRequestsContainer');
             let html = "";
@@ -291,7 +337,7 @@
             });
         }
 
-        // বুস্ট রিকোয়েস্ট ম্যানেজমেন্ট[cite: 10, 11, 12]
+        // বুস্ট রিকোয়েস্ট ম্যানেজমেন্ট
         db.ref('users').on('value', snap => {
             if (!snap.exists()) return;
             let container = document.getElementById('boostRequestsContainer');
@@ -308,6 +354,9 @@
                                     <div class="boost-info">
                                         <b>User:</b> ${boost.userName} (ID: ${uId})<br>
                                         <b>Service:</b> <span style="color:#fbbf24">${boost.serviceName} (${boost.duration})</span><br>
+                                        <b>Method:</b> ${boost.method || 'N/A'}<br>
+                                        <b>Sender Number:</b> <span style="color:#38bdf8">${boost.senderNumber || 'N/A'}</span><br>
+                                        <b>TXID:</b> <span style="color:#fbbf24">${boost.transactionId || 'N/A'}</span><br>
                                         <a href="${boost.screenshot}" target="_blank" style="color:#38bdf8; font-size:11px;">View Screenshot 📷</a>
                                     </div>
                                     <div class="btn-group">
