@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <!-- ৩. স্পন্সর পেমেন্ট সেটিংস ট্যাব (নম্বর পরিবর্তন বা খালি রাখার কন্ট্রোল) -->
+        <!-- ৩. স্পন্সর পেমেন্ট সেটিংস ট্যাব -->
         <div id="settingsTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-gear"></i> Sponsor Payment Accounts</h4>
@@ -152,7 +152,6 @@
             btnElement.classList.add('active');
         }
 
-        // বর্তমান পেমেন্ট সেটিংস ইনপুটে লোড করা
         db.ref('sponsor_payment_settings').once('value', snap => {
             let data = snap.val() || {};
             document.getElementById('setBinance').value = data.binanceUid || "";
@@ -161,7 +160,6 @@
             document.getElementById('setBkash').value = data.bkashNum || "01601642742";
         });
 
-        // পেমেন্ট সেটিংস সেভ বা আপডেট করা
         function savePaymentSettings() {
             let settingsData = {
                 binanceUid: document.getElementById('setBinance').value.trim(),
@@ -176,7 +174,6 @@
             });
         }
 
-        // ডলার কার্ড অর্ডার রেন্ডার ও প্রসেস করা
         db.ref('dollar_card_orders').on('value', snap => {
             let container = document.getElementById('dollarOrdersListContainer');
             let html = "";
@@ -203,6 +200,8 @@
                                 <b>Cost:</b> 🪙 ${order.price.toLocaleString()} Gold<br>
                                 <b>USDT Addr:</b> <span style="color:#38bdf8;">${order.usdtAddress || 'N/A'}</span><br>
                                 <b>Exchange UID:</b> <span style="color:#c084fc; font-weight:bold;">${order.exchangeUid || 'N/A'}</span><br>
+                                <b>Bkash:</b> <span style="color:#fbbf24;">${order.bkashNumber || 'N/A'}</span><br>
+                                <b>Nagad:</b> <span style="color:#fbbf24;">${order.nagadNumber || 'N/A'}</span><br>
                                 <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${orderDate}</span>
                             </div>
@@ -258,7 +257,7 @@
             } else if (status === 'Approved') {
                 let notifData = {
                     title: "Dollar Card Approved! 🎉",
-                    message: `Congratulations! Your dollar card order has been approved and sent to your address/UID.`,
+                    message: `Congratulations! Your dollar card order has been approved.`,
                     timestamp: Date.now()
                 };
                 db.ref(`users/${targetUserId}/notifications`).push(notifData);
@@ -269,7 +268,7 @@
             });
         }
 
-        // স্পন্সর রিকোয়েস্ট ম্যানেজমেন্ট
+        // স্পন্সর রিকোয়েস্ট ম্যানেজমেন্ট (স্ক্রিনশট প্রুফ সহ)
         db.ref('sponsor_requests').on('value', snap => {
             let container = document.getElementById('sponsorRequestsContainer');
             let html = "";
@@ -287,6 +286,7 @@
                     let date = req.timestamp ? new Date(req.timestamp).toLocaleString() : 'N/A';
                     let status = req.status || 'Pending';
                     let statusColor = status === 'Active' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24');
+                    let screenshotLink = req.screenshotUrl ? `<a href="${req.screenshotUrl}" target="_blank" style="color:#22c55e; font-weight:bold;">View Screenshot 🖼️</a>` : `No Screenshot`;
 
                     html += `
                         <div class="order-box">
@@ -296,7 +296,9 @@
                                 <b>Type:</b> ${req.targetType || 'Website'}<br>
                                 <b>Banner URL:</b> <a href="${req.bannerUrl}" target="_blank" style="color:#38bdf8;">View Banner</a><br>
                                 <b>Target URL:</b> <a href="${req.targetUrl}" target="_blank" style="color:#38bdf8;">${req.targetUrl}</a><br>
+                                <b>Sender Number:</b> <span style="color:#fbbf24;">${req.senderNumber || 'N/A'}</span><br>
                                 <b>Payment TXID:</b> <span style="color:#fbbf24; font-weight:bold;">${req.paymentTxId}</span><br>
+                                <b>Payment Proof:</b> ${screenshotLink}<br>
                                 <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
                                 <span style="font-size:10px; color:var(--text-muted);">${date}</span>
                             </div>
