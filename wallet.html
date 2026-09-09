@@ -60,12 +60,15 @@
         <div class="card">
             <h4><i class="fa-solid fa-id-card"></i> Crypto & Exchange UID Setup</h4>
             <div class="form-group">
-                <label>Binance / Bitget UID</label>
-                <input type="text" id="exchangeUid" class="form-control" placeholder="Enter your Exchange UID (e.g. 9950270208)">
+                <label>Select Exchange</label>
+                <select id="exchangeChoice" class="form-control">
+                    <option value="Binance">Binance</option>
+                    <option value="Bitget">Bitget</option>
+                </select>
             </div>
             <div class="form-group">
-                <label>USDT TRC20 Address</label>
-                <input type="text" id="usdtAddress" class="form-control" placeholder="Enter your USDT TRC20 deposit address">
+                <label>Exchange UID</label>
+                <input type="text" id="exchangeUid" class="form-control" placeholder="Enter your Exchange UID (e.g. 9950270208)">
             </div>
         </div>
 
@@ -108,29 +111,29 @@
         let user = tg.initDataUnsafe.user;
         let userId = user ? user.id.toString() : "7757851056";
 
-        // ডাটাবেজ থেকে পূর্বের সেভ করা ওয়ালেট ইনফো লোড করা
+        // ফায়ারবেস থেকে পূর্বের সেভ করা ওয়ালেট ইনফো লোড করা
         db.ref('users/' + userId + '/wallet_info').on('value', snap => {
             let data = snap.val();
             if(data) {
+                if(data.exchangeChoice) document.getElementById('exchangeChoice').value = data.exchangeChoice;
                 if(data.exchangeUid) document.getElementById('exchangeUid').value = data.exchangeUid;
-                if(data.usdtAddress) document.getElementById('usdtAddress').value = data.usdtAddress;
                 if(data.mfsNumber) document.getElementById('mfsNumber').value = data.mfsNumber;
             }
         });
 
         function saveWalletDetails() {
+            let exchangeChoice = document.getElementById('exchangeChoice').value;
             let exchangeUid = document.getElementById('exchangeUid').value.trim();
-            let usdtAddress = document.getElementById('usdtAddress').value.trim();
             let mfsNumber = document.getElementById('mfsNumber').value.trim();
 
-            if (!exchangeUid && !usdtAddress && !mfsNumber) {
-                tg.showAlert("⚠️ Please fill at least one payment detail field!");
+            if (!exchangeUid && !mfsNumber) {
+                tg.showAlert("⚠️ Please enter at least your Exchange UID or MFS Number!");
                 return;
             }
 
             db.ref('users/' + userId + '/wallet_info').set({
+                exchangeChoice: exchangeChoice,
                 exchangeUid: exchangeUid,
-                usdtAddress: usdtAddress,
                 mfsNumber: mfsNumber,
                 updatedAt: Date.now()
             }).then(() => {
