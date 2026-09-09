@@ -22,10 +22,9 @@
             margin: 0; padding: 16px;
             display: flex; justify-content: center;
         }
-        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 80px; }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 90px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
         .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #c084fc; display: flex; align-items: center; gap: 8px; }
@@ -41,10 +40,10 @@
         .action-btn:hover { opacity: 0.9; }
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
-        /* নিচের দিকে সহজ ব্যাক বাটন স্টাইল */
-        .bottom-back-box { text-align: center; margin-top: 20px; }
-        .bottom-back-link { background: #131c2e; border: 1px solid var(--card-border); color: #c084fc; padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .bottom-back-link:hover { background: #1a2642; }
+        /* নিচের দিকে দুটি ব্যাক অপশন বাটন (Back to Profile এবং Back to Home) */
+        .bottom-back-container { display: flex; gap: 10px; margin-top: 20px; }
+        .bottom-back-btn { flex: 1; background: #131c2e; border: 1px solid var(--card-border); color: #c084fc; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 700; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .bottom-back-btn:hover { background: #1a2642; border-color: #7c3aed; color: #fff; }
     </style>
 </head>
 <body>
@@ -52,7 +51,6 @@
     <div class="container">
         <div class="header">
             <h3><i class="fa-solid fa-headset" style="color: #0891b2;"></i> Heyfo Support Inbox</h3>
-            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
         </div>
 
         <!-- সরাসরি ইনবক্স / অভিযোগ ও সাহায্য ফর্ম -->
@@ -87,9 +85,10 @@
             <button class="action-btn" id="submitBtn" onclick="sendSupportMessage()">Submit to Admin Inbox</button>
         </div>
 
-        <!-- নিচে সহজ ব্যাক অপশন -->
-        <div class="bottom-back-box">
-            <a href="profile.html" class="bottom-back-link"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
+        <!-- নিচে দুটি ব্যাক অপশন -->
+        <div class="bottom-back-container">
+            <a href="profile.html" class="bottom-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
+            <a href="index.html" class="bottom-back-btn"><i class="fa-solid fa-house"></i> Back to Home</a>
         </div>
     </div>
 
