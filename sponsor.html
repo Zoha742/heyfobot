@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heyfo - Sponsor & Ad Banner Submission</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131c2e;
+            --card-border: #2a1b4e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-purple: #7c3aed;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 16px;
+            display: flex; justify-content: center;
+        }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 90px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+
+        .banner-card {
+            background: linear-gradient(135deg, #7c3aed, #4c1d95);
+            border-radius: 18px; padding: 18px; color: #fff; text-align: center; margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        }
+        .banner-card h2 { margin: 0 0 6px 0; font-size: 20px; }
+        .banner-card p { margin: 0; font-size: 12px; opacity: 0.9; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 10px 0; font-size: 14px; color: #fbbf24; display: flex; align-items: center; gap: 8px; }
+        
+        .rules-list { font-size: 12px; color: var(--text-muted); padding-left: 16px; margin: 0 0 16px 0; line-height: 1.6; }
+        .rules-list li { margin-bottom: 6px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #7c3aed; }
+
+        .price-tag { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 10px; border-radius: 10px; text-align: center; font-size: 13px; font-weight: bold; color: #fbbf24; margin-bottom: 14px; }
+
+        .action-btn { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
+
+        .privacy-box { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 10px; }
+
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; background: var(--card-bg); 
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
+            padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
+        }
+        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
+        .nav-item.active { color: #c084fc; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h3><i class="fa-solid fa-rectangle-ad" style="color: #22c55e;"></i> Sponsor & Ads</h3>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+        </div>
+
+        <div class="banner-card">
+            <h2>🚀 Promote Your Business</h2>
+            <p>Display your brand banner or promotional video to thousands of active users!</p>
+        </div>
+
+        <div class="card">
+            <h4><i class="fa-solid fa-circle-info"></i> Terms & Specifications</h4>
+            <ul class="rules-list">
+                <li><strong>Banner Size:</strong> 600x300 pixels (Webp, PNG, or JPG format).</li>
+                <li><strong>Video Ad:</strong> Max length 15-30 seconds (Direct MP4 URL / Cloudinary link).</li>
+                <li><strong>Duration:</strong> 1 Month (30 Days active display).</li>
+                <li><strong>Content Policy:</strong> No adult, scam, or illegal content allowed. Admin holds the right to review.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h4><i class="fa-solid fa-file-invoice-dollar"></i> Submit Advertisement Request</h4>
+            <div class="form-group">
+                <label>Shop / Business Name</label>
+                <input type="text" id="shopName" class="form-control" placeholder="e.g. My Awesome Shop">
+            </div>
+            <div class="form-group">
+                <label>Banner or Video URL (Direct Link)</label>
+                <input type="text" id="bannerUrl" class="form-control" placeholder="https://res.cloudinary.com/... or MP4 link">
+            </div>
+            <div class="form-group">
+                <label>Redirect Target URL (Website / Telegram Link)</label>
+                <input type="text" id="targetUrl" class="form-control" placeholder="https://t.me/yourshop">
+            </div>
+
+            <div class="price-tag">
+                💰 Campaign Cost: $1.00 USD (1 Month Duration)
+            </div>
+
+            <button class="action-btn" onclick="submitSponsorRequest()">Pay $1.00 & Submit Request</button>
+            <div class="privacy-box">
+                <i class="fa-solid fa-shield-halved"></i> Protected by Heyfo Privacy Policy & Secure Boost System.
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+        <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
+        <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
+        <a class="nav-item" href="shop.html"><i class="fa-solid fa-store"></i>Shop</a>
+        <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let user = tg.initDataUnsafe.user;
+        let userId = user ? user.id.toString() : "7757851056";
+        let userName = user ? (user.first_name || "User") : "User";
+
+        function submitSponsorRequest() {
+            let shopName = document.getElementById('shopName').value.trim();
+            let bannerUrl = document.getElementById('bannerUrl').value.trim();
+            let targetUrl = document.getElementById('targetUrl').value.trim();
+
+            if (!shopName || !bannerUrl || !targetUrl) {
+                tg.showAlert("⚠️ Please fill in all required fields!");
+                return;
+            }
+
+            // সিমুলেটেড পেমেন্ট গেটওয়ে (Boost অপশনের মতো $1 কাটার লজিক বা রিকোয়েস্ট)
+            if (confirm("Proceed with $1.00 payment to submit your sponsor banner for review?")) {
+                let sponsorData = {
+                    userId: userId,
+                    userName: userName,
+                    shopName: shopName,
+                    bannerUrl: bannerUrl,
+                    targetUrl: targetUrl,
+                    duration: "1 Month",
+                    price: "$1.00",
+                    status: "Pending",
+                    timestamp: Date.now()
+                };
+
+                // সরাসরি shopadmin বা sponsor_requests নোডে রিকোয়েস্ট পাঠানো
+                db.ref('sponsor_requests').push(sponsorData).then(() => {
+                    tg.showAlert("🎉 Sponsor request submitted successfully! Admin will review and approve it shortly.");
+                    window.location.href = "index.html";
+                });
+            }
+        }
+    </script>
+</body>
+</html>
