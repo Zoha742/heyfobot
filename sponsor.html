@@ -89,7 +89,7 @@
             <h4><i class="fa-solid fa-circle-info"></i> Terms & Specifications</h4>
             <ul class="rules-list">
                 <li><strong>Banner Size:</strong> 600x300 pixels (Webp, PNG, or JPG format).</li>
-                <li><strong>Video Ad:</strong> Max length 15-30 seconds (Direct MP4 URL / Cloudinary link).</li>
+                <li><strong>Video Ad:</strong> Max length 15-30 seconds (Direct MP4 URL / Video format).</li>
                 <li><strong>Duration:</strong> 1 Month (30 Days active display).</li>
                 <li><strong>Content Policy:</strong> No adult, scam, or illegal content allowed.</li>
             </ul>
@@ -103,9 +103,12 @@
                 <input type="text" id="shopName" class="form-control" placeholder="e.g. My Awesome Shop">
             </div>
 
+            <!-- ব্যানার ইমেজ বা ভিডিও আপলোড সিস্টেম (ছবি ও ভিডিও দুটোই সাপোর্ট করবে) -->
             <div class="form-group">
-                <label>Banner or Video URL (Direct Link)</label>
-                <input type="text" id="bannerUrl" class="form-control" placeholder="https://res.cloudinary.com/... or MP4 link">
+                <label>Upload Banner Image or Video (ব্যানার ছবি বা ভিডিও আপলোড করুন)</label>
+                <input type="file" id="bannerFile" class="form-control" accept="image/*,video/*" onchange="uploadBannerImage(this)">
+                <input type="hidden" id="bannerUrl">
+                <small id="bannerUploadStatus" style="color: #38bdf8; font-size: 10px; display: block; margin-top: 4px;"></small>
             </div>
 
             <div class="form-group">
@@ -219,7 +222,46 @@
             });
         }
 
-        // ক্লাউডিনারিতে স্ক্রিনশট আপলোড করার ফাংশন
+        // ব্যানার ইমেজ বা ভিডিও ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে আপলোড করার ফাংশন
+        function uploadBannerImage(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                let statusEl = document.getElementById('bannerUploadStatus');
+                let submitBtn = document.getElementById('submitBtn');
+                
+                statusEl.innerText = "Uploading file (Image/Video)...";
+                submitBtn.disabled = true;
+
+                let formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'ml_default');
+                formData.append('folder', 'Dress - MiniApp/sponser');
+
+                // যেহেতু ছবি বা ভিডিও হতে পারে, তাই ক্লাউডিনারির অটো রিসোর্স টাইপ API ব্যবহার করা হলো
+                fetch('https://api.cloudinary.com/v1_1/dyqegwdme/auto/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.secure_url) {
+                        document.getElementById('bannerUrl').value = data.secure_url;
+                        statusEl.innerText = "✅ File uploaded successfully!";
+                        submitBtn.disabled = false;
+                    } else {
+                        statusEl.innerText = "❌ Upload failed. Try again.";
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    statusEl.innerText = "❌ Error uploading file.";
+                    submitBtn.disabled = false;
+                });
+            }
+        }
+
+        // পেমেন্ট স্ক্রিনশট আপলোড করার ফাংশন
         function uploadScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
@@ -231,7 +273,8 @@
 
                 let formData = new FormData();
                 formData.append('file', file);
-                formData.append('upload_preset', 'ml_default'); // আপনার ক্লাউডিনারি প্রিসেট
+                formData.append('upload_preset', 'ml_default');
+                formData.append('folder', 'Dress - MiniApp/sponser');
 
                 fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
                     method: 'POST',
@@ -266,7 +309,7 @@
             let screenshotUrl = document.getElementById('screenshotUrl').value.trim();
 
             if (!shopName || !bannerUrl || !targetUrl || !senderNumber || !paymentTxId) {
-                tg.showAlert("⚠️ Please fill in all required fields including Sender Number and TXID!");
+                tg.showAlert("⚠️ Please fill in all required fields including Banner/Video, Sender Number and TXID!");
                 return;
             }
 
