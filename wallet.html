@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heyfo - Wallet & Add Fund</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131c2e;
+            --card-border: #2a1b4e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-purple: #7c3aed;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 16px;
+            display: flex; justify-content: center;
+        }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 70px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; }
+        .card h4 { margin: 0 0 12px 0; font-size: 14px; color: #fbbf24; display: flex; align-items: center; gap: 8px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-control { width: 100%; background: #0b0f19; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: #7c3aed; }
+
+        .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
+
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; background: var(--card-bg); 
+            border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
+            padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
+        }
+        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
+        .nav-item.active { color: #c084fc; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h3><i class="fa-solid fa-wallet" style="color: #22c55e;"></i> Wallet & Add Fund</h3>
+            <a href="profile.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Profile</a>
+        </div>
+
+        <div class="card">
+            <h4><i class="fa-solid fa-id-card"></i> Crypto & Exchange UID Setup</h4>
+            <div class="form-group">
+                <label>Binance / Bitget UID</label>
+                <input type="text" id="exchangeUid" class="form-control" placeholder="Enter your Exchange UID (e.g. 9950270208)">
+            </div>
+            <div class="form-group">
+                <label>USDT TRC20 Address</label>
+                <input type="text" id="usdtAddress" class="form-control" placeholder="Enter your USDT TRC20 deposit address">
+            </div>
+        </div>
+
+        <div class="card">
+            <h4><i class="fa-solid fa-mobile-screen-button"></i> Local Payment Setup (MFS)</h4>
+            <div class="form-group">
+                <label>Nagad / bKash Personal Number</label>
+                <input type="text" id="mfsNumber" class="form-control" placeholder="Enter 017xxxxxxxx">
+            </div>
+            <button class="action-btn" onclick="saveWalletDetails()">Save Wallet Settings</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
+        <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
+        <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
+        <a class="nav-item active" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeekTPKMLpOhBH_fMB3eIqWgGy8APQFa8",
+            authDomain: "heycen-9a9d8.firebaseapp.com",
+            databaseURL: "https://heycen-9a9d8-default-rtdb.firebaseio.com",
+            projectId: "heycen-9a9d8",
+            storageBucket: "heycen-9a9d8.firebasestorage.app",
+            messagingSenderId: "442359961958",
+            appId: "1:442359961958:web:815606d4836a66003d50a7",
+            measurementId: "G-XNQSP1R3JR"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let user = tg.initDataUnsafe.user;
+        let userId = user ? user.id.toString() : "7757851056";
+
+        // ডাটাবেজ থেকে পূর্বের সেভ করা ওয়ালেট ইনফো লোড করা
+        db.ref('users/' + userId + '/wallet_info').on('value', snap => {
+            let data = snap.val();
+            if(data) {
+                if(data.exchangeUid) document.getElementById('exchangeUid').value = data.exchangeUid;
+                if(data.usdtAddress) document.getElementById('usdtAddress').value = data.usdtAddress;
+                if(data.mfsNumber) document.getElementById('mfsNumber').value = data.mfsNumber;
+            }
+        });
+
+        function saveWalletDetails() {
+            let exchangeUid = document.getElementById('exchangeUid').value.trim();
+            let usdtAddress = document.getElementById('usdtAddress').value.trim();
+            let mfsNumber = document.getElementById('mfsNumber').value.trim();
+
+            if (!exchangeUid && !usdtAddress && !mfsNumber) {
+                tg.showAlert("⚠️ Please fill at least one payment detail field!");
+                return;
+            }
+
+            db.ref('users/' + userId + '/wallet_info').set({
+                exchangeUid: exchangeUid,
+                usdtAddress: usdtAddress,
+                mfsNumber: mfsNumber,
+                updatedAt: Date.now()
+            }).then(() => {
+                tg.showAlert("✅ Wallet details saved successfully!");
+                window.location.href = "profile.html";
+            });
+        }
+    </script>
+</body>
+</html>
