@@ -80,36 +80,36 @@
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$5 Dollar Card</h4>
-                    <p>50,000 Gold</p>
+                    <p>80,000 Gold</p>
                 </div>
-                <button class="buy-btn" onclick="buyDollarCard(5, 50000)">Buy Now</button>
+                <button class="buy-btn" onclick="buyDollarCard(5, 80000)">Buy Now</button>
             </div>
 
             <div class="card-item">
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$10 Dollar Card</h4>
-                    <p>95,000 Gold</p>
+                    <p>150,000 Gold (150L)</p>
                 </div>
-                <button class="buy-btn" onclick="buyDollarCard(10, 95000)">Buy Now</button>
+                <button class="buy-btn" onclick="buyDollarCard(10, 150000)">Buy Now</button>
             </div>
 
             <div class="card-item">
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$20 Dollar Card</h4>
-                    <p>180,000 Gold</p>
+                    <p>290,000 Gold</p>
                 </div>
-                <button class="buy-btn" onclick="buyDollarCard(20, 180000)">Buy Now</button>
+                <button class="buy-btn" onclick="buyDollarCard(20, 290000)">Buy Now</button>
             </div>
 
             <div class="card-item">
                 <div>
                     <i class="fa-solid fa-wallet"></i>
                     <h4>$50 Dollar Card</h4>
-                    <p>430,000 Gold</p>
+                    <p>700,000 Gold</p>
                 </div>
-                <button class="buy-btn" onclick="buyDollarCard(50, 430000)">Buy Now</button>
+                <button class="buy-btn" onclick="buyDollarCard(50, 700000)">Buy Now</button>
             </div>
         </div>
     </div>
@@ -118,6 +118,7 @@
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
         <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
+        <a class="nav-item active" href="shop.html"><i class="fa-solid fa-store"></i>Shop</a>
         <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
     </div>
 
@@ -158,7 +159,6 @@
         });
 
         function buyDollarCard(dollarAmount, goldPrice) {
-            // ১. বাধ্যতামূলক পেমেন্ট ইনফো (USDT Address ও UID) চেক করা
             if (!userWallet.usdtAddress || !userWallet.exchangeUid) {
                 tg.showAlert("⚠️ Please setup your USDT Address and Exchange UID in your Profile before purchasing!");
                 window.location.href = "profile.html";
