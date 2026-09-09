@@ -237,12 +237,22 @@
     <!-- Overlay & Modals -->
     <div class="overlay" id="overlay" onclick="closeModals()"></div>
 
+    <!-- Modal 0: OnClickA Ad Watch Notice for Mining/Claiming -->
+    <div class="modal" id="adModal">
+        <h3>📺 Watch Ad to Claim!</h3>
+        <p>To mine and claim your reward GP, you must first watch an OnClickA ad.</p>
+        <button class="modal-btn" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="watchOnClickAAd()">
+            <i class="fa-solid fa-play"></i> Watch OnClickA Ad
+        </button>
+        <span class="cancel-text" onclick="closeModals()">Cancel</span>
+    </div>
+
     <!-- Modal 1: Select Payment Method -->
     <div class="modal" id="paymentMethodModal">
         <h3>Boost <span id="modal-coin-name">Service</span></h3>
         <p>Choose your preferred payment method to boost this item.</p>
         <div id="paymentMethodsContainer">
-            <!-- Dynamic Payment Buttons -->
+            <!-- Dynamic Payment Buttons loaded from Firebase Settings -->
         </div>
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
@@ -250,11 +260,11 @@
     <!-- Modal 2: Submit Proof -->
     <div class="modal" id="proofModal">
         <h3 id="proof-title">Payment Proof</h3>
-        <p>Send payment to the account below, then submit details and screenshot.</p>
+        <p>Send payment to the account below, then enter your details and upload screenshot.</p>
         
         <div class="uid-box">
-            <span id="admin-uid-text">Account - </span>
-            <button class="copy-uid-btn" onclick="copyAdminUid()">Copy</button>
+            <span id="admin-account-text">Account - </span>
+            <button class="copy-uid-btn" onclick="copyAdminAccount()">Copy</button>
         </div>
 
         <div class="input-label">Telegram User ID:</div>
@@ -263,8 +273,8 @@
         <div class="input-label">Sender Number / Account Details:</div>
         <input type="text" id="sender-number" class="form-input" placeholder="e.g. 017xxxxxxxx or Wallet ID">
 
-        <div class="input-label">Transaction ID / TXID / Hash:</div>
-        <input type="text" id="transaction-id" class="form-input" placeholder="Enter TXID or TrxID">
+        <div class="input-label">Transaction ID / TXID:</div>
+        <input type="text" id="transaction-id" class="form-input" placeholder="Enter TXID / TrxID">
 
         <div class="input-label">Upload Payment Proof / Screenshot:</div>
         <input type="file" id="proof-file" class="form-input" accept="image/*">
@@ -309,7 +319,7 @@
         let userName = user ? (user.first_name || "User") : "User";
         let userRef = db.ref('users/' + userId);
 
-        const COOLDOWN_TIME = 12 * 60 * 60 * 1000;
+        const COOLDOWN_TIME = 12 * 60 * 60 * 1000; // ১২ ঘণ্টা কুলডাউন
 
         let boostItems = [
             { id: 'item1', name: 'Boost Alpha', icon: 'fa-fire', normalGp: 50, boostedGp: 500, duration: '5 Days', price: '$2.5' },
@@ -323,11 +333,12 @@
         let userData = {};
         let selectedBoostId = "";
         let selectedBoostName = "";
+        let selectedRewardGp = 0;
         let selectedMethod = "";
         let currentAdminAccount = "";
         let paymentSettings = {};
 
-        // পেমেন্ট সেটিংস ফায়ারবেস থেকে লোড করা
+        // ফায়ারবেস থেকে পেমেন্ট সেটিংস ফেচ করা
         db.ref('sponsor_payment_settings').on('value', snap => {
             paymentSettings = snap.val() || {};
         });
@@ -377,7 +388,7 @@
                             </div>
                         </div>
                         <div class="card-buttons">
-                            <button id="claimBtn_${item.id}" class="action-btn claim-btn" ${claimBtnDisabled ? 'disabled' : ''} onclick="claimReward('${item.id}', ${rewardGp})">${claimBtnText}</button>
+                            <button id="claimBtn_${item.id}" class="action-btn claim-btn" ${claimBtnDisabled ? 'disabled' : ''} onclick="promptWatchAd('${item.id}', ${rewardGp})">${claimBtnText}</button>
                             <button class="${boostBtnClass}" onclick="openPaymentModal('${item.id}', '${item.name}', '${item.duration}', '${item.price}')">${boostBtnText}</button>
                         </div>
                     </div>
@@ -385,7 +396,28 @@
             });
         }
 
-        function claimReward(id, gp) {
+        // দাবির আগে অ্যাড দেখানোর মোডাল ওপেন করা
+        function promptWatchAd(id, gp) {
+            selectedBoostId = id;
+            selectedRewardGp = gp;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('adModal').style.display = 'block';
+        }
+
+        // OnClickA অ্যাড দেখার ফাংশন (লিংক বা ট্র্যাকিং এখানে যুক্ত করতে পারেন)
+        function watchOnClickAAd() {
+            // আপনার OnClickA অ্যাড লিংক এখানে ওপেন করা যেতে পারে বা নতুন ট্যাবে দেখানো যায়
+            // উদাহরণস্বরূপ: window.open('https://your-onclicka-ad-link.com', '_blank');
+            
+            tg.showAlert("📺 Watching OnClickA Ad... Please wait 5 seconds.", () => {
+                setTimeout(() => {
+                    closeModals();
+                    executeClaimReward(selectedBoostId, selectedRewardGp);
+                }, 3000);
+            });
+        }
+
+        function executeClaimReward(id, gp) {
             let now = Date.now();
             userRef.once('value').then((snapshot) => {
                 let data = snapshot.val() || {};
@@ -399,7 +431,7 @@
                 updateData['lastClaim_' + id] = now;
 
                 userRef.update(updateData).then(() => {
-                    tg.showAlert(`🎉 Successfully claimed ${gp} GP!`);
+                    tg.showAlert(`🎉 Ad verified! Successfully claimed ${gp} GP!`);
                 });
             });
         }
@@ -421,7 +453,6 @@
 
             document.getElementById('modal-coin-name').innerText = `${boostName} (${duration} - ${price})`;
             
-            // ডাইনামিক পেমেন্ট মেথড বাটন তৈরি (যদি অ্যাডমিন নম্বর দিয়ে থাকে)
             let methodsBox = document.getElementById('paymentMethodsContainer');
             let html = "";
 
@@ -435,7 +466,7 @@
                 html += `<button class="modal-btn" onclick="openProofModal('Nagad', '${paymentSettings.nagadNum}')"><i class="fa-solid fa-mobile-screen" style="color: #f97316; font-size: 18px;"></i> Nagad: ${paymentSettings.nagadNum}</button>`;
             }
             if (paymentSettings.bkashNum && paymentSettings.bkashNum.trim() !== "") {
-                html += `<button class="modal-btn" onclick="openProofModal('Bkash', '${paymentSettings.bkashNum}')"><i class="fa-solid fa-mobile-screen" style="color: #ec4899; font-size: 18px;"></i> Bkash: ${paymentSettings.bkashNum}</button>`;
+                html += `<button class="modal-btn" onclick="openProofModal('Bkash', '${paymentSettings.bkashNum}')"><i class="fa-solid fa-mobile-screen" style="color: #ec4899; font-size: 18px;"></i> bKash: ${paymentSettings.bkashNum}</button>`;
             }
 
             methodsBox.innerHTML = html !== "" ? html : `<p style="color:#ef4444;">No payment methods active currently!</p>`;
@@ -450,7 +481,7 @@
             document.getElementById('paymentMethodModal').style.display = 'none';
             
             document.getElementById('proof-title').innerText = `${method} Proof (${selectedBoostName})`;
-            document.getElementById('admin-uid-text').innerText = `${method} Account - ${adminAccount}`;
+            document.getElementById('admin-account-text').innerText = `${method} Account - ${adminAccount}`;
             document.getElementById('user-tg-id').value = userId;
             document.getElementById('sender-number').value = "";
             document.getElementById('transaction-id').value = "";
@@ -459,7 +490,7 @@
             document.getElementById('proofModal').style.display = 'block';
         }
 
-        function copyAdminUid() {
+        function copyAdminAccount() {
             navigator.clipboard.writeText(currentAdminAccount).then(() => {
                 tg.showAlert(`Copied: ${currentAdminAccount}`);
             });
@@ -510,6 +541,7 @@
 
         function closeModals() {
             document.getElementById('overlay').style.display = 'none';
+            document.getElementById('adModal').style.display = 'none';
             document.getElementById('paymentMethodModal').style.display = 'none';
             document.getElementById('proofModal').style.display = 'none';
         }
