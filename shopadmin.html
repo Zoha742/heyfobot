@@ -65,8 +65,9 @@
 
         <div class="tab-menu">
             <div class="tab-btn active" onclick="switchTab('dollarTab', this)">Dollar Orders</div>
-            <div class="tab-btn" onclick="switchTab('sponsorTab', this)">Sponsor Requests</div>
-            <div class="tab-btn" onclick="switchTab('settingsTab', this)">Payment Settings</div>
+            <div class="tab-btn" onclick="switchTab('sponsorTab', this)">Sponsor</div>
+            <div class="tab-btn" onclick="switchTab('settingsTab', this)">Payment</div>
+            <div class="tab-btn" onclick="switchTab('gameControlTab', this)">Game Control</div>
         </div>
 
         <!-- ১. ডলার কার্ড অর্ডার ট্যাব -->
@@ -93,7 +94,6 @@
         <div id="settingsTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-gear"></i> Sponsor Payment Accounts</h4>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Leave any field empty if you do not want to display that payment method.</p>
                 
                 <div class="form-group">
                     <label>Binance UID</label>
@@ -113,6 +113,25 @@
                 </div>
 
                 <button class="action-btn" onclick="savePaymentSettings()">Save Settings</button>
+            </div>
+        </div>
+
+        <!-- ৪. গেম কন্ট্রোল ট্যাব (নতুন যোগ করা হয়েছে) -->
+        <div id="gameControlTab" class="tab-content">
+            <div class="card">
+                <h4><i class="fa-solid fa-gamepad"></i> Game Settings & Controls</h4>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Control item spawn rate and falling speed for the drop game.</p>
+                
+                <div class="form-group">
+                    <label>Item Spawn Interval (ms) [Smaller = More Items, e.g. 300 to 650]</label>
+                    <input type="number" id="gameSpawnRate" class="form-control" placeholder="e.g. 500">
+                </div>
+                <div class="form-group">
+                    <label>Speed Multiplier [Smaller = Slower Speed, e.g. 0.8 to 1.5]</label>
+                    <input type="number" step="0.1" id="gameSpeedMultiplier" class="form-control" placeholder="e.g. 1.0">
+                </div>
+
+                <button class="action-btn" onclick="saveGameSettings()">Save Game Controls</button>
             </div>
         </div>
     </div>
@@ -152,6 +171,7 @@
             btnElement.classList.add('active');
         }
 
+        // পেমেন্ট সেটিংস লোড
         db.ref('sponsor_payment_settings').once('value', snap => {
             let data = snap.val() || {};
             document.getElementById('setBinance').value = data.binanceUid || "";
@@ -168,9 +188,31 @@
                 bkashNum: document.getElementById('setBkash').value.trim(),
                 updatedAt: Date.now()
             };
-
             db.ref('sponsor_payment_settings').set(settingsData).then(() => {
-                tg.showAlert("✅ Payment settings updated successfully!");
+                tg.showAlert("✅ Payment settings updated!");
+            });
+        }
+
+        // গেম সেটিংস লোড
+        db.ref('game_settings').once('value', snap => {
+            let data = snap.val() || {};
+            document.getElementById('gameSpawnRate').value = data.spawnInterval || 500;
+            document.getElementById('gameSpeedMultiplier').value = data.speedMultiplier || 1.0;
+        });
+
+        // গেম সেটিংস সেভ
+        function saveGameSettings() {
+            let spawnInterval = parseInt(document.getElementById('gameSpawnRate').value) || 500;
+            let speedMultiplier = parseFloat(document.getElementById('gameSpeedMultiplier').value) || 1.0;
+
+            let gameSettings = {
+                spawnInterval: spawnInterval,
+                speedMultiplier: speedMultiplier,
+                updatedAt: Date.now()
+            };
+
+            db.ref('game_settings').set(gameSettings).then(() => {
+                tg.showAlert("🎮 Game controls updated successfully!");
             });
         }
 
@@ -184,35 +226,22 @@
                     order.id = childSnap.key;
                     ordersArray.push(order);
                 });
-
                 ordersArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
                 ordersArray.forEach(order => {
-                    let orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString() : 'N/A';
                     let status = order.status || 'Pending';
                     let statusColor = status === 'Approved' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24');
-
                     html += `
                         <div class="order-box">
                             <div class="order-info">
                                 <b>User:</b> ${order.userName || 'User'} (ID: ${order.userId})<br>
-                                <b>Card Item:</b> <span style="color:#34d399; font-weight:bold;">${order.cardName}</span><br>
+                                <b>Card:</b> <span style="color:#34d399;">${order.cardName}</span><br>
                                 <b>Cost:</b> 🪙 ${order.price.toLocaleString()} Gold<br>
-                                <b>USDT Addr:</b> <span style="color:#38bdf8;">${order.usdtAddress || 'N/A'}</span><br>
-                                <b>Exchange UID:</b> <span style="color:#c084fc; font-weight:bold;">${order.exchangeUid || 'N/A'}</span><br>
-                                <b>Bkash:</b> <span style="color:#fbbf24;">${order.bkashNumber || 'N/A'}</span><br>
-                                <b>Nagad:</b> <span style="color:#fbbf24;">${order.nagadNumber || 'N/A'}</span><br>
-                                <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
-                                <span style="font-size:10px; color:var(--text-muted);">${orderDate}</span>
+                                <b>Status:</b> <span style="color:${statusColor};">${status}</span>
                             </div>
                             ${status === 'Pending' ? `
                                 <div class="btn-group">
                                     <button class="accept-btn" onclick="processDollarOrder('${order.id}', '${order.userId}', 'Approved', 0)">Approve</button>
-                                    <button class="reject-btn" onclick="toggleReasonBox('${order.id}')">Reject & Refund</button>
-                                </div>
-                                <div class="reason-box" id="reasonBox-${order.id}">
-                                    <input type="text" id="reasonInput-${order.id}" class="form-control" placeholder="Reason for rejection..." style="margin-top:6px; margin-bottom:6px;">
-                                    <button class="action-btn" style="padding:6px; font-size:11px;" onclick="processDollarOrder('${order.id}', '${order.userId}', 'Rejected', ${order.price})">Confirm Rejection & Refund</button>
+                                    <button class="reject-btn" onclick="processDollarOrder('${order.id}', '${order.userId}', 'Rejected', ${order.price})">Reject & Refund</button>
                                 </div>
                             ` : ''}
                         </div>
@@ -220,55 +249,24 @@
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No dollar card orders found.</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No orders found.</small>`;
             }
         });
 
-        function toggleReasonBox(orderKey) {
-            let box = document.getElementById(`reasonBox-${orderKey}`);
-            box.style.display = box.style.display === 'block' ? 'none' : 'block';
-        }
-
         function processDollarOrder(orderKey, targetUserId, status, refundAmount) {
-            let reason = "";
-            if (status === 'Rejected') {
-                reason = document.getElementById(`reasonInput-${orderKey}`).value.trim();
-                if (!reason) {
-                    alert("Please write a reason for rejection!");
-                    return;
-                }
-            }
-
             let updates = {};
             updates[`dollar_card_orders/${orderKey}/status`] = status;
-
             if (status === 'Rejected' && refundAmount > 0) {
                 db.ref(`users/${targetUserId}/gold`).once('value').then(snap => {
                     let currentGold = snap.val() || 0;
                     db.ref(`users/${targetUserId}`).update({ gold: currentGold + refundAmount });
                 });
-
-                let notifData = {
-                    title: "Dollar Order Rejected & Refunded",
-                    message: `Your dollar card order was rejected. Reason: ${reason}. 🪙 ${refundAmount.toLocaleString()} Gold refunded.`,
-                    timestamp: Date.now()
-                };
-                db.ref(`users/${targetUserId}/notifications`).push(notifData);
-            } else if (status === 'Approved') {
-                let notifData = {
-                    title: "Dollar Card Approved! 🎉",
-                    message: `Congratulations! Your dollar card order has been approved.`,
-                    timestamp: Date.now()
-                };
-                db.ref(`users/${targetUserId}/notifications`).push(notifData);
             }
-
             db.ref().update(updates).then(() => {
-                tg.showAlert(`Order status updated to ${status} successfully!`);
+                tg.showAlert(`Order ${status}!`);
             });
         }
 
-        // স্পন্সর রিকোয়েস্ট ম্যানেজমেন্ট (স্ক্রিনশট প্রুফ সহ)
         db.ref('sponsor_requests').on('value', snap => {
             let container = document.getElementById('sponsorRequestsContainer');
             let html = "";
@@ -279,28 +277,17 @@
                     req.id = childSnap.key;
                     reqArray.push(req);
                 });
-
                 reqArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
                 reqArray.forEach(req => {
-                    let date = req.timestamp ? new Date(req.timestamp).toLocaleString() : 'N/A';
                     let status = req.status || 'Pending';
-                    let statusColor = status === 'Active' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24');
-                    let screenshotLink = req.screenshotUrl ? `<a href="${req.screenshotUrl}" target="_blank" style="color:#22c55e; font-weight:bold;">View Screenshot 🖼️</a>` : `No Screenshot`;
-
+                    let screenshotLink = req.screenshotUrl ? `<a href="${req.screenshotUrl}" target="_blank" style="color:#22c55e;">View Proof 🖼️</a>` : `No Proof`;
                     html += `
                         <div class="order-box">
                             <div class="order-info">
-                                <b>Shop Name:</b> <span style="color:#34d399; font-weight:bold;">${req.shopName}</span><br>
-                                <b>User:</b> ${req.userName} (ID: ${req.userId})<br>
-                                <b>Type:</b> ${req.targetType || 'Website'}<br>
-                                <b>Banner URL:</b> <a href="${req.bannerUrl}" target="_blank" style="color:#38bdf8;">View Banner</a><br>
-                                <b>Target URL:</b> <a href="${req.targetUrl}" target="_blank" style="color:#38bdf8;">${req.targetUrl}</a><br>
-                                <b>Sender Number:</b> <span style="color:#fbbf24;">${req.senderNumber || 'N/A'}</span><br>
-                                <b>Payment TXID:</b> <span style="color:#fbbf24; font-weight:bold;">${req.paymentTxId}</span><br>
-                                <b>Payment Proof:</b> ${screenshotLink}<br>
-                                <b>Status:</b> <span style="color:${statusColor}; font-weight:bold;">${status}</span><br>
-                                <span style="font-size:10px; color:var(--text-muted);">${date}</span>
+                                <b>Shop:</b> <span style="color:#34d399;">${req.shopName}</span><br>
+                                <b>TXID:</b> ${req.paymentTxId}<br>
+                                <b>Proof:</b> ${screenshotLink}<br>
+                                <b>Status:</b> ${status}
                             </div>
                             <div class="btn-group">
                                 <button class="accept-btn" onclick="setLiveSponsor('${req.id}', '${req.shopName}', '${req.bannerUrl}', '${req.targetUrl}')">Make Live</button>
@@ -311,31 +298,20 @@
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = `<small style="color: var(--text-muted);">No sponsor requests found.</small>`;
+                container.innerHTML = `<small style="color: var(--text-muted);">No requests.</small>`;
             }
         });
 
         function setLiveSponsor(reqKey, shopName, bannerUrl, targetUrl) {
-            let activeData = {
-                shopName: shopName,
-                bannerUrl: bannerUrl,
-                targetUrl: targetUrl,
-                updatedAt: Date.now()
-            };
-
+            let activeData = { shopName, bannerUrl, targetUrl, updatedAt: Date.now() };
             let updates = {};
             updates[`active_sponsor`] = activeData;
             updates[`sponsor_requests/${reqKey}/status`] = "Active";
-
-            db.ref().update(updates).then(() => {
-                tg.showAlert("🚀 Sponsor banner is now live on the home page!");
-            });
+            db.ref().update(updates).then(() => { tg.showAlert("Sponsor Live!"); });
         }
 
         function rejectSponsor(reqKey) {
-            db.ref(`sponsor_requests/${reqKey}`).update({ status: "Rejected" }).then(() => {
-                tg.showAlert("Sponsor request rejected.");
-            });
+            db.ref(`sponsor_requests/${reqKey}`).update({ status: "Rejected" }).then(() => { tg.showAlert("Rejected."); });
         }
     </script>
 </body>
