@@ -251,14 +251,14 @@
         </div>
         <div class="bonus-scroll" id="daily-bonus-container"></div>
 
-        <!-- স্পন্সর ব্যানার সেকশন -->
+        <!-- স্পন্সর ব্যানার সেকশন (নতুন ইমেজ এবং ক্লিক করলে sponsor.html এ যাবে) -->
         <div class="section-header">
             <div class="section-title">📢 Featured Sponsor</div>
             <a href="sponsor.html" style="font-size: 11px; color: #c084fc; text-decoration: none; font-weight: 600;">Ad with Us</a>
         </div>
         <div id="activeSponsorContainer">
             <div class="sponsor-display-box" onclick="location.href='sponsor.html'">
-                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="sponsor-media" alt="Sponsor Banner">
+                <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788989816/s_c378ru.png" class="sponsor-media" alt="Sponsor Banner">
                 <h4>Create Your First Sponsor Ad!</h4>
                 <p>No active sponsor yet. Click here to create your ad 🚀</p>
             </div>
@@ -411,7 +411,7 @@
             });
         }
 
-        // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা
+        // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা (যদি না থাকে তবে নতুন ব্যানারসহ ডিফল্ট স্পন্সর পেজে যাওয়ার অপশন দেখাবে)
         db.ref('active_sponsor').on('value', snap => {
             let sponsor = snap.val();
             let container = document.getElementById('activeSponsorContainer');
@@ -432,7 +432,7 @@
             } else {
                 container.innerHTML = `
                     <div class="sponsor-display-box" onclick="location.href='sponsor.html'">
-                        <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788180133/2_g6yybc.webp" class="sponsor-media" alt="Sponsor Banner">
+                        <img src="https://res.cloudinary.com/dyqegwdme/image/upload/v1788989816/s_c378ru.png" class="sponsor-media" alt="Sponsor Banner">
                         <h4>Create Your First Sponsor Ad!</h4>
                         <p>No active sponsor yet. Click here to create your ad 🚀</p>
                     </div>
