@@ -51,7 +51,6 @@
         .action-btn { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
-        /* নিচের দিকে দুটি সুন্দর ব্যাক অপশন বাটন স্টাইল */
         .bottom-back-container { display: flex; gap: 10px; margin-top: 20px; }
         .bottom-back-btn { flex: 1; background: #131c2e; border: 1px solid var(--card-border); color: #c084fc; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 700; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .bottom-back-btn:hover { background: #1a2642; border-color: #7c3aed; color: #fff; }
@@ -86,33 +85,19 @@
                 <div class="info-box">
                     <b>Direct Paid Verification ($30):</b><br>
                     সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
-
-                    <b>🔹 Binance UID:</b>
-                    <div class="copy-row">
-                        <span class="copy-text" id="binanceUidText">9950270208</span>
-                        <button class="copy-btn" onclick="copyText('binanceUidText', 'Binance UID')">Copy UID</button>
-                    </div>
-
-                    <b>🔹 Bitget UID:</b>
-                    <div class="copy-row">
-                        <span class="copy-text" id="bitgetUidText">521132367</span>
-                        <button class="copy-btn" onclick="copyText('bitgetUidText', 'Bitget UID')">Copy UID</button>
-                    </div>
-
-                    <b>🔹 Bkash / Nagad (Personal):</b>
-                    <div class="copy-row">
-                        <span class="copy-text" id="mfsNumText">01601642742</span>
-                        <button class="copy-btn" onclick="copyText('mfsNumText', 'Number')">Copy Number</button>
+                    
+                    <div id="paymentAccountsBox">
+                        <small style="color: var(--text-muted);">Loading payment accounts...</small>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Payment Method Used</label>
                     <select id="payMethod" class="form-control">
-                        <option value="Bkash">Bkash (01601642742)</option>
-                        <option value="Nagad">Nagad (01601642742)</option>
-                        <option value="Binance">Binance UID (9950270208)</option>
-                        <option value="Bitget">Bitget UID (521132367)</option>
+                        <option value="Bkash">Bkash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Binance">Binance UID</option>
+                        <option value="Bitget">Bitget UID</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -129,7 +114,7 @@
             </div>
         </div>
 
-        <!-- নিচে দুটি ব্যাক অপশন (Back to Profile এবং Back to Home) -->
+        <!-- নিচে দুটি ব্যাক অপশন -->
         <div class="bottom-back-container">
             <a href="profile.html" class="bottom-back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Profile</a>
             <a href="index.html" class="bottom-back-btn"><i class="fa-solid fa-house"></i> Back to Home</a>
@@ -166,6 +151,28 @@
             if(data) {
                 userGold = data.gold !== undefined ? data.gold : 0;
             }
+        });
+
+        // ফায়ারবেস থেকে পেমেন্ট অ্যাকাউন্টগুলো ডাইনামিক্যালি লোড করা
+        db.ref('sponsor_payment_settings').on('value', snap => {
+            let data = snap.val() || {};
+            let box = document.getElementById('paymentAccountsBox');
+            let html = "";
+
+            if (data.binanceUid && data.binanceUid.trim() !== "") {
+                html += `<b>🔹 Binance UID:</b><div class="copy-row"><span class="copy-text" id="binanceUidText">${data.binanceUid}</span><button class="copy-btn" onclick="copyText('binanceUidText', 'Binance UID')">Copy UID</button></div>`;
+            }
+            if (data.bitgetUid && data.bitgetUid.trim() !== "") {
+                html += `<b>🔹 Bitget UID:</b><div class="copy-row"><span class="copy-text" id="bitgetUidText">${data.bitgetUid}</span><button class="copy-btn" onclick="copyText('bitgetUidText', 'Bitget UID')">Copy UID</button></div>`;
+            }
+            if (data.nagadNum && data.nagadNum.trim() !== "") {
+                html += `<b>🔹 Nagad (Personal):</b><div class="copy-row"><span class="copy-text" id="nagadNumText">${data.nagadNum}</span><button class="copy-btn" onclick="copyText('nagadNumText', 'Nagad Number')">Copy Number</button></div>`;
+            }
+            if (data.bkashNum && data.bkashNum.trim() !== "") {
+                html += `<b>🔹 bKash (Personal):</b><div class="copy-row"><span class="copy-text" id="bkashNumText">${data.bkashNum}</span><button class="copy-btn" onclick="copyText('bkashNumText', 'bKash Number')">Copy Number</button></div>`;
+            }
+
+            box.innerHTML = html !== "" ? html : `<small style="color: var(--text-muted);">No payment methods active right now.</small>`;
         });
 
         function switchMethod(tabId, tabElement) {
