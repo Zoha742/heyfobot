@@ -37,7 +37,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0 0 120px 0;
+            padding: 0 0 100px 0;
             display: flex;
             justify-content: center;
             overflow-x: hidden;
@@ -62,15 +62,15 @@
         .boost-header h2 { margin: 0 0 6px 0; font-size: 20px; color: #fff; }
         .boost-header p { margin: 0; font-size: 12px; opacity: 0.9; }
 
-        /* ব্যানার অ্যাড কন্টেইনার */
+        /* ব্যানার অ্যাড কন্টেইনার (ফাঁকা জায়গা) */
         .banner-ad-box {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            border: 1px dashed var(--card-border);
             border-radius: 14px;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             margin-bottom: 20px;
-            min-height: 50px;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -254,18 +254,18 @@
             <p>Active Boost Services & Rewards (12 Hours Interval)</p>
         </div>
 
-        <!-- ব্যানার অ্যাড সেকশন -->
+        <div class="boost-list" id="boosts-container">
+            <!-- Dynamic Boost Items -->
+        </div>
+
+        <!-- ব্যানার অ্যাড সেকশন (কার্ডগুলোর নিচে এবং নেভিগেশন বারের ওপরে ফাঁকা জায়গা) -->
         <div class="banner-ad-box" id="bannerAdContainer">
-            <!-- Richads Banner Ad Code Render Here -->
+            <span style="font-size: 11px; color: var(--text-muted);">Banner Ad Space</span>
             <script>
                 if (window.TelegramAdsController) {
                     // ব্যানার বা ইন্টারস্টিশিয়াল ট্রিগার করার কোড
                 }
             </script>
-        </div>
-
-        <div class="boost-list" id="boosts-container">
-            <!-- Dynamic Boost Items -->
         </div>
     </div>
 
@@ -432,12 +432,9 @@
                     executeClaimReward(id, gp);
                 }).catch((err) => {
                     console.log("Ad load error or skipped:", err);
-                    // অ্যাড শো না করলে ইউজার যাতে আটকে না যায়, বিকল্প হিসেবে সরাসরি ক্লেইম দিতে পারেন অথবা অ্যালার্ট দিতে পারেন
                     tg.showAlert("⚠️ Please watch the ad completely to claim your GP!");
-                    // চাইলে ফোর্জড অ্যাড সাকসেসের জন্য সরাসরি executeClaimReward(id, gp) দিতে পারেন যদি নেটওয়ার্ক ইস্যু হয়
                 });
             } else {
-                // যদি কন্ট্রোলার লোড না হয়ে থাকে সরাসরি ক্লেইম করবে
                 executeClaimReward(id, gp);
             }
         }
