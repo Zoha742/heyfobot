@@ -86,8 +86,9 @@
                     <b>Direct Paid Verification ($30):</b><br>
                     সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
 
+                    <!-- এখানে বিকাশ, নগদ ও UID বক্সগুলো ডাইনামিক্যালি রেন্ডার হবে -->
                     <div id="paymentAccountsBox">
-                        <!-- ডাইনামিক পেমেন্ট অ্যাকাউন্টস লোড হবে -->
+                        <small style="color: var(--text-muted);">Loading payment accounts...</small>
                     </div>
                 </div>
 
@@ -153,7 +154,7 @@
             }
         });
 
-        // ফায়ারবেস থেকে পেমেন্ট অ্যাকাউন্টগুলো ডাইনামিক্যালি লোড করা (bKash, Nagad, Binance, Bitget)
+        // শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ, নগদ, বাইন্যান্স ও বিটগেট নম্বর/UID ডাইনামিক্যালি ফেচ করা
         db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
             let box = document.getElementById('paymentAccountsBox');
