@@ -62,16 +62,11 @@
         .boost-header h2 { margin: 0 0 6px 0; font-size: 20px; color: #fff; }
         .boost-header p { margin: 0; font-size: 12px; opacity: 0.9; }
 
-        /* ব্যানার অ্যাড কন্টেইনার */
+        /* ব্যানার অ্যাড কন্টেইনার (বর্ডার ও টেক্সট ছাড়া শুধু ফাঁকা জায়গা) */
         .banner-ad-box {
-            background: var(--card-bg);
-            border: 1px dashed var(--card-border);
-            border-radius: 12px;
-            padding: 6px;
-            text-align: center;
             margin-top: 10px;
             margin-bottom: 10px;
-            min-height: 40px;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -259,10 +254,8 @@
             <!-- Dynamic Boost Items -->
         </div>
 
-        <!-- ব্যানার অ্যাড সেকশন -->
-        <div class="banner-ad-box" id="bannerAdContainer">
-            <span style="font-size: 10px; color: var(--text-muted);">Banner Ad Space</span>
-        </div>
+        <!-- ব্যানার অ্যাড সেকশন (ক্লিন ও ফাঁকা জায়গা) -->
+        <div class="banner-ad-box" id="bannerAdContainer"></div>
     </div>
 
     <!-- Overlay & Modals -->
@@ -433,7 +426,7 @@
             });
         }
 
-        // কঠোর ভিডিও অ্যাড লজিক: অ্যাড কমপ্লিট না করলে পয়েন্ট দেওয়া হবে না
+        // কঠোর ভিডিও অ্যাড লজিক: অ্যাড সম্পূর্ণ না দেখলে রিওয়ার্ড দেওয়া হবে না
         function triggerVideoAdAndClaim(id, gp) {
             if (window.TelegramAdsController) {
                 try {
