@@ -37,7 +37,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0 0 100px 0;
+            padding: 0 0 120px 0;
             display: flex;
             justify-content: center;
             overflow-x: hidden;
@@ -48,7 +48,6 @@
             max-width: 480px;
             padding: 16px;
             box-sizing: border-box;
-            transition: transform 0.3s ease, opacity 0.3s ease;
         }
 
         .boost-header {
@@ -62,6 +61,20 @@
         }
         .boost-header h2 { margin: 0 0 6px 0; font-size: 20px; color: #fff; }
         .boost-header p { margin: 0; font-size: 12px; opacity: 0.9; }
+
+        /* ব্যানার অ্যাড কন্টেইনার */
+        .banner-ad-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .boost-list {
             display: flex;
@@ -241,6 +254,16 @@
             <p>Active Boost Services & Rewards (12 Hours Interval)</p>
         </div>
 
+        <!-- ব্যানার অ্যাড সেকশন -->
+        <div class="banner-ad-box" id="bannerAdContainer">
+            <!-- Richads Banner Ad Code Render Here -->
+            <script>
+                if (window.TelegramAdsController) {
+                    // ব্যানার বা ইন্টারস্টিশিয়াল ট্রিগার করার কোড
+                }
+            </script>
+        </div>
+
         <div class="boost-list" id="boosts-container">
             <!-- Dynamic Boost Items -->
         </div>
@@ -253,9 +276,7 @@
     <div class="modal" id="paymentMethodModal">
         <h3>Boost <span id="modal-coin-name">Service</span></h3>
         <p>Choose your preferred payment method to boost this item.</p>
-        <div id="paymentMethodsContainer">
-            <!-- Dynamic Payment Buttons loaded from Firebase Settings -->
-        </div>
+        <div id="paymentMethodsContainer"></div>
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
 
@@ -342,7 +363,6 @@
         let currentAdminAccount = "";
         let paymentSettings = {};
 
-        // ফায়ারবেস থেকে পেমেন্ট সেটিংস ফেচ করা
         db.ref('sponsor_payment_settings').on('value', snap => {
             paymentSettings = snap.val() || {};
         });
@@ -392,12 +412,34 @@
                             </div>
                         </div>
                         <div class="card-buttons">
-                            <button id="claimBtn_${item.id}" class="action-btn claim-btn" ${claimBtnDisabled ? 'disabled' : ''} onclick="executeClaimReward('${item.id}', ${rewardGp})">${claimBtnText}</button>
+                            <button id="claimBtn_${item.id}" class="action-btn claim-btn" ${claimBtnDisabled ? 'disabled' : ''} onclick="triggerAdAndClaim('${item.id}', ${rewardGp})">${claimBtnText}</button>
                             <button class="${boostBtnClass}" onclick="openPaymentModal('${item.id}', '${item.name}', '${item.duration}', '${item.price}')">${boostBtnText}</button>
                         </div>
                     </div>
                 `;
             });
+        }
+
+        // ক্লেইম বা মাইনিং করার আগে অ্যাড দেখানোর লজিক
+        function triggerAdAndClaim(id, gp) {
+            if (window.TelegramAdsController) {
+                // Richads দেখানোর ফাংশন কল
+                window.TelegramAdsController.show({
+                    pubId: "1022197",
+                    appId: "8858"
+                }).then(() => {
+                    // অ্যাড দেখা শেষ হলে তবেই রিওয়ার্ড বা মাইনিং শুরু হবে
+                    executeClaimReward(id, gp);
+                }).catch((err) => {
+                    console.log("Ad load error or skipped:", err);
+                    // অ্যাড শো না করলে ইউজার যাতে আটকে না যায়, বিকল্প হিসেবে সরাসরি ক্লেইম দিতে পারেন অথবা অ্যালার্ট দিতে পারেন
+                    tg.showAlert("⚠️ Please watch the ad completely to claim your GP!");
+                    // চাইলে ফোর্জড অ্যাড সাকসেসের জন্য সরাসরি executeClaimReward(id, gp) দিতে পারেন যদি নেটওয়ার্ক ইস্যু হয়
+                });
+            } else {
+                // যদি কন্ট্রোলার লোড না হয়ে থাকে সরাসরি ক্লেইম করবে
+                executeClaimReward(id, gp);
+            }
         }
 
         function executeClaimReward(id, gp) {
@@ -414,7 +456,7 @@
                 updateData['lastClaim_' + id] = now;
 
                 userRef.update(updateData).then(() => {
-                    tg.showAlert(`🎉 Successfully claimed ${gp} GP!`);
+                    tg.showAlert(`🎉 Ad watched successfully! Claimed ${gp} GP!`);
                 });
             });
         }
@@ -482,7 +524,6 @@
             });
         }
 
-        // ক্লাউডিনারির 'Heyfo MiniApp/boost' ফোল্ডারে পেমেন্ট প্রুফ স্ক্রিনশট আপলোড করার ফাংশন
         function uploadBoostScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
@@ -495,7 +536,7 @@
                 let formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', 'ml_default');
-                formData.append('folder', 'Heyfo MiniApp/boost'); // নির্দিষ্ট বুস্ট ফোল্ডার
+                formData.append('folder', 'Heyfo MiniApp/boost');
 
                 fetch('https://api.cloudinary.com/v1_1/dyqegwdme/image/upload', {
                     method: 'POST',
