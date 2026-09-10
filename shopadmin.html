@@ -51,8 +51,6 @@
         .btn-group { display: flex; gap: 8px; }
         .accept-btn { background: #22c55e; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
         .reject-btn { background: #ef4444; color: #fff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
-
-        .reason-box { display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -66,6 +64,7 @@
         <div class="tab-menu">
             <div class="tab-btn active" onclick="switchTab('dollarTab', this)">Dollar Orders</div>
             <div class="tab-btn" onclick="switchTab('sponsorTab', this)">Sponsor</div>
+            <div class="tab-btn" onclick="switchTab('agentTab', this)">Agent Req</div>
             <div class="tab-btn" onclick="switchTab('settingsTab', this)">Payment</div>
             <div class="tab-btn" onclick="switchTab('gameControlTab', this)">Game Control</div>
         </div>
@@ -90,10 +89,20 @@
             </div>
         </div>
 
-        <!-- ৩. স্পন্সর পেমেন্ট সেটিংস ট্যাব -->
+        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (নতুন যোগ করা হয়েছে) -->
+        <div id="agentTab" class="tab-content">
+            <div class="card">
+                <h4><i class="fa-solid fa-user-check"></i> Account Verification & Agent Requests</h4>
+                <div id="agentRequestsContainer">
+                    <small style="color: var(--text-muted);">Loading agent requests...</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ৪. স্পন্সর পেমেন্ট সেটিংস ট্যাব -->
         <div id="settingsTab" class="tab-content">
             <div class="card">
-                <h4><i class="fa-solid fa-gear"></i> Sponsor Payment Accounts</h4>
+                <h4><i class="fa-solid fa-gear"></i> Sponsor & Agent Payment Accounts</h4>
                 
                 <div class="form-group">
                     <label>Binance UID</label>
@@ -116,7 +125,7 @@
             </div>
         </div>
 
-        <!-- ৪. গেম কন্ট্রোল ট্যাব (নতুন যোগ করা হয়েছে) -->
+        <!-- ৫. গেম কন্ট্রোল ট্যাব -->
         <div id="gameControlTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-gamepad"></i> Game Settings & Controls</h4>
@@ -216,6 +225,7 @@
             });
         }
 
+        // ডলার কার্ড অর্ডার লোড
         db.ref('dollar_card_orders').on('value', snap => {
             let container = document.getElementById('dollarOrdersListContainer');
             let html = "";
@@ -267,6 +277,7 @@
             });
         }
 
+        // স্পন্সর রিকোয়েস্ট লোড
         db.ref('sponsor_requests').on('value', snap => {
             let container = document.getElementById('sponsorRequestsContainer');
             let html = "";
@@ -280,13 +291,13 @@
                 reqArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 reqArray.forEach(req => {
                     let status = req.status || 'Pending';
-                    let screenshotLink = req.screenshotUrl ? `<a href="${req.screenshotUrl}" target="_blank" style="color:#22c55e;">View Proof 🖼️</a>` : `No Proof`;
+                    let screenshotLink = req.screenshotUrl ? `<a href="${req.screenshotUrl}" target="_blank" style="color:#22c55e;">View SS 🖼️</a>` : `No SS`;
                     html += `
                         <div class="order-box">
                             <div class="order-info">
                                 <b>Shop:</b> <span style="color:#34d399;">${req.shopName}</span><br>
                                 <b>TXID:</b> ${req.paymentTxId}<br>
-                                <b>Proof:</b> ${screenshotLink}<br>
+                                <b>SS:</b> ${screenshotLink}<br>
                                 <b>Status:</b> ${status}
                             </div>
                             <div class="btn-group">
@@ -312,6 +323,69 @@
 
         function rejectSponsor(reqKey) {
             db.ref(`sponsor_requests/${reqKey}`).update({ status: "Rejected" }).then(() => { tg.showAlert("Rejected."); });
+        }
+
+        // এজেন্ট / ভেরিফিকেশন রিকোয়েস্ট লোড
+        db.ref('verification_requests').on('value', snap => {
+            let container = document.getElementById('agentRequestsContainer');
+            let html = "";
+            if (snap.exists()) {
+                let reqArray = [];
+                snap.forEach(childSnap => {
+                    let req = childSnap.val();
+                    req.id = childSnap.key;
+                    reqArray.push(req);
+                });
+                reqArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                reqArray.forEach(req => {
+                    let status = req.status || 'Pending';
+                    let statusColor = status === 'Approved' ? '#22c55e' : (status === 'Rejected' ? '#ef4444' : '#fbbf24');
+                    let ssLink = req.screenshot ? `<a href="${req.screenshot}" target="_blank" style="color:#22c55e;">View SS 🖼️</a>` : `No SS (Gold Paid)`;
+                    
+                    if (status === 'Pending') {
+                        html += `
+                            <div class="order-box">
+                                <div class="order-info">
+                                    <b>User:</b> ${req.userName} (ID: ${req.userId})<br>
+                                    <b>Method:</b> <span style="color:#34d399;">${req.method}</span><br>
+                                    <b>TrxID / Info:</b> ${req.trxId}<br>
+                                    <b>SS:</b> ${ssLink}<br>
+                                    <b>Status:</b> <span style="color:${statusColor};">${status}</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="accept-btn" onclick="processAgentRequest('${req.id}', '${req.userId}', 'Approved')">Approve & Verify</button>
+                                    <button class="reject-btn" onclick="processAgentRequest('${req.id}', '${req.userId}', 'Rejected')">Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                container.innerHTML = html !== "" ? html : `<small style="color: var(--text-muted);">No pending agent requests.</small>`;
+            } else {
+                container.innerHTML = `<small style="color: var(--text-muted);">No agent requests found.</small>`;
+            }
+        });
+
+        function processAgentRequest(reqKey, targetUserId, status) {
+            let updates = {};
+            updates[`verification_requests/${reqKey}/status`] = status;
+            if (status === 'Approved') {
+                updates[`users/${targetUserId}/isVerified`] = true;
+                db.ref(`users/${targetUserId}/notifications`).push({
+                    title: "Account Verified! 🎉",
+                    message: `Congratulations! Your account verification request has been approved by Admin.`,
+                    timestamp: Date.now()
+                });
+            } else {
+                db.ref(`users/${targetUserId}/notifications`).push({
+                    title: "Verification Rejected",
+                    message: `Your account verification request was rejected. Please contact support.`,
+                    timestamp: Date.now()
+                });
+            }
+            db.ref().update(updates).then(() => {
+                tg.showAlert(`Agent request ${status}!`);
+            });
         }
     </script>
 </body>
