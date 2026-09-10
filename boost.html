@@ -37,7 +37,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0 0 140px 0;
+            padding: 0 0 90px 0; /* প্যাডিং কমিয়ে ছোট করা হয়েছে */
             display: flex;
             justify-content: center;
             overflow-x: hidden;
@@ -62,16 +62,16 @@
         .boost-header h2 { margin: 0 0 6px 0; font-size: 20px; color: #fff; }
         .boost-header p { margin: 0; font-size: 12px; opacity: 0.9; }
 
-        /* ব্যানার অ্যাড কন্টেইনার (ফাঁকা জায়গা) */
+        /* ব্যানার অ্যাড কন্টেইনার ফাঁকা জায়গা কমিয়ে কম্প্যাক্ট করা হয়েছে */
         .banner-ad-box {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 10px;
+            border: 1px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 6px;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
             margin-bottom: 10px;
-            min-height: 60px;
+            min-height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -81,7 +81,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .boost-card {
@@ -234,12 +234,12 @@
         .btn-submit-proof:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .cancel-text { color: #ef4444; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block; }
 
-        /* বটম নেভিগেশন বার */
+        /* বটম নেভিগেশন বার - ফিক্সড ও প্রপারলি সেট করা */
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
             width: 100%; max-width: 480px; background: var(--card-bg); 
             border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
-            padding: 12px 0 14px 0; box-sizing: border-box; z-index: 999; 
+            padding: 10px 0 12px 0; box-sizing: border-box; z-index: 9999; 
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
         }
         .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; transition: color 0.2s, transform 0.2s; }
@@ -259,9 +259,9 @@
             <!-- Dynamic Boost Items -->
         </div>
 
-        <!-- ব্যানার অ্যাড সেকশন -->
+        <!-- ব্যানার অ্যাড সেকশন (কম্প্যাক্ট ফাঁকা জায়গা) -->
         <div class="banner-ad-box" id="bannerAdContainer">
-            <!-- Richads Banner will be injected here -->
+            <span style="font-size: 10px; color: var(--text-muted);">Banner Ad Space</span>
         </div>
     </div>
 
@@ -305,13 +305,13 @@
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
 
-    <!-- নেভিগেশন বার -->
+    <!-- নেভিগেশন বার (প্রোফাইল আইকন সহ ফিক্সড) -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
         <a class="nav-item" href="task.html"><i class="fa-solid fa-list-check"></i>Task</a>
         <a class="nav-item active" href="boost.html"><i class="fa-solid fa-bolt"></i>Boost</a>
-        <a class="nav-item" href="profile.html"><i class="fa-solid-user"></i>Profile</a>
+        <a class="nav-item" href="profile.html"><i class="fa-solid fa-user"></i>Profile</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -340,7 +340,7 @@
         let userName = user ? (user.first_name || "User") : "User";
         let userRef = db.ref('users/' + userId);
 
-        const COOLDOWN_TIME = 12 * 60 * 60 * 1000; // ১২ ঘণ্টা কুলডাউন
+        const COOLDOWN_TIME = 12 * 60 * 60 * 1000;
 
         let boostItems = [
             { id: 'item1', name: 'Boost Alpha', icon: 'fa-fire', normalGp: 50, boostedGp: 500, duration: '5 Days', price: '$2.5' },
@@ -368,7 +368,7 @@
             renderBoosts();
         });
 
-        // পেজ লোড হওয়ার সাথে সাথে ব্যানার অ্যাড রেন্ডার করার ফাংশন
+        // ব্যানার অ্যাড রেন্ডারিং
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 if (window.TelegramAdsController) {
@@ -433,20 +433,17 @@
             });
         }
 
-        // রিওয়ার্ডেড বা ইন্টারস্টিশিয়াল ভিডিও অ্যাড ট্রিগার করার সঠিক মেথড
+        // রিওয়ার্ডেড ভিডিও অ্যাড মেথড
         function triggerVideoAdAndClaim(id, gp) {
             if (window.TelegramAdsController) {
-                // Richads ইন্টারস্টিশিয়াল/ভিডিও অ্যাড জোন ট্রিগার
                 window.TelegramAdsController.show({
-                    zoneId: 406945, // আপনার ভিডিও জোনের আইডি
+                    zoneId: 406945,
                     onShow: () => { console.log("Video ad started"); },
                     onComplete: () => {
-                        // অ্যাড দেখা শেষ হলে তবেই গোল্ড ক্লেইম হবে
                         executeClaimReward(id, gp);
                     },
                     onError: (err) => {
                         console.log("Video ad error or skipped:", err);
-                        // ফেইলসেইফ: যদি নেটওয়ার্ক বা অন্য কারণে অ্যাড লোড না হয়, ইউজার যাতে রিওয়ার্ড মিস না করে
                         executeClaimReward(id, gp);
                     }
                 }).catch(() => {
