@@ -86,7 +86,7 @@
                     <b>Direct Paid Verification ($30):</b><br>
                     সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
 
-                    <!-- এখানে বিকাশ, নগদ ও UID বক্সগুলো ডাইনামিক্যালি রেন্ডার হবে -->
+                    <!-- বিকাশ, নগদ এবং UID বক্সগুলো এখানে ডাইনামিক্যালি রেন্ডার হবে -->
                     <div id="paymentAccountsBox">
                         <small style="color: var(--text-muted);">Loading payment accounts...</small>
                     </div>
@@ -154,7 +154,7 @@
             }
         });
 
-        // শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ, নগদ, বাইন্যান্স ও বিটগেট নম্বর/UID ডাইনামিক্যালি ফেচ করা
+        // শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ, নগদ, বাইন্যান্স ও বিটগেট নম্বর/UID ডাইনামিক্যালি ফেচ করা[cite: 7]
         db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
             let box = document.getElementById('paymentAccountsBox');
@@ -190,7 +190,7 @@
             });
         }
 
-        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন
+        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন[cite: 7]
         function uploadVerificationScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
