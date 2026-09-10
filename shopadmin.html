@@ -89,46 +89,11 @@
             </div>
         </div>
 
-        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (সাথে পেমেন্ট নম্বর সেটিংও যুক্ত করা হলো) -->
+        <!-- ৩. এজেন্ট রিকোয়েস্ট ট্যাব (যেখানে স্ক্রিনশটের মতো হুবহু সেটিংস কার্ড এবং রিকোয়েস্ট লিস্ট থাকবে) -->
         <div id="agentTab" class="tab-content">
-            <div class="card" style="border-color: #3b82f6; background: #0f172a;">
-                <h4><i class="fa-solid fa-sliders"></i> Quick Agent Payment Settings</h4>
-                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Update agent bKash, Nagad & UIDs directly from here:</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                    <div>
-                        <label style="font-size: 10px; color: #94a3b8;">bKash Number</label>
-                        <input type="text" id="quickBkash" class="form-control" placeholder="bKash No">
-                    </div>
-                    <div>
-                        <label style="font-size: 10px; color: #94a3b8;">Nagad Number</label>
-                        <input type="text" id="quickNagad" class="form-control" placeholder="Nagad No">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                    <div>
-                        <label style="font-size: 10px; color: #94a3b8;">Binance UID</label>
-                        <input type="text" id="quickBinance" class="form-control" placeholder="Binance UID">
-                    </div>
-                    <div>
-                        <label style="font-size: 10px; color: #94a3b8;">Bitget UID</label>
-                        <input type="text" id="quickBitget" class="form-control" placeholder="Bitget UID">
-                    </div>
-                </div>
-                <button class="action-btn" style="padding: 8px; font-size: 12px;" onclick="saveQuickPaymentSettings()">Update Agent Numbers</button>
-            </div>
-
+            <!-- স্ক্রিনশটের হুবহু স্টাইলের পেমেন্ট অ্যাকাউন্টস সেটিংস কার্ড -->
             <div class="card">
-                <h4><i class="fa-solid fa-user-check"></i> Account Verification & Agent Requests</h4>
-                <div id="agentRequestsContainer">
-                    <small style="color: var(--text-muted);">Loading agent requests...</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- ৪. পেমেন্ট ও অ্যাকাউন্ট সেটিংস ট্যাব -->
-        <div id="settingsTab" class="tab-content">
-            <div class="card">
-                <h4><i class="fa-solid fa-gear"></i> Sponsor & Agent Payment Accounts</h4>
+                <h4><i class="fa-solid fa-gear" style="color: #c084fc;"></i> Sponsor & Agent Payment Accounts</h4>
                 
                 <div class="form-group">
                     <label>Binance UID</label>
@@ -148,6 +113,38 @@
                 </div>
 
                 <button class="action-btn" onclick="savePaymentSettings()">Save Settings</button>
+            </div>
+
+            <!-- ইউজারদের এজেন্ট ভেরিফিকেশন রিকোয়েস্ট লিস্ট -->
+            <div class="card">
+                <h4><i class="fa-solid fa-user-check"></i> Account Verification & Agent Requests</h4>
+                <div id="agentRequestsContainer">
+                    <small style="color: var(--text-muted);">Loading agent requests...</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ৪. সাধারণ পেমেন্ট সেটিংস ট্যাব -->
+        <div id="settingsTab" class="tab-content">
+            <div class="card">
+                <h4><i class="fa-solid fa-gear"></i> Payment Accounts Settings</h4>
+                <div class="form-group">
+                    <label>Binance UID</label>
+                    <input type="text" id="setBinance2" class="form-control" placeholder="Enter Binance UID">
+                </div>
+                <div class="form-group">
+                    <label>Bitget UID</label>
+                    <input type="text" id="setBitget2" class="form-control" placeholder="Enter Bitget UID">
+                </div>
+                <div class="form-group">
+                    <label>Nagad Number</label>
+                    <input type="text" id="setNagad2" class="form-control" placeholder="Enter Nagad number">
+                </div>
+                <div class="form-group">
+                    <label>Bkash Number</label>
+                    <input type="text" id="setBkash2" class="form-control" placeholder="Enter Bkash number">
+                </div>
+                <button class="action-btn" onclick="savePaymentSettings2()">Save Settings</button>
             </div>
         </div>
 
@@ -209,17 +206,17 @@
         // পেমেন্ট সেটিংস লোড
         db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
-            // মেইন পেমেন্ট ট্যাব
+            // এজেন্ট ট্যাবের ফর্ম
             document.getElementById('setBinance').value = data.binanceUid || "";
             document.getElementById('setBitget').value = data.bitgetUid || "";
             document.getElementById('setNagad').value = data.nagadNum || "";
             document.getElementById('setBkash').value = data.bkashNum || "";
-            
-            // এজেন্ট ট্যাবের কুইক সেটিংস
-            document.getElementById('quickBinance').value = data.binanceUid || "";
-            document.getElementById('quickBitget').value = data.bitgetUid || "";
-            document.getElementById('quickNagad').value = data.nagadNum || "";
-            document.getElementById('quickBkash').value = data.bkashNum || "";
+
+            // সাধারণ পেমেন্ট ট্যাবের ফর্ম
+            document.getElementById('setBinance2').value = data.binanceUid || "";
+            document.getElementById('setBitget2').value = data.bitgetUid || "";
+            document.getElementById('setNagad2').value = data.nagadNum || "";
+            document.getElementById('setBkash2').value = data.bkashNum || "";
         });
 
         function savePaymentSettings() {
@@ -235,16 +232,16 @@
             });
         }
 
-        function saveQuickPaymentSettings() {
+        function savePaymentSettings2() {
             let settingsData = {
-                binanceUid: document.getElementById('quickBinance').value.trim(),
-                bitgetUid: document.getElementById('quickBitget').value.trim(),
-                nagadNum: document.getElementById('quickNagad').value.trim(),
-                bkashNum: document.getElementById('quickBkash').value.trim(),
+                binanceUid: document.getElementById('setBinance2').value.trim(),
+                bitgetUid: document.getElementById('setBitget2').value.trim(),
+                nagadNum: document.getElementById('setNagad2').value.trim(),
+                bkashNum: document.getElementById('setBkash2').value.trim(),
                 updatedAt: Date.now()
             };
             db.ref('sponsor_payment_settings').set(settingsData).then(() => {
-                tg.showAlert("✅ Agent payment numbers updated successfully!");
+                tg.showAlert("✅ Payment accounts settings updated successfully!");
             });
         }
 
@@ -255,7 +252,6 @@
             document.getElementById('gameSpeedMultiplier').value = data.speedMultiplier || 1.0;
         });
 
-        // গেম সেটিংস সেভ
         function saveGameSettings() {
             let spawnInterval = parseInt(document.getElementById('gameSpawnRate').value) || 500;
             let speedMultiplier = parseFloat(document.getElementById('gameSpeedMultiplier').value) || 1.0;
@@ -313,7 +309,7 @@
             let updates = {};
             updates[`dollar_card_orders/${orderKey}/status`] = status;
             if (status === 'Rejected' && refundAmount > 0) {
-                db.ref(`users/${targetUserId}/gold`).once('value').then(snap => {
+                db.ref(`users/${targetUserId}/gold`).once('value', snap => {
                     let currentGold = snap.val() || 0;
                     db.ref(`users/${targetUserId}`).update({ gold: currentGold + refundAmount });
                 });
@@ -371,7 +367,7 @@
             db.ref(`sponsor_requests/${reqKey}`).update({ status: "Rejected" }).then(() => { tg.showAlert("Rejected."); });
         }
 
-        // এজেন্ট / ভেরিফিকেশন রিকোয়েস্ট লোড
+        // এজেন্ট রিকোয়েস্ট লোড
         db.ref('verification_requests').on('value', snap => {
             let container = document.getElementById('agentRequestsContainer');
             let html = "";
