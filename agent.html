@@ -87,37 +87,17 @@
                     সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
 
                     <div id="paymentAccountsBox">
-                        <!-- পেমেন্ট অ্যাকাউন্টগুলো ডাইনামিক্যালি লোড হবে -->
-                        <b>🔹 bKash (Personal):</b>
-                        <div class="copy-row">
-                            <span class="copy-text" id="bkashNumText">01601642742</span>
-                            <button class="copy-btn" onclick="copyText('bkashNumText', 'bKash Number')">Copy Number</button>
-                        </div>
-                        <b>🔹 Nagad (Personal):</b>
-                        <div class="copy-row">
-                            <span class="copy-text" id="nagadNumText">01601642742</span>
-                            <button class="copy-btn" onclick="copyText('nagadNumText', 'Nagad Number')">Copy Number</button>
-                        </div>
-                        <b>🔹 Binance UID:</b>
-                        <div class="copy-row">
-                            <span class="copy-text" id="binanceUidText">9950270208</span>
-                            <button class="copy-btn" onclick="copyText('binanceUidText', 'Binance UID')">Copy UID</button>
-                        </div>
-                        <b>🔹 Bitget UID:</b>
-                        <div class="copy-row">
-                            <span class="copy-text" id="bitgetUidText">521132367</span>
-                            <button class="copy-btn" onclick="copyText('bitgetUidText', 'Bitget UID')">Copy UID</button>
-                        </div>
+                        <!-- ডাইনামিক পেমেন্ট অ্যাকাউন্টস লোড হবে -->
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Payment Method Used</label>
                     <select id="payMethod" class="form-control">
-                        <option value="Bkash">bKash (01601642742)</option>
-                        <option value="Nagad">Nagad (01601642742)</option>
-                        <option value="Binance">Binance UID (9950270208)</option>
-                        <option value="Bitget">Bitget UID (521132367)</option>
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Binance">Binance UID</option>
+                        <option value="Bitget">Bitget UID</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -173,7 +153,7 @@
             }
         });
 
-        // ফায়ারবেসের শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ ও নগদ নম্বর ডাইনামিক্যালি ফেচ করা
+        // ফায়ারবেস থেকে পেমেন্ট অ্যাকাউন্টগুলো ডাইনামিক্যালি লোড করা (bKash, Nagad, Binance, Bitget)
         db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
             let box = document.getElementById('paymentAccountsBox');
@@ -209,7 +189,7 @@
             });
         }
 
-        // ক্লাউডিনারির 'Heyfo MiniApp/agent' ফোল্ডারে SS আপলোড করার ফাংশন
+        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন
         function uploadVerificationScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
