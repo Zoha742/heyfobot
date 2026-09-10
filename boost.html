@@ -37,7 +37,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0 0 90px 0; /* প্যাডিং কমিয়ে ছোট করা হয়েছে */
+            padding: 0 0 90px 0;
             display: flex;
             justify-content: center;
             overflow-x: hidden;
@@ -62,7 +62,7 @@
         .boost-header h2 { margin: 0 0 6px 0; font-size: 20px; color: #fff; }
         .boost-header p { margin: 0; font-size: 12px; opacity: 0.9; }
 
-        /* ব্যানার অ্যাড কন্টেইনার ফাঁকা জায়গা কমিয়ে কম্প্যাক্ট করা হয়েছে */
+        /* ব্যানার অ্যাড কন্টেইনার */
         .banner-ad-box {
             background: var(--card-bg);
             border: 1px dashed var(--card-border);
@@ -234,7 +234,7 @@
         .btn-submit-proof:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
         .cancel-text { color: #ef4444; font-size: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block; }
 
-        /* বটম নেভিগেশন বার - ফিক্সড ও প্রপারলি সেট করা */
+        /* বটম নেভিগেশন বার */
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
             width: 100%; max-width: 480px; background: var(--card-bg); 
@@ -259,7 +259,7 @@
             <!-- Dynamic Boost Items -->
         </div>
 
-        <!-- ব্যানার অ্যাড সেকশন (কম্প্যাক্ট ফাঁকা জায়গা) -->
+        <!-- ব্যানার অ্যাড সেকশন -->
         <div class="banner-ad-box" id="bannerAdContainer">
             <span style="font-size: 10px; color: var(--text-muted);">Banner Ad Space</span>
         </div>
@@ -305,7 +305,7 @@
         <span class="cancel-text" onclick="closeModals()">Cancel</span>
     </div>
 
-    <!-- নেভিগেশন বার (প্রোফাইল আইকন সহ ফিক্সড) -->
+    <!-- নেভিগেশন বার -->
     <div class="bottom-nav" id="bottomNav">
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -433,24 +433,30 @@
             });
         }
 
-        // রিওয়ার্ডেড ভিডিও অ্যাড মেথড
+        // কঠোর ভিডিও অ্যাড লজিক: অ্যাড কমপ্লিট না করলে পয়েন্ট দেওয়া হবে না
         function triggerVideoAdAndClaim(id, gp) {
             if (window.TelegramAdsController) {
-                window.TelegramAdsController.show({
-                    zoneId: 406945,
-                    onShow: () => { console.log("Video ad started"); },
-                    onComplete: () => {
-                        executeClaimReward(id, gp);
-                    },
-                    onError: (err) => {
-                        console.log("Video ad error or skipped:", err);
-                        executeClaimReward(id, gp);
-                    }
-                }).catch(() => {
-                    executeClaimReward(id, gp);
-                });
+                try {
+                    window.TelegramAdsController.show({
+                        zoneId: 406945, // আপনার ভিডিও জোন আইডি
+                        onShow: () => { 
+                            console.log("Video ad started"); 
+                        },
+                        onComplete: () => {
+                            // ইউজার সম্পূর্ণ অ্যাড দেখলে তবেই রিওয়ার্ড পাবে
+                            executeClaimReward(id, gp);
+                        },
+                        onError: (err) => {
+                            console.log("Video ad error or skipped:", err);
+                            tg.showAlert("❌ You must watch the complete video ad to claim your GP!");
+                        }
+                    });
+                } catch (e) {
+                    console.log("Ad exception:", e);
+                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
+                }
             } else {
-                executeClaimReward(id, gp);
+                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
             }
         }
 
