@@ -33,7 +33,7 @@
             margin: 0; padding: 16px;
             display: flex; justify-content: center;
         }
-        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 70px; }
+        .container { width: 100%; max-width: 480px; box-sizing: border-box; padding-bottom: 90px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .header h3 { margin: 0; color: #fff; background: linear-gradient(135deg, #c084fc, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .back-btn { background: #2a1b4e; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; text-decoration: none; }
@@ -46,21 +46,17 @@
         .balance-card h4 { margin: 0 0 4px 0; font-size: 12px; opacity: 0.9; }
         .balance-card h2 { margin: 0; font-size: 22px; color: #fbbf24; }
 
-        /* ব্যানার অ্যাড কন্টেইনার স্টাইল (খালি জায়গা) */
+        /* ব্যানার অ্যাড কন্টেইনার (বর্ডার ও টেক্সট ছাড়া শুধু ফাঁকা জায়গা) */
         .banner-ad-box {
-            background: var(--card-bg);
-            border: 1px dashed var(--card-border);
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-            margin-bottom: 16px;
-            min-height: 60px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
         .card-item {
             background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 16px; padding: 16px; text-align: center; display: flex;
@@ -80,10 +76,11 @@
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
             width: 100%; max-width: 480px; background: var(--card-bg); 
             border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; 
-            padding: 12px 0 16px 0; box-sizing: border-box; z-index: 9999; 
+            padding: 10px 0 12px 0; box-sizing: border-box; z-index: 9999; 
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
         }
-        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; }
-        .nav-item.active { color: #c084fc; }
+        .nav-item { text-align: center; color: var(--text-muted); text-decoration: none; font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; transition: color 0.2s, transform 0.2s; }
+        .nav-item.active { color: #c084fc; transform: translateY(-2px); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
 </head>
@@ -137,7 +134,6 @@
                 <button class="buy-btn" onclick="buyDollarCard(50, 700000)">Buy Now</button>
             </div>
 
-            <!-- নতুন যোগ করা কার্ডসমূহ -->
             <div class="card-item">
                 <div>
                     <i class="fa-solid fa-wallet"></i>
@@ -175,17 +171,11 @@
             </div>
         </div>
 
-        <!-- কার্ডগুলোর ঠিক নিচে ব্যানার অ্যাড এর জন্য ফাঁকা জায়গা (Ad Box) -->
-        <div class="banner-ad-box" id="bannerAdContainer">
-            <span style="font-size: 11px; color: var(--text-muted);">Banner Ad Space</span>
-            <script>
-                if (window.TelegramAdsController) {
-                    // ব্যানার অ্যাড রেন্ডার হওয়ার জায়গা
-                }
-            </script>
-        </div>
+        <!-- ব্যানার অ্যাড সেকশন (ক্লিন ও ফাঁকা জায়গা) -->
+        <div class="banner-ad-box" id="bannerAdContainer"></div>
     </div>
 
+    <!-- নেভিগেশন বার -->
     <div class="bottom-nav">
         <a class="nav-item" href="index.html"><i class="fa-solid fa-house"></i>Home</a>
         <a class="nav-item" href="game.html"><i class="fa-solid fa-gamepad"></i>Game</a>
@@ -228,6 +218,23 @@
                 userGold = data.gold !== undefined ? data.gold : 0;
                 document.getElementById('userGoldDisplay').innerText = userGold.toLocaleString();
             }
+        });
+
+        // ব্যানার অ্যাড রেন্ডারিং
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.TelegramAdsController) {
+                    try {
+                        window.TelegramAdsController.renderBanner({
+                            pubId: "1022197",
+                            appId: "8858",
+                            containerId: "bannerAdContainer"
+                        });
+                    } catch (e) {
+                        console.log("Banner render error:", e);
+                    }
+                }
+            }, 1000);
         });
 
         function buyDollarCard(dollarAmount, goldPrice) {
