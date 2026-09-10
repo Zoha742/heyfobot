@@ -10,6 +10,15 @@
     <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
     <!-- OnClicka SDK Script -->
     <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+    <!-- Richads Telegram Integration Script -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+        window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "1022197",
+            appId: "8858",
+        });
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -59,6 +68,16 @@
 
         .section-title { font-size: 15px; font-weight: 700; color: #c084fc; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
+        /* ব্যানার অ্যাড কন্টেইনার */
+        .banner-ad-box {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* Ad কার্ডগুলোর জন্য 2-column grid */
         .ad-grid {
             display: grid;
@@ -88,7 +107,6 @@
             border: 1px solid rgba(251, 146, 60, 0.45);
             box-shadow: 0 8px 22px -10px rgba(239, 68, 68, 0.55);
         }
-        .ad-task-card.onclicka-card:hover { border-color: #fb923c; }
         .ad-task-card.onclicka-card .ad-icon { background: rgba(251, 146, 60, 0.22); color: #fdba74; }
         .ad-task-card.onclicka-card .ad-action-btn { background: linear-gradient(135deg, #fb923c, #ef4444); box-shadow: 0 4px 12px -3px rgba(239, 68, 68, 0.6); }
 
@@ -98,19 +116,17 @@
             border: 1px solid rgba(34, 211, 238, 0.45);
             box-shadow: 0 8px 22px -10px rgba(8, 145, 178, 0.55);
         }
-        .ad-task-card.monetag-card:hover { border-color: #22d3ee; }
         .ad-task-card.monetag-card .ad-icon { background: rgba(34, 211, 238, 0.22); color: #67e8f9; }
         .ad-task-card.monetag-card .ad-action-btn { background: linear-gradient(135deg, #22d3ee, #0891b2); box-shadow: 0 4px 12px -3px rgba(8, 145, 178, 0.6); }
 
-        /* Monetag Bonus (popup) কার্ডের কালার থিম (গোলাপি-বেগুনি) */
-        .ad-task-card.monetag-bonus-card {
-            background: linear-gradient(150deg, rgba(217, 70, 239, 0.22), rgba(88, 28, 135, 0.4));
-            border: 1px solid rgba(232, 121, 249, 0.45);
-            box-shadow: 0 8px 22px -10px rgba(192, 38, 211, 0.55);
+        /* Richads কার্ডের কালার থিম (বেগুনি-গোলাপি) */
+        .ad-task-card.richads-card {
+            background: linear-gradient(150deg, rgba(168, 85, 247, 0.22), rgba(76, 29, 149, 0.4));
+            border: 1px solid rgba(192, 132, 252, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(124, 58, 237, 0.55);
         }
-        .ad-task-card.monetag-bonus-card:hover { border-color: #e879f9; }
-        .ad-task-card.monetag-bonus-card .ad-icon { background: rgba(232, 121, 249, 0.22); color: #f0abfc; }
-        .ad-task-card.monetag-bonus-card .ad-action-btn { background: linear-gradient(135deg, #e879f9, #c026d3); box-shadow: 0 4px 12px -3px rgba(192, 38, 211, 0.6); }
+        .ad-task-card.richads-card .ad-icon { background: rgba(192, 132, 252, 0.22); color: #e879f9; }
+        .ad-task-card.richads-card .ad-action-btn { background: linear-gradient(135deg, #c084fc, #9333ea); box-shadow: 0 4px 12px -3px rgba(124, 58, 237, 0.6); }
 
         .ad-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .ad-details h4 { margin: 0 0 2px 0; font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.25; }
@@ -177,7 +193,7 @@
             border-top: 1px solid var(--card-border); 
             display: flex; 
             justify-content: space-around; 
-            padding: 12px 0 16px 0; 
+            padding: 10px 0 12px 0; 
             box-sizing: border-box; 
             z-index: 9999; 
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
@@ -200,78 +216,102 @@
         <div class="section-title"><i class="fa-solid fa-play-circle"></i> Rewarded Video Ad</div>
 
         <div class="ad-grid">
+            <!-- 4 OnClicka Cards (25 GP) -->
             <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Video Ad #1</h4>
-                    <p>+20 GP Fuel</p>
+                    <h4>OnClicka Ad #1</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn1" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn1', 'lastOcAdTime1')">Watch Ad</button>
+                <button id="adBtn1" class="ad-action-btn" onclick="watchOnClickaAd(25, 'adBtn1', 'lastOcAdTime1')">Watch Ad</button>
             </div>
 
             <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Video Ad #2</h4>
-                    <p>+20 GP Fuel</p>
+                    <h4>OnClicka Ad #2</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn2" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn2', 'lastOcAdTime2')">Watch Ad</button>
+                <button id="adBtn2" class="ad-action-btn" onclick="watchOnClickaAd(25, 'adBtn2', 'lastOcAdTime2')">Watch Ad</button>
             </div>
 
             <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Video Ad #3</h4>
-                    <p>+20 GP Fuel</p>
+                    <h4>OnClicka Ad #3</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn3" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn3', 'lastOcAdTime3')">Watch Ad</button>
+                <button id="adBtn3" class="ad-action-btn" onclick="watchOnClickaAd(25, 'adBtn3', 'lastOcAdTime3')">Watch Ad</button>
             </div>
 
             <div class="ad-task-card onclicka-card">
                 <div class="ad-icon"><i class="fa-solid fa-film"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Video Ad #4</h4>
-                    <p>+20 GP Fuel</p>
+                    <h4>OnClicka Ad #4</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn4" class="ad-action-btn" onclick="watchOnClickaAd(20, 'adBtn4', 'lastOcAdTime4')">Watch Ad</button>
+                <button id="adBtn4" class="ad-action-btn" onclick="watchOnClickaAd(25, 'adBtn4', 'lastOcAdTime4')">Watch Ad</button>
+            </div>
+
+            <!-- 4 Monetag Cards (25 GP) -->
+            <div class="ad-task-card monetag-card">
+                <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
+                <div class="ad-details">
+                    <h4>Monetag Ad #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn5" class="ad-action-btn" onclick="watchMonetagAd(25, 'adBtn5', 'lastMtAdTime1')">Watch Ad</button>
             </div>
 
             <div class="ad-task-card monetag-card">
                 <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Daily Ad #1</h4>
-                    <p>+30 GP Fuel</p>
+                    <h4>Monetag Ad #2</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn5" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn5', 'lastMtAdTime1')">Watch Ad</button>
+                <button id="adBtn6" class="ad-action-btn" onclick="watchMonetagAd(25, 'adBtn6', 'lastMtAdTime2')">Watch Ad</button>
             </div>
 
             <div class="ad-task-card monetag-card">
                 <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Daily Ad #2</h4>
-                    <p>+30 GP Fuel</p>
+                    <h4>Monetag Ad #3</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn6" class="ad-action-btn" onclick="watchMonetagAd(30, 'adBtn6', 'lastMtAdTime2')">Watch Ad</button>
+                <button id="adBtn7" class="ad-action-btn" onclick="watchMonetagAd(25, 'adBtn7', 'lastMtAdTime3')">Watch Ad</button>
             </div>
 
-            <div class="ad-task-card monetag-bonus-card">
-                <div class="ad-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div class="ad-task-card monetag-card">
+                <div class="ad-icon"><i class="fa-solid fa-video"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Bonus Ad #1</h4>
-                    <p>+30 GP Fuel</p>
+                    <h4>Monetag Ad #4</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn7" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn7', 'lastMtPopTime1')">Watch Ad</button>
+                <button id="adBtn8" class="ad-action-btn" onclick="watchMonetagAd(25, 'adBtn8', 'lastMtAdTime4')">Watch Ad</button>
             </div>
 
-            <div class="ad-task-card monetag-bonus-card">
-                <div class="ad-icon"><i class="fa-solid fa-bolt"></i></div>
+            <!-- 2 Richads Video Cards (25 GP) -->
+            <div class="ad-task-card richads-card">
+                <div class="ad-icon"><i class="fa-solid fa-clapperboard"></i></div>
                 <div class="ad-details">
-                    <h4>Watch Bonus Ad #2</h4>
-                    <p>+30 GP Fuel</p>
+                    <h4>Richads Video #1</h4>
+                    <p>+25 GP Fuel</p>
                 </div>
-                <button id="adBtn8" class="ad-action-btn" onclick="watchMonetagPopupAd(30, 'adBtn8', 'lastMtPopTime2')">Watch Ad</button>
+                <button id="adBtn9" class="ad-action-btn" onclick="watchRichadsVideo(25, 'adBtn9', 'lastRcAdTime1')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card richads-card">
+                <div class="ad-icon"><i class="fa-solid fa-clapperboard"></i></div>
+                <div class="ad-details">
+                    <h4>Richads Video #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn10" class="ad-action-btn" onclick="watchRichadsVideo(25, 'adBtn10', 'lastRcAdTime2')">Watch Ad</button>
             </div>
         </div>
+
+        <!-- ব্যানার অ্যাড ফাঁকা জায়গা -->
+        <div class="banner-ad-box" id="bannerAdContainer"></div>
 
         <div class="section-title"><i class="fa-brands fa-telegram"></i> Telegram Channel Tasks</div>
         
@@ -337,6 +377,23 @@
             renderTasksAndAds();
         });
 
+        // ব্যানার অ্যাড রেন্ডারিং
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.TelegramAdsController) {
+                    try {
+                        window.TelegramAdsController.renderBanner({
+                            pubId: "1022197",
+                            appId: "8858",
+                            containerId: "bannerAdContainer"
+                        });
+                    } catch (e) {
+                        console.log("Banner render error:", e);
+                    }
+                }
+            }, 1000);
+        });
+
         function renderTasksAndAds() {
             renderAds();
             renderChannelTasks();
@@ -349,12 +406,15 @@
             renderAdButton('adBtn4', userData.lastOcAdTime4 || 0);
             renderAdButton('adBtn5', userData.lastMtAdTime1 || 0);
             renderAdButton('adBtn6', userData.lastMtAdTime2 || 0);
-            renderAdButton('adBtn7', userData.lastMtPopTime1 || 0);
-            renderAdButton('adBtn8', userData.lastMtPopTime2 || 0);
+            renderAdButton('adBtn7', userData.lastMtAdTime3 || 0);
+            renderAdButton('adBtn8', userData.lastMtAdTime4 || 0);
+            renderAdButton('adBtn9', userData.lastRcAdTime1 || 0);
+            renderAdButton('adBtn10', userData.lastRcAdTime2 || 0);
         }
 
         function renderAdButton(btnId, lastTime) {
             let btn = document.getElementById(btnId);
+            if (!btn) return;
             let now = Date.now();
             let timeLeft = (lastTime + INTERVAL_12H) - now;
 
@@ -402,19 +462,29 @@
             }
         }
 
-        function watchMonetagPopupAd(rewardAmount, btnId, cooldownKey) {
+        function watchRichadsVideo(rewardAmount, btnId, cooldownKey) {
             let btn = document.getElementById(btnId);
             if(btn.disabled) return;
 
-            if (typeof show_11752857 === 'function') {
-                show_11752857({ type: 'pop' }).then(() => {
-                    grantAdReward(rewardAmount, cooldownKey);
-                }).catch((err) => {
-                    console.error("Monetag popup error:", err);
-                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
-                });
+            if (window.TelegramAdsController) {
+                try {
+                    window.TelegramAdsController.show({
+                        zoneId: 406945, // Richads ভিডিও জোন আইডি
+                        onShow: () => { console.log("Richads video started"); },
+                        onComplete: () => {
+                            grantAdReward(rewardAmount, cooldownKey);
+                        },
+                        onError: (err) => {
+                            console.log("Richads error or skipped:", err);
+                            tg.showAlert("❌ You must watch the complete video ad to claim your GP!");
+                        }
+                    });
+                } catch (e) {
+                    console.log("Richads exception:", e);
+                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
+                }
             } else {
-                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
             }
         }
 
@@ -431,6 +501,7 @@
 
         function renderChannelTasks() {
             const grid = document.getElementById('dynamicTaskGrid');
+            if(!grid) return;
             grid.innerHTML = ''; 
 
             let currentTime = Date.now();
@@ -530,7 +601,7 @@
             renderChannelTasks();
         }, 1000);
 
-        // ডানে সোয়াইপ করলে Game পেজে এবং বামে সোয়াইপ করলে Profile পেজে যাওয়ার সোয়াইপ নেভিগেশন সিস্টেম
+        // সোয়াইপ নেভিগেশন সিস্টেম
         let touchStartX = 0;
         window.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
         window.addEventListener('touchend', e => {
