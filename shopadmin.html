@@ -89,8 +89,34 @@
             </div>
         </div>
 
-        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (স্ক্রিনশটের ওপরের লাল বক্সের মতো) -->
+        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (সাথে পেমেন্ট নম্বর সেটিংও যুক্ত করা হলো) -->
         <div id="agentTab" class="tab-content">
+            <div class="card" style="border-color: #3b82f6; background: #0f172a;">
+                <h4><i class="fa-solid fa-sliders"></i> Quick Agent Payment Settings</h4>
+                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Update agent bKash, Nagad & UIDs directly from here:</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <div>
+                        <label style="font-size: 10px; color: #94a3b8;">bKash Number</label>
+                        <input type="text" id="quickBkash" class="form-control" placeholder="bKash No">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #94a3b8;">Nagad Number</label>
+                        <input type="text" id="quickNagad" class="form-control" placeholder="Nagad No">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 10px; color: #94a3b8;">Binance UID</label>
+                        <input type="text" id="quickBinance" class="form-control" placeholder="Binance UID">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; color: #94a3b8;">Bitget UID</label>
+                        <input type="text" id="quickBitget" class="form-control" placeholder="Bitget UID">
+                    </div>
+                </div>
+                <button class="action-btn" style="padding: 8px; font-size: 12px;" onclick="saveQuickPaymentSettings()">Update Agent Numbers</button>
+            </div>
+
             <div class="card">
                 <h4><i class="fa-solid fa-user-check"></i> Account Verification & Agent Requests</h4>
                 <div id="agentRequestsContainer">
@@ -99,7 +125,7 @@
             </div>
         </div>
 
-        <!-- ৪. পেমেন্ট ও অ্যাকাউন্ট সেটিংস ট্যাব (স্ক্রিনশটের নিচের লাল বক্সের মতো) -->
+        <!-- ৪. পেমেন্ট ও অ্যাকাউন্ট সেটিংস ট্যাব -->
         <div id="settingsTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-gear"></i> Sponsor & Agent Payment Accounts</h4>
@@ -181,12 +207,19 @@
         }
 
         // পেমেন্ট সেটিংস লোড
-        db.ref('sponsor_payment_settings').once('value', snap => {
+        db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
+            // মেইন পেমেন্ট ট্যাব
             document.getElementById('setBinance').value = data.binanceUid || "";
             document.getElementById('setBitget').value = data.bitgetUid || "";
-            document.getElementById('setNagad').value = data.nagadNum || "01601642742";
-            document.getElementById('setBkash').value = data.bkashNum || "01601642742";
+            document.getElementById('setNagad').value = data.nagadNum || "";
+            document.getElementById('setBkash').value = data.bkashNum || "";
+            
+            // এজেন্ট ট্যাবের কুইক সেটিংস
+            document.getElementById('quickBinance').value = data.binanceUid || "";
+            document.getElementById('quickBitget').value = data.bitgetUid || "";
+            document.getElementById('quickNagad').value = data.nagadNum || "";
+            document.getElementById('quickBkash').value = data.bkashNum || "";
         });
 
         function savePaymentSettings() {
@@ -199,6 +232,19 @@
             };
             db.ref('sponsor_payment_settings').set(settingsData).then(() => {
                 tg.showAlert("✅ Payment accounts settings updated successfully!");
+            });
+        }
+
+        function saveQuickPaymentSettings() {
+            let settingsData = {
+                binanceUid: document.getElementById('quickBinance').value.trim(),
+                bitgetUid: document.getElementById('quickBitget').value.trim(),
+                nagadNum: document.getElementById('quickNagad').value.trim(),
+                bkashNum: document.getElementById('quickBkash').value.trim(),
+                updatedAt: Date.now()
+            };
+            db.ref('sponsor_payment_settings').set(settingsData).then(() => {
+                tg.showAlert("✅ Agent payment numbers updated successfully!");
             });
         }
 
