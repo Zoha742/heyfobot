@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (নতুন যোগ করা হয়েছে) -->
+        <!-- ৩. এজেন্ট রিকোয়েস্ট ম্যানেজমেন্ট ট্যাব (স্ক্রিনশটের ওপরের লাল বক্সের মতো) -->
         <div id="agentTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-user-check"></i> Account Verification & Agent Requests</h4>
@@ -99,7 +99,7 @@
             </div>
         </div>
 
-        <!-- ৪. স্পন্সর পেমেন্ট সেটিংস ট্যাব -->
+        <!-- ৪. পেমেন্ট ও অ্যাকাউন্ট সেটিংস ট্যাব (স্ক্রিনশটের নিচের লাল বক্সের মতো) -->
         <div id="settingsTab" class="tab-content">
             <div class="card">
                 <h4><i class="fa-solid fa-gear"></i> Sponsor & Agent Payment Accounts</h4>
@@ -198,7 +198,7 @@
                 updatedAt: Date.now()
             };
             db.ref('sponsor_payment_settings').set(settingsData).then(() => {
-                tg.showAlert("✅ Payment settings updated!");
+                tg.showAlert("✅ Payment accounts settings updated successfully!");
             });
         }
 
