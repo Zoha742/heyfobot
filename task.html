@@ -16,7 +16,7 @@
         window.TelegramAdsController = new TelegramAdsController();
         window.TelegramAdsController.initialize({
             pubId: "1022197",
-            appId: "8858",
+            appId: "8870",
         });
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -387,7 +387,7 @@
                     try {
                         window.TelegramAdsController.renderBanner({
                             pubId: "1022197",
-                            appId: "8858",
+                            appId: "8870",
                             containerId: "bannerAdContainer"
                         });
                     } catch (e) {
@@ -472,7 +472,7 @@
             if (window.TelegramAdsController) {
                 try {
                     window.TelegramAdsController.show({
-                        zoneId: 406945, // Platinum (Richads) ভিডিও জোন আইডি
+                        zoneId: 407053, // Platinum (Richads) ভিডিও জোন আইডি - zoha742.github.io ডোমেইনে নতুন করে সেটআপ করা
                         onShow: () => { console.log("Platinum video started"); },
                         onComplete: () => {
                             grantAdReward(rewardAmount, cooldownKey);
