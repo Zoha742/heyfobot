@@ -68,7 +68,7 @@
             
             <div class="method-tabs">
                 <div class="method-tab active" onclick="switchMethod('freeTab', this)">1. Free Work (200K Gold)</div>
-                <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($30 / Payment)</div>
+                <div class="method-tab" onclick="switchMethod('directTab', this)">2. Direct ($10 / 1000 Tk)</div>
             </div>
 
             <!-- অপশন ১: ফ্রি কাজ / গোল্ড দিয়ে ভেরিফিকেশন -->
@@ -83,7 +83,7 @@
             <!-- অপশন ২: সরাসরি পেইড ভেরিফিকেশন -->
             <div id="directTab" class="method-content">
                 <div class="info-box">
-                    <b>Direct Paid Verification ($30):</b><br>
+                    <b>Direct Paid Verification ($10 / 1000 Taka):</b><br>
                     সরাসরি ভেরিফাইড হতে নিচের যেকোনো মাধ্যমে পেমেন্ট করুন:<br><br>
 
                     <!-- বিকাশ, নগদ এবং UID বক্সগুলো এখানে ডাইনামিক্যালি রেন্ডার হবে -->
@@ -154,7 +154,7 @@
             }
         });
 
-        // শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ, নগদ, বাইন্যান্স ও বিটগেট নম্বর/UID ডাইনামিক্যালি ফেচ করা[cite: 7]
+        // শপ অ্যাডমিন পেমেন্ট সেটিংস থেকে বিকাশ, নগদ, বাইন্যান্স ও বিটগেট নম্বর/UID ডাইনামিক্যালি ফেচ করা
         db.ref('sponsor_payment_settings').on('value', snap => {
             let data = snap.val() || {};
             let box = document.getElementById('paymentAccountsBox');
@@ -190,7 +190,7 @@
             });
         }
 
-        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন[cite: 7]
+        // ক্লাউডিনারির নির্দিষ্ট ফোল্ডারে SS আপলোড করার ফাংশন
         function uploadVerificationScreenshot(input) {
             if (input.files && input.files[0]) {
                 let file = input.files[0];
