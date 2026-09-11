@@ -311,9 +311,45 @@
                 </div>
                 <button id="adBtn10" class="ad-action-btn" onclick="watchPlatinumVideo(25, 'adBtn10', 'lastPlatinumAdTime2')">Watch Ad</button>
             </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn11" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn11', 'lastPlatinumAdTime3')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn12" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn12', 'lastPlatinumAdTime4')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #3</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn13" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn13', 'lastPlatinumAdTime5')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #4</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn14" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn14', 'lastPlatinumAdTime6')">Watch Ad</button>
+            </div>
         </div>
 
-        <!-- ব্যানার অ্যাড ফাঁকা জায়গা -->
+        <!-- ব্যানার অ্যাড ফাঁকা জায়গা -->
         <div class="banner-ad-box" id="bannerAdContainer"></div>
 
         <div class="section-title"><i class="fa-brands fa-telegram"></i> Telegram Channel Tasks</div>
@@ -413,6 +449,10 @@
             renderAdButton('adBtn8', userData.lastDiamondAdTime4 || 0);
             renderAdButton('adBtn9', userData.lastPlatinumAdTime1 || 0);
             renderAdButton('adBtn10', userData.lastPlatinumAdTime2 || 0);
+            renderAdButton('adBtn11', userData.lastPlatinumAdTime3 || 0);
+            renderAdButton('adBtn12', userData.lastPlatinumAdTime4 || 0);
+            renderAdButton('adBtn13', userData.lastPlatinumAdTime5 || 0);
+            renderAdButton('adBtn14', userData.lastPlatinumAdTime6 || 0);
         }
 
         function renderAdButton(btnId, lastTime) {
@@ -484,6 +524,32 @@
                     });
                 } catch (e) {
                     console.log("Platinum exception:", e);
+                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
+                }
+            } else {
+                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
+            }
+        }
+
+        function watchPlatinumPush(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+
+            if (window.TelegramAdsController) {
+                try {
+                    window.TelegramAdsController.show({
+                        zoneId: 407050, // Platinum (Richads) Push-style জোন আইডি - zoha742.github.io ডোমেইনে সেটআপ করা
+                        onShow: () => { console.log("Platinum push started"); },
+                        onComplete: () => {
+                            grantAdReward(rewardAmount, cooldownKey);
+                        },
+                        onError: (err) => {
+                            console.log("Platinum push error or skipped:", err);
+                            tg.showAlert("❌ You must complete the ad to claim your GP!");
+                        }
+                    });
+                } catch (e) {
+                    console.log("Platinum push exception:", e);
                     tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
                 }
             } else {
