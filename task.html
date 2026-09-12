@@ -55,6 +55,76 @@
 
         .section-title { font-size: 15px; font-weight: 700; color: #c084fc; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
+        /* ব্যানার অ্যাড কন্টেইনার */
+        .banner-ad-box {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ad কার্ডগুলোর জন্য 2-column grid */
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* ১টি ভিডিও অ্যাড সেকশন কার্ড */
+        .ad-task-card {
+            border-radius: 18px;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            transition: 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .ad-task-card:active { transform: scale(0.97); }
+
+        /* Gold কার্ডের কালার থিম (হলুদ-কমলা) */
+        .ad-task-card.gold-card {
+            background: linear-gradient(150deg, rgba(245, 158, 11, 0.22), rgba(120, 53, 15, 0.35));
+            border: 1px solid rgba(251, 191, 36, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(245, 158, 11, 0.55);
+        }
+        .ad-task-card.gold-card:hover { border-color: #fbbf24; }
+        .ad-task-card.gold-card .ad-icon { background: rgba(251, 191, 36, 0.22); color: #fde047; }
+        .ad-task-card.gold-card .ad-action-btn { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 12px -3px rgba(245, 158, 11, 0.6); }
+
+        /* Diamond কার্ডের কালার থিম (সায়ান-টিল) */
+        .ad-task-card.diamond-card {
+            background: linear-gradient(150deg, rgba(6, 182, 212, 0.22), rgba(8, 47, 73, 0.4));
+            border: 1px solid rgba(34, 211, 238, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(8, 145, 178, 0.55);
+        }
+        .ad-task-card.diamond-card:hover { border-color: #22d3ee; }
+        .ad-task-card.diamond-card .ad-icon { background: rgba(34, 211, 238, 0.22); color: #67e8f9; }
+        .ad-task-card.diamond-card .ad-action-btn { background: linear-gradient(135deg, #22d3ee, #0891b2); box-shadow: 0 4px 12px -3px rgba(8, 145, 178, 0.6); }
+
+        /* Platinum কার্ডের কালার থিম (বেগুনি-গোলাপি) */
+        .ad-task-card.platinum-card {
+            background: linear-gradient(150deg, rgba(168, 85, 247, 0.22), rgba(76, 29, 149, 0.4));
+            border: 1px solid rgba(192, 132, 252, 0.45);
+            box-shadow: 0 8px 22px -10px rgba(124, 58, 237, 0.55);
+        }
+        .ad-task-card.platinum-card:hover { border-color: #e879f9; }
+        .ad-task-card.platinum-card .ad-icon { background: rgba(192, 132, 252, 0.22); color: #e879f9; }
+        .ad-task-card.platinum-card .ad-action-btn { background: linear-gradient(135deg, #c084fc, #9333ea); box-shadow: 0 4px 12px -3px rgba(124, 58, 237, 0.6); }
+
+        .ad-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .ad-details h4 { margin: 0 0 2px 0; font-size: 12.5px; font-weight: 700; color: #fff; line-height: 1.25; }
+        .ad-details p { margin: 0; font-size: 10.5px; color: #fbbf24; font-weight: 600; }
+
+        .ad-action-btn { width: 100%; color: #fff; border: none; padding: 8px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .ad-action-btn:disabled { background: #334155 !important; color: #94a3b8; cursor: not-allowed; box-shadow: none !important; }
+
         .task-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -130,8 +200,144 @@
     <div class="container" id="mainContainer">
         <div class="tasks-header-banner">
             <h2>🎁 Earn GP Fuel</h2>
-            <p>Join channels to collect GP for gaming</p>
+            <p>Watch ad & join channels to collect GP for gaming</p>
         </div>
+
+        <div class="section-title"><i class="fa-solid fa-play-circle"></i> Rewarded Video Ad</div>
+
+        <div class="ad-grid">
+            <!-- 4 Gold Cards (25 GP) -->
+            <div class="ad-task-card gold-card">
+                <div class="ad-icon"><i class="fa-solid fa-coins"></i></div>
+                <div class="ad-details">
+                    <h4>Gold Ad #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn1" class="ad-action-btn" onclick="watchGoldAd(25, 'adBtn1', 'lastGoldAdTime1')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card gold-card">
+                <div class="ad-icon"><i class="fa-solid fa-coins"></i></div>
+                <div class="ad-details">
+                    <h4>Gold Ad #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn2" class="ad-action-btn" onclick="watchGoldAd(25, 'adBtn2', 'lastGoldAdTime2')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card gold-card">
+                <div class="ad-icon"><i class="fa-solid fa-coins"></i></div>
+                <div class="ad-details">
+                    <h4>Gold Ad #3</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn3" class="ad-action-btn" onclick="watchGoldAd(25, 'adBtn3', 'lastGoldAdTime3')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card gold-card">
+                <div class="ad-icon"><i class="fa-solid fa-coins"></i></div>
+                <div class="ad-details">
+                    <h4>Gold Ad #4</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn4" class="ad-action-btn" onclick="watchGoldAd(25, 'adBtn4', 'lastGoldAdTime4')">Watch Ad</button>
+            </div>
+
+            <!-- 4 Diamond Cards (25 GP) -->
+            <div class="ad-task-card diamond-card">
+                <div class="ad-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="ad-details">
+                    <h4>Diamond Ad #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn5" class="ad-action-btn" onclick="watchDiamondAd(25, 'adBtn5', 'lastDiamondAdTime1')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card diamond-card">
+                <div class="ad-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="ad-details">
+                    <h4>Diamond Ad #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn6" class="ad-action-btn" onclick="watchDiamondAd(25, 'adBtn6', 'lastDiamondAdTime2')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card diamond-card">
+                <div class="ad-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="ad-details">
+                    <h4>Diamond Ad #3</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn7" class="ad-action-btn" onclick="watchDiamondAd(25, 'adBtn7', 'lastDiamondAdTime3')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card diamond-card">
+                <div class="ad-icon"><i class="fa-solid fa-gem"></i></div>
+                <div class="ad-details">
+                    <h4>Diamond Ad #4</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn8" class="ad-action-btn" onclick="watchDiamondAd(25, 'adBtn8', 'lastDiamondAdTime4')">Watch Ad</button>
+            </div>
+
+            <!-- 2 Platinum Video Cards (25 GP) -->
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-award"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Video #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn9" class="ad-action-btn" onclick="watchPlatinumVideo(25, 'adBtn9', 'lastPlatinumAdTime1')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-award"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Video #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn10" class="ad-action-btn" onclick="watchPlatinumVideo(25, 'adBtn10', 'lastPlatinumAdTime2')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #1</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn11" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn11', 'lastPlatinumAdTime3')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #2</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn12" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn12', 'lastPlatinumAdTime4')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #3</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn13" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn13', 'lastPlatinumAdTime5')">Watch Ad</button>
+            </div>
+
+            <div class="ad-task-card platinum-card">
+                <div class="ad-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="ad-details">
+                    <h4>Platinum Push #4</h4>
+                    <p>+25 GP Fuel</p>
+                </div>
+                <button id="adBtn14" class="ad-action-btn" onclick="watchPlatinumPush(25, 'adBtn14', 'lastPlatinumAdTime6')">Watch Ad</button>
+            </div>
+        </div>
+
+        <!-- ব্যানার অ্যাড ফাঁকা জায়গা -->
+        <div class="banner-ad-box" id="bannerAdContainer"></div>
 
         <div class="section-title"><i class="fa-brands fa-telegram"></i> Telegram Channel Tasks</div>
         
@@ -185,8 +391,83 @@
             renderTasksAndAds();
         });
 
+        // ব্যানার অ্যাড রেন্ডারিং — AdSonar approve হলে এখানে তাদের banner render code বসবে
+
         function renderTasksAndAds() {
+            renderAds();
             renderChannelTasks();
+        }
+
+        function renderAds() {
+            renderAdButton('adBtn1', userData.lastGoldAdTime1 || 0);
+            renderAdButton('adBtn2', userData.lastGoldAdTime2 || 0);
+            renderAdButton('adBtn3', userData.lastGoldAdTime3 || 0);
+            renderAdButton('adBtn4', userData.lastGoldAdTime4 || 0);
+            renderAdButton('adBtn5', userData.lastDiamondAdTime1 || 0);
+            renderAdButton('adBtn6', userData.lastDiamondAdTime2 || 0);
+            renderAdButton('adBtn7', userData.lastDiamondAdTime3 || 0);
+            renderAdButton('adBtn8', userData.lastDiamondAdTime4 || 0);
+            renderAdButton('adBtn9', userData.lastPlatinumAdTime1 || 0);
+            renderAdButton('adBtn10', userData.lastPlatinumAdTime2 || 0);
+            renderAdButton('adBtn11', userData.lastPlatinumAdTime3 || 0);
+            renderAdButton('adBtn12', userData.lastPlatinumAdTime4 || 0);
+            renderAdButton('adBtn13', userData.lastPlatinumAdTime5 || 0);
+            renderAdButton('adBtn14', userData.lastPlatinumAdTime6 || 0);
+        }
+
+        function renderAdButton(btnId, lastTime) {
+            let btn = document.getElementById(btnId);
+            if (!btn) return;
+            let now = Date.now();
+            let timeLeft = (lastTime + INTERVAL_12H) - now;
+
+            if (timeLeft > 0) {
+                btn.disabled = true;
+                let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                btn.innerText = `${hours}h ${minutes}m ${seconds}s`;
+            } else {
+                btn.disabled = false;
+                btn.innerText = "Watch Ad";
+            }
+        }
+
+        // AdSonar approve হলে এই ৪টা ফাংশনের ভেতরে তাদের ad-trigger code বসবে।
+        // এখন শুধু placeholder — বাটন কাজ করবে কিন্তু কোনো ad network যুক্ত নেই বলে reward দিচ্ছে না।
+        function watchGoldAd(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+        }
+
+        function watchDiamondAd(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+        }
+
+        function watchPlatinumVideo(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+        }
+
+        function watchPlatinumPush(rewardAmount, btnId, cooldownKey) {
+            let btn = document.getElementById(btnId);
+            if(btn.disabled) return;
+            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+        }
+
+        function grantAdReward(rewardAmount, cooldownKey) {
+            let now = Date.now();
+            let currentGp = userData.gp !== undefined ? userData.gp : (userData.points || 0);
+            let updateObj = { gp: currentGp + rewardAmount, points: currentGp + rewardAmount };
+            updateObj[cooldownKey] = now;
+
+            userRef.update(updateObj).then(() => {
+                tg.showAlert(`Ad watched successfully! +${rewardAmount} GP added.`);
+            });
         }
 
         function renderChannelTasks() {
@@ -287,6 +568,7 @@
         }
 
         setInterval(() => {
+            renderAds();
             renderChannelTasks();
         }, 1000);
 
