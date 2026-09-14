@@ -6,6 +6,19 @@
     <title>Heyfo - Tasks</title>
     <!-- Telegram Web App Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Monetag SDK Script -->
+    <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
+    <!-- OnClicka SDK Script -->
+    <script src="https://js.onclckvd.com/in-stream-ad-admanager/tma.js"></script>
+    <!-- Richads Telegram Integration Script -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+        window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "1022197",
+            appId: "8870",
+        });
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -379,6 +392,18 @@
         let userId = user ? user.id.toString() : "7757851056";
         let userRef = db.ref('users/' + userId);
 
+        if (typeof show_11752857 === 'function') {
+            show_11752857({
+                type: 'inApp',
+                inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false }
+            }).catch(() => {});
+        }
+
+        let goldShowAd = null;
+        window.initCdTma?.({ id: 6151334 })
+            .then(show => { goldShowAd = show; })
+            .catch(e => console.error("Gold Ad init error:", e));
+
         const channelList = [
             "Xoypo", "Xoyfo", "Xoyco", "Xoyvo", "Xoyqo", "Xoywo", "Ogeeu", "Foyko", "Royci", "Royqo", "Keoiv", "Keoiz", "Bivbo", "Mivbo", "Oviib", "Qeoil", "EoPay", "cyriv", "cypit", "Bypir", "cypij", "Cypia", "Psirt", "Wjstv", "Doyvi", "Foyvi", "Jtrtv", "Apsox", "Apgox", "Oamgo", "Cisot", "Orous", "Okous", "Oeous", "uoike", "Foike", "Doike", "Uniwo", "hizdo", "Eopse", "Risof", "Roiho", "Tebvi", "Coaic", "icoji", "Uaffi", "Xafbi", "Coijo", "Cexmo", "Pexmo", "Wopse", "tavfo", "Kavfo", "Oanlo", "Eamvo", "Oanvo", "oofti", "Foqro", "Foqxo", "Joivo", "Xijci", "Foyzo", "Foljo", "Fuuqo", "fusqo", "fuyqo", "tiqoo", "Qifoo", "Hoyqo", "Qelfo", "Qeljo", "Fnntv", "Jnntv", "Fnitv", "Fbntv", "Cbigo", "Eavno", "Eapno", "Foyqo", "Upbif", "Upbib", "Upbir", "Upbip", "Upbim", "Oesno", "Lanvo", "Yovki", "Oovki", "Uovki", "syfox", "Spyzo", "Vavfo", "Cavfo", "Eavdo", "Coixo", "Fovgi", "Tafvi", "Guzna", "Aovji", "Oelgo", "Yelfo", "Zoosy", "Zivfo", "Uesgo", "Ripfo", "Fovmi", "Wovti", "Jafki", "Dikto", "Joizo", "Uxdao", "Wxdao", "Movti", "Fovti", "Oafki", "Eafki", "Oafmi", "Uafmi", "Vafmi", "Eafmi", "Gigxe", "Eooti", "Eovmi", "Pafbi", "Livbo", "Dapbo", "Roiwo", "Foiqo", "Wigdo", "Diczo", "Oafvi", "Dijzo", "Kovmi", "Oubuy", "Jafvi", "Kafvi", "Cafvi", "Eapti", "Xafti", "Cekio", "Ualjo", "Ealjo", "Uofti", "Eofti", "Pofti", "Vunki", "dagpi", "Hagpi", "Eagpi", "Cagpi", "Zidme", "Relbo", "Eelvo", "Yelvo", "Ohous", "Opous", "Tewvi", "Epegi", "Uafti", "dysel", "dycel", "Oviwo", "Dojvi", "Fisdo", "Rirbo", "Uanbo", "Oamco", "Zisvo", "Oisvo", "Wisvo", "Oispo", "reljo", "uepax", "uevax", "aekax", "Cigzo", "Uevio", "Xikvi", "Oeyvi", "Ueyvi", "Qittoo", "ZilMal", "ZilXal", "XilXal", "BikNak", "BikVak", "BakVak", "XilMal", "Zilfal", "ZilSal", "XalXil", "XikMik", "XilMil", "XikXaq", "HakVak", "HakBak", "HikDik"
         ];
@@ -391,7 +416,22 @@
             renderTasksAndAds();
         });
 
-        // ব্যানার অ্যাড রেন্ডারিং — AdSonar approve হলে এখানে তাদের banner render code বসবে
+        // ব্যানার অ্যাড রেন্ডারিং
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.TelegramAdsController) {
+                    try {
+                        window.TelegramAdsController.renderBanner({
+                            pubId: "1022197",
+                            appId: "8870",
+                            containerId: "bannerAdContainer"
+                        });
+                    } catch (e) {
+                        console.log("Banner render error:", e);
+                    }
+                }
+            }, 1000);
+        });
 
         function renderTasksAndAds() {
             renderAds();
@@ -434,30 +474,90 @@
         }
 
         // AdSonar approve হলে এই ৪টা ফাংশনের ভেতরে তাদের ad-trigger code বসবে।
-        // এখন শুধু placeholder — বাটন কাজ করবে কিন্তু কোনো ad network যুক্ত নেই বলে reward দিচ্ছে না।
         function watchGoldAd(rewardAmount, btnId, cooldownKey) {
             let btn = document.getElementById(btnId);
             if(btn.disabled) return;
-            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+
+            if (goldShowAd) {
+                goldShowAd().then(() => {
+                    grantAdReward(rewardAmount, cooldownKey);
+                }).catch((err) => {
+                    console.error("OnClicka error:", err);
+                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+                });
+            } else {
+                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+            }
         }
 
         function watchDiamondAd(rewardAmount, btnId, cooldownKey) {
             let btn = document.getElementById(btnId);
             if(btn.disabled) return;
-            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+
+            if (typeof show_11752857 === 'function') {
+                show_11752857().then(() => {
+                    grantAdReward(rewardAmount, cooldownKey);
+                }).catch((err) => {
+                    console.error("Monetag error:", err);
+                    tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+                });
+            } else {
+                tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+            }
         }
 
         function watchPlatinumVideo(rewardAmount, btnId, cooldownKey) {
             let btn = document.getElementById(btnId);
             if(btn.disabled) return;
-            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+
+            if (window.TelegramAdsController) {
+                try {
+                    window.TelegramAdsController.show({
+                        zoneId: 407053, // Platinum (Richads) ভিডিও জোন আইডি - zoha742.github.io ডোমেইনে সেটআপ করা
+                        onShow: () => { console.log("Platinum video started"); },
+                        onComplete: () => {
+                            grantAdReward(rewardAmount, cooldownKey);
+                        },
+                        onError: (err) => {
+                            console.log("Platinum error or skipped:", err);
+                            tg.showAlert("❌ You must watch the complete video ad to claim your GP!");
+                        }
+                    });
+                } catch (e) {
+                    console.log("Platinum exception:", e);
+                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
+                }
+            } else {
+                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
+            }
         }
 
         function watchPlatinumPush(rewardAmount, btnId, cooldownKey) {
             let btn = document.getElementById(btnId);
             if(btn.disabled) return;
-            tg.showAlert("⏳ Ad is currently unavailable. Please try again later.");
+
+            if (window.TelegramAdsController) {
+                try {
+                    window.TelegramAdsController.show({
+                        zoneId: 407050, // Platinum (Richads) Push-style জোন আইডি - zoha742.github.io ডোমেইনে সেটআপ করা
+                        onShow: () => { console.log("Platinum push started"); },
+                        onComplete: () => {
+                            grantAdReward(rewardAmount, cooldownKey);
+                        },
+                        onError: (err) => {
+                            console.log("Platinum push error or skipped:", err);
+                            tg.showAlert("❌ You must complete the ad to claim your GP!");
+                        }
+                    });
+                } catch (e) {
+                    console.log("Platinum push exception:", e);
+                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
+                }
+            } else {
+                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
+            }
         }
+
 
         function grantAdReward(rewardAmount, cooldownKey) {
             let now = Date.now();
