@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heyfo - Boost Center</title>
     
-    <!-- Telegram Mini App & Richads Integration Script -->
+    <!-- Telegram Mini App & Richads Integration Script (banner-এর জন্য) -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <script>
@@ -15,6 +15,8 @@
             appId: "8870",
         });
     </script>
+    <!-- Monetag SDK Script (video claim ad-এর জন্য) -->
+    <script src='//libtl.com/sdk.js' data-zone='11752857' data-sdk='show_11752857'></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -426,30 +428,18 @@
             });
         }
 
-        // কঠোর ভিডিও অ্যাড লজিক: অ্যাড সম্পূর্ণ না দেখলে রিওয়ার্ড দেওয়া হবে না
+        // কঠোর ভিডিও অ্যাড লজিক: অ্যাড সম্পূর্ণ না দেখলে রিওয়ার্ড দেওয়া হবে না
         function triggerVideoAdAndClaim(id, gp) {
-            if (window.TelegramAdsController) {
-                try {
-                    window.TelegramAdsController.show({
-                        zoneId: 407053, // RichAds Interstitial video zone - zoha742.github.io ডোমেইনে নতুন করে সেটআপ করা
-                        onShow: () => { 
-                            console.log("Video ad started"); 
-                        },
-                        onComplete: () => {
-                            // ইউজার সম্পূর্ণ অ্যাড দেখলে তবেই রিওয়ার্ড পাবে
-                            executeClaimReward(id, gp);
-                        },
-                        onError: (err) => {
-                            console.log("Video ad error or skipped:", err);
-                            tg.showAlert("❌ You must watch the complete video ad to claim your GP!");
-                        }
-                    });
-                } catch (e) {
-                    console.log("Ad exception:", e);
-                    tg.showAlert("⚠️ Ad could not be loaded. Please try again later.");
-                }
+            if (typeof show_11752857 === 'function') {
+                show_11752857().then(() => {
+                    // ইউজার সম্পূর্ণ অ্যাড দেখলে তবেই রিওয়ার্ড পাবে
+                    executeClaimReward(id, gp);
+                }).catch((err) => {
+                    console.log("Video ad error or skipped:", err);
+                    tg.showAlert("❌ You must watch the complete video ad to claim your GP!");
+                });
             } else {
-                tg.showAlert("⚠️ Ad controller not initialized. Please refresh!");
+                tg.showAlert("⚠️ Ad is currently unavailable. Please try again later.");
             }
         }
 
