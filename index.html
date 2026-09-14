@@ -47,6 +47,32 @@
         .user-info p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); }
         .header-icons { display: flex; align-items: center; gap: 12px; }
         .notification-btn { background: none; border: none; font-size: 20px; color: var(--text-main); cursor: pointer; position: relative; }
+
+        /* আনরিড নোটিফিকেশন থাকলে বেল আইকন কাঁপবে */
+        .notification-btn.has-unread {
+            animation: bellShake 1.2s ease-in-out infinite;
+            color: #fbbf24;
+        }
+        @keyframes bellShake {
+            0%, 100% { transform: rotate(0deg); }
+            10% { transform: rotate(-15deg); }
+            20% { transform: rotate(13deg); }
+            30% { transform: rotate(-10deg); }
+            40% { transform: rotate(8deg); }
+            50% { transform: rotate(-5deg); }
+            60% { transform: rotate(3deg); }
+            70%, 100% { transform: rotate(0deg); }
+        }
+        .notification-btn .unread-dot {
+            position: absolute;
+            top: -2px; right: -2px;
+            width: 9px; height: 9px;
+            background: #ef4444;
+            border: 2px solid var(--bg-color);
+            border-radius: 50%;
+            display: none;
+        }
+        .notification-btn.has-unread .unread-dot { display: block; }
         
         .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid #7c3aed; }
         
@@ -196,7 +222,7 @@
                 <p>Play games, complete tasks & earn!</p>
             </div>
             <div class="header-icons">
-                <button class="notification-btn" onclick="location.href='notification.html'"><i class="fa-regular fa-bell"></i></button>
+                <button class="notification-btn" id="notificationBtn" onclick="location.href='notification.html'"><i class="fa-regular fa-bell"></i><span class="unread-dot"></span></button>
                 <img id="user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="avatar" alt="User" onclick="location.href='profile.html'">
             </div>
         </div>
@@ -412,6 +438,27 @@
                 tg.showAlert(`Claimed Daily Bonus! +${rewardAmount} Gold added to your balance.`);
             });
         }
+
+        // নোটিফিকেশন চেক করে বেল আইকন কাঁপানো (আনরিড থাকলে)
+        db.ref('users/' + userId + '/notifications').on('value', snap => {
+            let bellBtn = document.getElementById('notificationBtn');
+            let hasUnread = false;
+
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    let notif = child.val();
+                    if (!notif.isRead) {
+                        hasUnread = true;
+                    }
+                });
+            }
+
+            if (hasUnread) {
+                bellBtn.classList.add('has-unread');
+            } else {
+                bellBtn.classList.remove('has-unread');
+            }
+        });
 
         // ফায়ারবেস থেকে একটিভ স্পন্সর ফেচ করা
         db.ref('active_sponsor').on('value', snap => {
